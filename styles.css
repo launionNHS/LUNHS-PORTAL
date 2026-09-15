@@ -1309,3 +1309,124 @@ input,textarea,select,button,.btn{
   opacity:1 !important;
   visibility:visible !important;
 }
+
+
+/* ==========================================================
+   v16 — SIMPLE CLEAN THEME
+   Removes section-by-section contrast styling.
+   ========================================================== */
+:root{
+  --green:#146B3A;
+  --white:#FFFFFF;
+  --text:#222222;
+}
+
+*,*::before,*::after{
+  text-shadow:none !important;
+  box-shadow:none !important;
+}
+
+html,body,main,
+#home,#announcements,#login,#dashboard,
+.home-page,.home-section,.media-hub,.updates-wrap,
+.publication,.featured-media,.featured-screen,.home-cta{
+  background:#FFFFFF !important;
+  color:#222222 !important;
+}
+
+h1,h2,h3,h4,h5,h6,
+#home h1,#home h2,#home h3,#home h4,
+#announcements h1,#login h1,#dashboard h1{
+  color:#146B3A !important;
+  text-shadow:none !important;
+}
+
+p,li,small,label,
+#home p,#announcements p,#login p,#dashboard p{
+  color:#222222 !important;
+  text-shadow:none !important;
+}
+
+/* Header and footer only */
+header,footer{
+  background:#146B3A !important;
+  color:#FFFFFF !important;
+}
+header *,footer *{
+  color:#FFFFFF !important;
+}
+
+/* Simple white cards */
+.info-card,.feature-update,.events-card,
+.discover-strip>div,.media-card,.panel,.card,
+.paper,.paper-front,.paper-back,
+.publishing-studio,.admin-post-card,
+.school-mark,.float-card,.featured-media{
+  background:#FFFFFF !important;
+  color:#222222 !important;
+  border:1px solid #146B3A !important;
+}
+
+.info-card h3,.feature-update h3,.events-card h3,
+.discover-strip b,.media-card h4,.panel h1,.card h3,
+.paper h3,.featured-media h3{
+  color:#146B3A !important;
+}
+
+.info-card p,.feature-update p,.events-card p,
+.discover-strip span,.media-card p,.panel p,.card p,
+.paper p,.paper small,.featured-media p{
+  color:#222222 !important;
+}
+
+/* Hero is also simple white */
+.hero,.hero-modern{
+  background:#FFFFFF !important;
+  color:#222222 !important;
+}
+.hero h1,.hero h2,.hero h3,.hero h1 span{
+  color:#146B3A !important;
+}
+.hero p,.hero strong,.hero small,.hero span{
+  color:#222222 !important;
+}
+.hero .eyebrow{color:#146B3A !important}
+
+/* Links and buttons */
+a{color:#146B3A !important}
+.primary,.btn.primary,button.primary{
+  background:#146B3A !important;
+  color:#FFFFFF !important;
+  border:1px solid #146B3A !important;
+}
+.ghost,.btn.ghost,.secondary,button.secondary{
+  background:#FFFFFF !important;
+  color:#146B3A !important;
+  border:1px solid #146B3A !important;
+}
+
+/* Inputs */
+input,textarea,select{
+  background:#FFFFFF !important;
+  color:#222222 !important;
+  border:1px solid #146B3A !important;
+}
+input::placeholder,textarea::placeholder{
+  color:#666666 !important;
+  opacity:1 !important;
+}
+
+/* Tags */
+.eyebrow,.tag,.kicker,.section-label{
+  color:#146B3A !important;
+}
+
+/* Remove decorative color effects */
+.orb{display:none !important}
+
+/* Keep content visible without animation opacity problems */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,[data-reveal]{
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+}
