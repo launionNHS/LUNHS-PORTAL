@@ -146,3 +146,71 @@ function addSelfPasswordCard(){
   host.appendChild(d);
 }
 setInterval(addSelfPasswordCard,1200);
+
+
+// v10.7 — reliable Admin password reset panel.
+async function renderAdminPasswordResetPanel(){
+  if(!me || me.role!=='admin') return;
+  const host=document.querySelector('#adminContent') || document.querySelector('main');
+  if(!host || document.getElementById('adminResetPanel')) return;
+
+  const {data:users,error}=await sb.from('profiles')
+    .select('id,display_name,role,school_id,grade_level,section')
+    .in('role',['student','teacher'])
+    .order('display_name');
+
+  const panel=document.createElement('section');
+  panel.id='adminResetPanel';
+  panel.className='card';
+  if(error){
+    panel.innerHTML='<h3>Password Management</h3><p>Could not load Student/Teacher accounts: '+error.message+'</p>';
+  }else{
+    panel.innerHTML=`<h3>Password Management</h3>
+      <p>Administrator can reset Student and Teacher passwords without email.</p>
+      <label>Select Account
+        <select id="resetTarget">
+          <option value="">Choose Student/Teacher</option>
+          ${(users||[]).map(u=>`<option value="${u.id}">${u.display_name} — ${u.role} — ${u.school_id||''}</option>`).join('')}
+        </select>
+      </label>
+      <label>New Password<input id="adminNewPass" type="password" minlength="8" autocomplete="new-password"></label>
+      <label>Confirm Password<input id="adminConfirmPass" type="password" minlength="8" autocomplete="new-password"></label>
+      <button id="adminResetPasswordBtn" type="button">Reset Selected User Password</button>
+      <p id="adminResetMsg"></p>`;
+  }
+  host.appendChild(panel);
+}
+
+document.addEventListener('click',async(e)=>{
+  const btn=e.target.closest?.('#adminResetPasswordBtn');
+  if(!btn)return;
+  const target=document.getElementById('resetTarget')?.value||'';
+  const p=document.getElementById('adminNewPass')?.value||'';
+  const c=document.getElementById('adminConfirmPass')?.value||'';
+  const msg=document.getElementById('adminResetMsg');
+  if(!target){msg.textContent='Select a Student or Teacher account.';return;}
+  if(p.length<8){msg.textContent='Password must be at least 8 characters.';return;}
+  if(p!==c){msg.textContent='Passwords do not match.';return;}
+
+  btn.disabled=true; msg.textContent='Resetting password...';
+  const {data,error}=await sb.functions.invoke('reset-school-user-password',{
+    body:{user_id:target,new_password:p}
+  });
+  btn.disabled=false;
+  if(error){
+    let detail=error.message||'Password reset failed.';
+    try{
+      if(error.context && typeof error.context.json==='function'){
+        const body=await error.context.json();
+        detail=body.error||body.message||detail;
+      }
+    }catch(_){}
+    msg.textContent=detail; return;
+  }
+  if(!data?.ok){msg.textContent=data?.error||'Password reset failed.';return;}
+  msg.textContent=data.message||'Password reset successfully.';
+  document.getElementById('adminNewPass').value='';
+  document.getElementById('adminConfirmPass').value='';
+});
+
+setInterval(renderAdminPasswordResetPanel,1000);
