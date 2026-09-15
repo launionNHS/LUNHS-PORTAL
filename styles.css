@@ -498,3 +498,134 @@ button.primary,.primary,.btn-primary,#savePostBtn,
 button.secondary,.secondary{
   color:#0b2447 !important;
 }
+
+
+/* ==========================================================
+   v12.5 — BLUE BACKGROUND CONTRAST FIX
+   FINAL override: any intentionally blue/dark school panel
+   uses white text, while white/ivory cards use dark text.
+   ========================================================== */
+
+/* DARK / BLUE AREAS */
+.hero,
+.hero-modern,
+.home-cta,
+.featured-media,
+.featured-screen,
+.publication,
+.feature-update,
+.events-card,
+.school-mark,
+.float-card {
+  color:#FFFFFF !important;
+}
+
+/* Force ALL textual descendants in blue/dark blocks to readable white */
+.hero h1,.hero h2,.hero h3,.hero h4,.hero p,.hero span,.hero strong,.hero small,.hero a,
+.hero-modern h1,.hero-modern h2,.hero-modern h3,.hero-modern p,.hero-modern span,.hero-modern strong,.hero-modern small,
+.home-cta h1,.home-cta h2,.home-cta h3,.home-cta p,.home-cta span,.home-cta small,
+.featured-media h1,.featured-media h2,.featured-media h3,.featured-media h4,.featured-media p,.featured-media span,.featured-media b,.featured-media small,
+.featured-screen h1,.featured-screen h2,.featured-screen h3,.featured-screen p,.featured-screen span,.featured-screen b,.featured-screen small,
+.publication h1,.publication h2,.publication h3,.publication h4,.publication p,.publication span,.publication small,
+.feature-update h1,.feature-update h2,.feature-update h3,.feature-update h4,.feature-update p,.feature-update span,.feature-update small,
+.events-card h1,.events-card h2,.events-card h3,.events-card h4,.events-card p,.events-card span,.events-card small,
+.school-mark span,
+.float-card {
+  color:#FFFFFF !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);
+}
+
+/* Links/buttons on blue backgrounds */
+.hero a:not(.primary),
+.home-cta a,
+.publication a:not(.publication-btn),
+.feature-update a,
+.events-card a {
+  color:#FFF0C9 !important;
+  opacity:1 !important;
+}
+
+/* Gold labels on blue backgrounds: use light gold, not dark gold */
+.hero .eyebrow,
+.home-cta .eyebrow,
+.publication .eyebrow,
+.feature-update .tag,
+.events-card .tag,
+.featured-media .tag {
+  color:#F3D99B !important;
+}
+
+/* LIGHT AREAS — guaranteed dark readable text */
+.home-section:not(.publication),
+.info-card,
+.discover-strip > div,
+.media-card,
+.panel,
+.card,
+#announcements,
+#login,
+#dashboard {
+  color:#1B2A3A !important;
+}
+
+.home-section:not(.publication) h1,
+.home-section:not(.publication) h2,
+.home-section:not(.publication) h3,
+.home-section:not(.publication) h4,
+.info-card h3,
+.discover-strip b,
+.media-card h4,
+#announcements h1,#announcements h2,#announcements h3,
+#login h1,#dashboard h1,#dashboard h2,#dashboard h3 {
+  color:#0B2447 !important;
+  opacity:1 !important;
+}
+
+.home-section:not(.publication) p,
+.info-card p,
+.discover-strip span,
+.media-card p,
+#announcements p,#login p,#login label,#dashboard p {
+  color:#34465A !important;
+  opacity:1 !important;
+}
+
+/* Exception: blue feature cards live inside a light home-section */
+.home-section .feature-update h3,
+.home-section .feature-update p,
+.home-section .events-card h3,
+.home-section .events-card p {
+  color:#FFFFFF !important;
+}
+.home-section .feature-update .tag,
+.home-section .events-card .tag {
+  color:#F3D99B !important;
+}
+.home-section .feature-update a,
+.home-section .events-card a {
+  color:#FFF0C9 !important;
+}
+
+/* Publication paper itself is light, so restore dark ink */
+.publication .paper,
+.publication .paper * {
+  color:#172235 !important;
+  text-shadow:none !important;
+}
+.publication .paper h3 { color:#0B2447 !important; }
+.publication .paper p,.publication .paper small { color:#465568 !important; }
+
+/* Media cards are light even though the featured media above is dark */
+.media-grid .media-card,
+.media-grid .media-card * {
+  text-shadow:none !important;
+}
+.media-grid .media-card h4 { color:#0B2447 !important; }
+.media-grid .media-card p { color:#465568 !important; }
+
+/* Never hide copy due to animation */
+.reveal,.reveal * {
+  visibility:visible !important;
+}
