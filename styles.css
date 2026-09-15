@@ -1930,3 +1930,57 @@ input::placeholder,textarea::placeholder{
     animation:none !important;
   }
 }
+
+
+/* ==========================================================
+   v19 — APPROVED DESIGN USED AS THE ACTUAL WEBSITE BANNER
+   ========================================================== */
+
+/* The approved design is now the hero background/banner itself. */
+.hero.hero-modern{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  min-height:0 !important;
+  aspect-ratio: 2000 / 767 !important;
+  padding:0 !important;
+  margin:0 !important;
+  background-image:url("lunhs-home-banner.png") !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  overflow:hidden !important;
+  border:0 !important;
+}
+
+/* Hide the old duplicated hero HTML because its content is already
+   visually included in the approved banner image. */
+.hero.hero-modern > .hero-copy,
+.hero.hero-modern > .hero-visual{
+  display:none !important;
+}
+
+/* Keep the banner clean and edge-to-edge. */
+#home.home-page{
+  padding-top:0 !important;
+}
+.hero.hero-modern::before,
+.hero.hero-modern::after{
+  display:none !important;
+}
+
+/* Responsive banner crop */
+@media(max-width:900px){
+  .hero.hero-modern{
+    aspect-ratio: 16 / 8.5 !important;
+    background-size:cover !important;
+    background-position:center center !important;
+  }
+}
+@media(max-width:600px){
+  .hero.hero-modern{
+    aspect-ratio: 4 / 3 !important;
+    background-size:cover !important;
+    background-position:center center !important;
+  }
+}
