@@ -284,169 +284,92 @@ setInterval(renderAdminPasswordResetPanel,1000);
 })();
 
 
-// v11.1 — elegant one-page navigation for Home / Announcements / Login
+// v11.5 — single navigation controller (replaces older stacked login patches)
 (function(){
-  const targets={home:'home',announcement:'announcements',announcements:'announcements',login:'login'};
-  function normalize(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ')}
-  function headerOffset(){
-    const candidates=[document.querySelector('header'),document.querySelector('nav')].filter(Boolean);
-    return Math.max(0,...candidates.map(x=>x.getBoundingClientRect().height))+14;
+  function label(el){
+    return String(el?.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');
   }
-  function go(id){
-    const el=document.getElementById(id); if(!el)return;
+  function headerOffset(){
+    const h=document.querySelector('header');
+    return (h?.getBoundingClientRect().height||0)+18;
+  }
+  function smoothTo(el){
+    if(!el)return;
     const y=el.getBoundingClientRect().top+window.scrollY-headerOffset();
     window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
-    try{history.replaceState(null,'','#'+id)}catch(_){}
   }
-
-  // Works with anchors or existing navigation buttons without disturbing portal controls.
-  document.addEventListener('click',e=>{
-    const el=e.target.closest('a,button'); if(!el)return;
-    const text=normalize(el.textContent);
-    const explicit=el.dataset.scrollNav;
-    const id=explicit||targets[text];
-    if(!id)return;
-    // Avoid treating form submit buttons as navigation.
-    if(el.tagName==='BUTTON' && (el.type==='submit'||el.closest('form')))return;
-    e.preventDefault(); go(id);
-  });
-
-  const sections=['home','announcements','login'].map(id=>document.getElementById(id)).filter(Boolean);
-  const navItems=[...document.querySelectorAll('a,button')].filter(el=>{
-    const t=normalize(el.textContent); return !!(el.dataset.scrollNav||targets[t]);
-  });
-  function setActive(){
-    if(!sections.length)return;
-    const probe=window.scrollY+headerOffset()+90;
-    let active=sections[0];
-    sections.forEach(s=>{if(s.offsetTop<=probe)active=s});
-    navItems.forEach(n=>{
-      const t=n.dataset.scrollNav||targets[normalize(n.textContent)];
-      n.classList.toggle('nav-active',t===active.id);
-      if(t===active.id)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');
-    });
-  }
-  addEventListener('scroll',setActive,{passive:true});
-  addEventListener('resize',setActive,{passive:true});
-  addEventListener('load',()=>{
-    if(location.hash && ['#home','#announcements','#login'].includes(location.hash))
-      setTimeout(()=>go(location.hash.slice(1)),180);
-    setActive();
-  });
-  setActive();
-})();
-
-
-// v11.2 — Portal Login goes directly to the actual login box.
-(function(){
-  function findLoginBox(){
-    return document.querySelector('#loginForm') ||
-           document.querySelector('.login-card') ||
-           document.querySelector('.portal-login') ||
-           document.querySelector('form:has(input[type="password"])') ||
-           document.querySelector('#login');
-  }
-  function scrollToLoginBox(){
-    const box=findLoginBox(); if(!box)return;
-    const header=document.querySelector('header')||document.querySelector('nav');
-    const offset=(header?.getBoundingClientRect().height||0)+18;
-    const y=box.getBoundingClientRect().top+window.scrollY-offset;
-    window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
-    setTimeout(()=>{
-      const first=box.querySelector('input:not([type="hidden"]):not([disabled])');
-      if(first) first.focus({preventScroll:true});
-      box.classList.add('login-focus-pulse');
-      setTimeout(()=>box.classList.remove('login-focus-pulse'),900);
-    },550);
-  }
-  document.addEventListener('click',e=>{
-    const el=e.target.closest('a,button'); if(!el)return;
-    const text=String(el.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');
-    if(['login','portal login','log in','sign in'].includes(text) && !el.closest('form')){
-      e.preventDefault(); e.stopImmediatePropagation(); scrollToLoginBox();
+  function revealView(el){
+    if(!el)return;
+    const view=el.classList.contains('view') ? el : el.closest('.view');
+    if(view){
+      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+      view.classList.add('active');
+      view.hidden=false;
+      view.removeAttribute('aria-hidden');
     }
-  },true);
-})();
-
-
-// v11.3 FIX: Portal Login first makes the login view visible, then scrolls to the login box.
-(function(){
-  const btn=document.getElementById('loginNav');
-  if(!btn)return;
-  btn.addEventListener('click',function(e){
-    e.preventDefault();
-    e.stopImmediatePropagation();
-
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    const login=document.getElementById('login');
-    if(!login)return;
-    login.classList.add('active');
-
-    // Update nav appearance.
-    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('nav-active'));
-    btn.classList.add('nav-active');
-
-    requestAnimationFrame(()=>{
-      const box=document.getElementById('loginForm')?.closest('.panel') || document.getElementById('loginForm') || login;
-      const header=document.querySelector('header');
-      const offset=(header?.getBoundingClientRect().height||0)+18;
-      const y=box.getBoundingClientRect().top+window.scrollY-offset;
-      window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
-      setTimeout(()=>{
-        document.getElementById('schoolLogin')?.focus({preventScroll:true});
-        box.classList.add('login-focus-pulse');
-        setTimeout(()=>box.classList.remove('login-focus-pulse'),900);
-      },450);
-    });
-  },true);
-})();
-
-
-// v11.4 — final live-site Portal Login navigation override
-(function(){
-  function text(el){return String(el?.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');}
-  function actualLogin(){
-    const form=document.getElementById('loginForm') || [...document.querySelectorAll('form')].find(f=>f.querySelector('input[type="password"]'));
-    return form ? (form.closest('.panel,.card,.login-card,section') || form) : document.getElementById('login');
+    el.hidden=false;
+    el.removeAttribute('aria-hidden');
   }
-  function openLogin(){
-    const form=document.getElementById('loginForm') || [...document.querySelectorAll('form')].find(f=>f.querySelector('input[type="password"]'));
-    const loginSection=form?.closest('section') || document.getElementById('login');
-    if(!loginSection)return;
+  function openPortalLogin(){
+    const form=document.getElementById('loginForm') ||
+      [...document.querySelectorAll('form')].find(f=>f.querySelector('input[type="password"]'));
+    const login=document.getElementById('login') || form?.closest('section') || form;
+    if(!login && !form)return;
 
-    // Make the actual login section visible regardless of the older .view implementation.
-    loginSection.hidden=false;
-    loginSection.style.removeProperty('display');
-    loginSection.classList.add('active');
+    revealView(login||form);
 
-    // If the site uses mutually exclusive .view sections, only deactivate sibling views.
-    if(loginSection.classList.contains('view')){
-      document.querySelectorAll('.view').forEach(v=>{ if(v!==loginSection)v.classList.remove('active'); });
+    // Some older CSS hides non-active login sections. Force only this destination visible.
+    if(login){
+      login.style.removeProperty('display');
+      login.style.removeProperty('visibility');
+      login.style.removeProperty('opacity');
     }
 
     requestAnimationFrame(()=>{
-      const box=actualLogin() || loginSection;
-      const header=document.querySelector('header');
-      const offset=(header?.offsetHeight||0)+20;
-      window.scrollTo({
-        top:Math.max(0,box.getBoundingClientRect().top+window.scrollY-offset),
-        behavior:'smooth'
+      requestAnimationFrame(()=>{
+        const box=form?.closest('.panel,.card,.login-card') || form || login;
+        smoothTo(box);
+        setTimeout(()=>{
+          const field=document.getElementById('schoolLogin') ||
+            box?.querySelector('input:not([type="hidden"]):not([disabled])');
+          field?.focus({preventScroll:true});
+          box?.classList.add('login-focus-pulse');
+          setTimeout(()=>box?.classList.remove('login-focus-pulse'),900);
+        },500);
       });
-      setTimeout(()=>{
-        (document.getElementById('schoolLogin') || box.querySelector('input:not([type="hidden"])'))?.focus({preventScroll:true});
-        box.classList.add('login-focus-pulse');
-        setTimeout(()=>box.classList.remove('login-focus-pulse'),1000);
-      },500);
     });
   }
+  function openSection(id){
+    const el=document.getElementById(id);
+    if(!el)return;
+    revealView(el);
+    requestAnimationFrame(()=>smoothTo(el));
+  }
 
-  // Capture phase ensures older navigation handlers cannot intercept Portal Login first.
+  // One capture listener only. No stopImmediatePropagation, so unrelated controls remain safe.
   document.addEventListener('click',function(e){
-    const el=e.target.closest('button,a'); if(!el || el.closest('form'))return;
-    if(text(el)==='portal login'){
+    const el=e.target.closest('a,button');
+    if(!el || el.closest('form'))return;
+    const t=label(el);
+
+    if(t==='portal login' || t==='login'){
       e.preventDefault();
-      e.stopImmediatePropagation();
-      openLogin();
+      openPortalLogin();
+      return;
+    }
+    if(t==='home'){
+      e.preventDefault();
+      openSection('home');
+      return;
+    }
+    if(t==='announcements' || t==='announcement'){
+      e.preventDefault();
+      openSection('announcements');
     }
   },true);
+
+  // If #login is opened directly.
+  if(location.hash==='#login'){
+    addEventListener('load',()=>setTimeout(openPortalLogin,150));
+  }
 })();
