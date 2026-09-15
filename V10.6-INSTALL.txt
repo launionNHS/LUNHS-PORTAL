@@ -1,0 +1,42 @@
+LUNHS PORTAL v10.6 — DUAL PASSWORD MANAGEMENT
+
+PASSWORD OPTIONS
+1. ADMINISTRATOR
+- Can reset Student/Teacher passwords in Admin > Users.
+- Can change own password while signed in.
+- If locked out, can use Administrator email recovery.
+
+2. STUDENT / TEACHER
+- Can change their OWN password after signing in.
+- Must enter their CURRENT password first.
+- Cannot change another user's password.
+- No email account is required.
+
+SUPABASE URL CONFIGURATION
+Authentication > URL Configuration
+
+Site URL:
+https://lolitodeloso-afk.github.io/lunhs/
+
+Add Redirect URL:
+https://lolitodeloso-afk.github.io/lunhs/admin-reset-password.html
+
+GITHUB
+Upload/replace the v10.6 website files.
+Upload admin-reset-password.html.
+Commit, wait for GitHub Pages, then Ctrl+F5.
+
+EDGE FUNCTIONS
+Keep both:
+- create-school-user
+- reset-school-user-password
+
+The included Edge Function files can be used if you need to redeploy them.
+
+ADMIN RECOVERY
+Enter the Administrator email in the login field and click:
+Administrator forgot password?
+Request only one recovery email and use the newest link.
+
+SECURITY
+Never share passwords, recovery links, access tokens, service-role keys, or secret keys.

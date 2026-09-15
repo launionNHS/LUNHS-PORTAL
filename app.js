@@ -107,3 +107,42 @@ function addAdminPasswordCard(){
   host.appendChild(d);
 }
 setInterval(addAdminPasswordCard,1200);
+
+const adminForgot=document.getElementById('adminForgot');
+if(adminForgot) adminForgot.onclick=async(e)=>{
+  e.preventDefault();
+  const email=String(document.getElementById('schoolLogin')?.value||'').trim();
+  if(!email.includes('@')){alert('Enter the Administrator email in the login box first.');return;}
+  const redirectTo=new URL('admin-reset-password.html',window.location.href).href;
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
+  if(error){alert(error.message);return;}
+  alert('Administrator recovery email requested. Use only the newest recovery email.');
+};
+
+async function selfChangePassword(){
+  if(!me || !['student','teacher'].includes(me.role))return;
+  const current=prompt('Enter your CURRENT password:'); if(current===null)return;
+  const schoolId=me.school_id;
+  const authEmail=internalEmail(schoolId);
+  const {error:verifyError}=await sb.auth.signInWithPassword({email:authEmail,password:current});
+  if(verifyError){alert('Current password is incorrect.');return;}
+  const np=prompt('Enter your NEW password (minimum 8 characters):'); if(np===null)return;
+  if(np.length<8){alert('New password must be at least 8 characters.');return;}
+  const cp=prompt('Re-enter your NEW password:');
+  if(cp!==np){alert('Passwords do not match. Nothing was changed.');return;}
+  const {error}=await sb.auth.updateUser({password:np});
+  if(error){alert(error.message);return;}
+  alert('Your password was changed successfully.');
+}
+document.addEventListener('click',async(e)=>{
+  if(e.target.closest?.('#selfChangePassword')) await selfChangePassword();
+});
+function addSelfPasswordCard(){
+  if(!me || !['student','teacher'].includes(me.role))return;
+  const host=document.querySelector('main');
+  if(!host || document.getElementById('selfPasswordCard'))return;
+  const d=document.createElement('div'); d.id='selfPasswordCard'; d.className='card';
+  d.innerHTML='<h3>My Account</h3><p>Change your own password.</p><button id="selfChangePassword" type="button">Change My Password</button>';
+  host.appendChild(d);
+}
+setInterval(addSelfPasswordCard,1200);

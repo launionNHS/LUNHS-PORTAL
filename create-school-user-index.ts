@@ -39,11 +39,13 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
     const role = String(body.role || "").trim();
-    const normalizedId = schoolId.toLowerCase().replace(/[^a-z0-9._-]/g, "-");
-    const email = `${normalizedId}@accounts.lunhs.local`;
     const password = String(body.password || "");
     const displayName = String(body.display_name || "").trim();
     const schoolId = String(body.school_id || "").trim();
+
+    // schoolId must be initialized before it is used to build the internal Auth email.
+    const normalizedId = schoolId.toLowerCase().replace(/[^a-z0-9._-]/g, "-");
+    const email = `${normalizedId}@accounts.lunhs.local`;
 
     if (!["student","teacher"].includes(role))
       return Response.json({ error: "Choose Student or Teacher." }, { status: 400, headers: corsHeaders });

@@ -1,0 +1,45 @@
+LUNHS PORTAL v10.5 — PASSWORD MANAGEMENT WITHOUT EMAIL RECOVERY
+
+REMOVED
+- Forgot Administrator Password email link
+- reset-password.html
+- Email-based password recovery from the LUNHS portal
+
+PASSWORD RESET DESIGN
+
+1. STUDENT / TEACHER
+Administrator > Users > Reset Password
+The Admin sets a new temporary password.
+The user's School ID/LRN/Employee ID stays the same.
+No email is required.
+
+2. ADMINISTRATOR — WHILE SIGNED IN
+Use the new "My Account > Change My Password" button.
+Enter the new password twice.
+No email is sent.
+
+3. ADMINISTRATOR — IF COMPLETELY LOCKED OUT
+Do NOT create a public password-reset endpoint.
+Use the Supabase project owner/dashboard to recover the Auth user securely.
+This protects the school portal from account takeover.
+
+INSTALL
+
+GITHUB:
+Upload/replace the website files from this ZIP.
+IMPORTANT: delete reset-password.html from the GitHub repository if it is still there.
+Commit changes and wait for GitHub Pages, then Ctrl+F5.
+
+SUPABASE:
+Keep the Edge Function:
+reset-school-user-password
+This is used by Admin to reset Student/Teacher passwords.
+
+If you have not deployed it yet:
+Create Edge Function named exactly reset-school-user-password
+and paste reset-school-user-password-index.ts, then Deploy.
+
+The create-school-user Edge Function remains unchanged.
+
+SECURITY
+Never place SUPABASE_SERVICE_ROLE_KEY in GitHub, config.js, or browser JavaScript.

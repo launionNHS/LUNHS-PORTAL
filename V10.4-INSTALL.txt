@@ -1,0 +1,39 @@
+LUNHS PORTAL v10.4 — STUDENT/TEACHER PASSWORD RECOVERY
+
+NEW FEATURE
+Admin can reset a Student or Teacher password even though the user has no personal email.
+The user's School ID/LRN/Employee ID does NOT change.
+
+INSTALL
+
+A. GitHub
+Replace app.js with the v10.4 app.js.
+You may upload all included website files if you prefer.
+Commit and wait for GitHub Pages, then Ctrl+F5.
+
+B. Supabase — NEW Edge Function
+Create a NEW Edge Function named exactly:
+reset-school-user-password
+
+Paste ALL code from:
+reset-school-user-password-index.ts
+
+Deploy it.
+
+Do not put SUPABASE_SERVICE_ROLE_KEY in GitHub or browser code.
+The function uses Supabase's server environment and verifies that the caller is an Admin.
+
+HOW TO USE
+1. Sign in as Administrator.
+2. Admin > Users.
+3. Student/Teacher cards now have Reset Password.
+4. Click Reset Password.
+5. Enter a new temporary password (8+ characters), then confirm it.
+6. Give that temporary password directly to the user.
+7. User logs in with the SAME School ID/LRN/Employee ID and the new password.
+
+SECURITY
+- Only an authenticated Admin can use the reset function.
+- It cannot reset the Administrator password.
+- No recovery email is required for Student/Teacher accounts.
+- Never share passwords in public posts or announcements.
