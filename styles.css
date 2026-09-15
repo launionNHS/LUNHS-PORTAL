@@ -100,3 +100,13 @@ body{background:#fff;color:var(--lunhs-ink)}
 .reveal{transition:opacity .85s ease,transform .85s cubic-bezier(.2,.7,.2,1)}
 @keyframes formalFloat{50%{transform:translateY(-7px)}}
 @media(max-width:850px){.hero-modern{min-height:auto}.hero-modern:before{width:4px}.home-section{padding-top:60px;padding-bottom:60px}}
+
+
+/* v11.1 one-page navigation */
+#home,#announcements,#login,.nav-anchor{scroll-margin-top:100px}
+[data-scroll-nav],nav a,header a{transition:color .25s ease,background .25s ease,border-color .25s ease,transform .25s ease}
+.nav-active{color:#b99854!important}
+nav .nav-active,header .nav-active{position:relative}
+nav .nav-active:after,header .nav-active:after{content:"";position:absolute;left:18%;right:18%;bottom:-7px;height:2px;background:#b99854;border-radius:2px;animation:navLine .3s ease}
+@keyframes navLine{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}

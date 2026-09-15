@@ -96,7 +96,49 @@
     </div>
   </section>
 
-  <section class="home-cta reveal">
+  
+<section id="mediaHub" class="media-hub home-section reveal">
+  <div class="media-topline">
+    <div><span class="eyebrow">LUNHS MEDIA</span><h2>School Media Hub</h2></div>
+    <div class="media-search"><input id="mediaSearch" placeholder="Search school videos and stories…" aria-label="Search media"></div>
+  </div>
+  <div class="media-chips" id="mediaChips">
+    <button class="active" data-filter="All">All</button>
+    <button data-filter="Event">Events</button>
+    <button data-filter="Students Update">Students Update</button>
+    <button data-filter="School Publication">School Publication</button>
+    <button data-filter="Achievement">Achievements</button>
+  </div>
+
+  <div id="featuredMedia" class="featured-media">
+    <div class="featured-screen">
+      <div class="featured-placeholder"><span>▶</span><b>Featured LUNHS Media</b><small>Select a video or story below</small></div>
+    </div>
+    <div class="featured-copy">
+      <span class="tag">FEATURED</span>
+      <h3>Stories from our school community</h3>
+      <p>Watch school events, student activities, achievements, and campus journalism features.</p>
+    </div>
+  </div>
+
+  <div class="media-section-title"><h3>Latest from LUNHS</h3><span id="mediaCount"></span></div>
+  <div id="mediaGrid" class="media-grid">
+    <article class="media-card demo-media" data-type="Event" data-title="School Events">
+      <div class="thumb demo-thumb"><span class="play-badge">▶</span><span class="duration">EVENT</span></div>
+      <div class="media-meta"><img src="lunhs-logo.png" alt=""><div><h4>School Events & Activities</h4><p>LUNHS • Events</p></div></div>
+    </article>
+    <article class="media-card demo-media" data-type="Students Update" data-title="Students Update">
+      <div class="thumb demo-thumb alt"><span class="photo-badge">▧</span><span class="duration">UPDATE</span></div>
+      <div class="media-meta"><img src="lunhs-logo.png" alt=""><div><h4>Students Update</h4><p>LUNHS • Student Life</p></div></div>
+    </article>
+    <article class="media-card demo-media" data-type="School Publication" data-title="School Publication">
+      <div class="thumb demo-thumb paper-thumb"><span class="photo-badge">📰</span><span class="duration">PUBLICATION</span></div>
+      <div class="media-meta"><img src="lunhs-logo.png" alt=""><div><h4>School Publication</h4><p>LUNHS • Campus Journalism</p></div></div>
+    </article>
+  </div>
+</section>
+
+<section class="home-cta reveal">
     <img src="lunhs-logo.png" alt="">
     <div><span class="eyebrow">LA UNION NATIONAL HIGH SCHOOL</span><h2>Learn. Participate. Achieve.</h2><p>Stay connected with our school community through the LUNHS online portal.</p></div>
   </section>

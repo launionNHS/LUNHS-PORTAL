@@ -223,3 +223,115 @@ setInterval(renderAdminPasswordResetPanel,1000);
   });
   addEventListener('scroll',reveal,{passive:true}); addEventListener('load',reveal); reveal();
 })();
+
+
+// v10.9 media hub interactions, filters, transitions, and media rendering.
+(function(){
+  const grid=document.getElementById('mediaGrid'), chips=document.getElementById('mediaChips'),
+        search=document.getElementById('mediaSearch'), count=document.getElementById('mediaCount'),
+        featured=document.getElementById('featuredMedia');
+  if(!grid)return;
+
+  function youtubeEmbed(url){
+    try{
+      const u=new URL(url);
+      let id='';
+      if(u.hostname.includes('youtu.be')) id=u.pathname.slice(1);
+      else if(u.hostname.includes('youtube.com')) id=u.searchParams.get('v')||u.pathname.split('/').pop();
+      return id ? `https://www.youtube.com/embed/${id}` : '';
+    }catch(_){return ''}
+  }
+  function showFeatured(card){
+    const title=card.dataset.title||'LUNHS Media', type=card.dataset.type||'School Media',
+          media=card.dataset.media||'', kind=card.dataset.kind||'';
+    let visual='<div class="featured-placeholder"><span>▶</span><b>Featured LUNHS Media</b><small>No media attached yet</small></div>';
+    const yt=youtubeEmbed(media);
+    if(yt) visual=`<iframe src="${yt}" title="${title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    else if(kind==='video' && media) visual=`<video src="${media}" controls playsinline></video>`;
+    else if(media) visual=`<img src="${media}" alt="${title}">`;
+    featured.querySelector('.featured-screen').innerHTML=visual;
+    featured.querySelector('.featured-copy').innerHTML=`<span class="tag">${type}</span><h3>${title}</h3><p>${card.dataset.body||'A story from the La Union National High School community.'}</p>`;
+    featured.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  grid.addEventListener('click',e=>{const card=e.target.closest('.media-card');if(card)showFeatured(card)});
+  function filter(){
+    const active=chips?.querySelector('.active')?.dataset.filter||'All', q=(search?.value||'').toLowerCase();
+    let n=0;
+    grid.querySelectorAll('.media-card').forEach(c=>{
+      const ok=(active==='All'||c.dataset.type===active) && (!q||(c.dataset.title||'').toLowerCase().includes(q)||(c.dataset.body||'').toLowerCase().includes(q));
+      c.classList.toggle('hidden',!ok); if(ok)n++;
+    }); if(count)count.textContent=`${n} item${n===1?'':'s'}`;
+  }
+  chips?.addEventListener('click',e=>{if(!e.target.matches('button'))return;chips.querySelectorAll('button').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');filter()});
+  search?.addEventListener('input',filter); filter();
+
+  // Load published posts into the media feed. Existing posts remain compatible.
+  async function loadMediaPosts(){
+    if(typeof sb==='undefined')return;
+    const {data,error}=await sb.from('posts').select('*').eq('published',true).order('created_at',{ascending:false});
+    if(error||!data)return;
+    data.forEach(p=>{
+      const type=p.category||p.type||'Event', media=p.media_url||'', thumb=p.thumbnail_url||media||'',
+            kind=p.media_type||((media.match(/\.(mp4|webm|mov)(\?|$)/i))?'video':'image');
+      const a=document.createElement('article');a.className='media-card';
+      a.dataset.type=type;a.dataset.title=p.title||'LUNHS Update';a.dataset.body=p.body||'';a.dataset.media=media;a.dataset.kind=kind;
+      const visual=thumb?`<img src="${thumb}" alt="">`:'';
+      a.innerHTML=`<div class="thumb">${visual}<span class="${kind==='video'?'play-badge':'photo-badge'}">${kind==='video'?'▶':'▧'}</span><span class="duration">${type}</span></div><div class="media-meta"><img src="lunhs-logo.png" alt=""><div><h4>${p.title||'LUNHS Update'}</h4><p>LUNHS • ${type}</p></div></div>`;
+      grid.prepend(a);
+    }); filter();
+  }
+  loadMediaPosts();
+})();
+
+
+// v11.1 — elegant one-page navigation for Home / Announcements / Login
+(function(){
+  const targets={home:'home',announcement:'announcements',announcements:'announcements',login:'login'};
+  function normalize(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ')}
+  function headerOffset(){
+    const candidates=[document.querySelector('header'),document.querySelector('nav')].filter(Boolean);
+    return Math.max(0,...candidates.map(x=>x.getBoundingClientRect().height))+14;
+  }
+  function go(id){
+    const el=document.getElementById(id); if(!el)return;
+    const y=el.getBoundingClientRect().top+window.scrollY-headerOffset();
+    window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+    try{history.replaceState(null,'','#'+id)}catch(_){}
+  }
+
+  // Works with anchors or existing navigation buttons without disturbing portal controls.
+  document.addEventListener('click',e=>{
+    const el=e.target.closest('a,button'); if(!el)return;
+    const text=normalize(el.textContent);
+    const explicit=el.dataset.scrollNav;
+    const id=explicit||targets[text];
+    if(!id)return;
+    // Avoid treating form submit buttons as navigation.
+    if(el.tagName==='BUTTON' && (el.type==='submit'||el.closest('form')))return;
+    e.preventDefault(); go(id);
+  });
+
+  const sections=['home','announcements','login'].map(id=>document.getElementById(id)).filter(Boolean);
+  const navItems=[...document.querySelectorAll('a,button')].filter(el=>{
+    const t=normalize(el.textContent); return !!(el.dataset.scrollNav||targets[t]);
+  });
+  function setActive(){
+    if(!sections.length)return;
+    const probe=window.scrollY+headerOffset()+90;
+    let active=sections[0];
+    sections.forEach(s=>{if(s.offsetTop<=probe)active=s});
+    navItems.forEach(n=>{
+      const t=n.dataset.scrollNav||targets[normalize(n.textContent)];
+      n.classList.toggle('nav-active',t===active.id);
+      if(t===active.id)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');
+    });
+  }
+  addEventListener('scroll',setActive,{passive:true});
+  addEventListener('resize',setActive,{passive:true});
+  addEventListener('load',()=>{
+    if(location.hash && ['#home','#announcements','#login'].includes(location.hash))
+      setTimeout(()=>go(location.hash.slice(1)),180);
+    setActive();
+  });
+  setActive();
+})();
