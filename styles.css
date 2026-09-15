@@ -777,3 +777,146 @@ input::placeholder,textarea::placeholder {
 .reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,[data-reveal] {
   visibility:visible !important;
 }
+
+
+/* ==========================================================
+   v14 — SIMPLE LUNHS 3-COLOR THEME
+   ONLY: NAVY #0B2447 | GOLD #B99854 | WHITE #FFFFFF
+   ========================================================== */
+:root{
+  --navy:#0B2447;
+  --gold:#B99854;
+  --white:#FFFFFF;
+}
+
+/* Base */
+html,body{background:var(--white)!important;color:var(--navy)!important}
+body,button,input,textarea,select{font-family:Arial,Helvetica,sans-serif}
+h1,h2,h3,h4,h5,h6{color:var(--navy)!important}
+p,li,small,label,span{color:inherit}
+
+/* Header */
+header{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+  border-bottom:4px solid var(--gold)!important;
+  box-shadow:none!important;
+}
+header *,header button{color:var(--white)!important}
+header button{background:transparent!important;border-color:transparent!important}
+header button:hover,header button:focus{color:var(--gold)!important}
+
+/* Main white sections */
+main,#home,#announcements,#login,#dashboard,
+.home-page,.home-section,.media-hub,.updates-wrap{
+  background:var(--white)!important;
+  color:var(--navy)!important;
+}
+.home-section h1,.home-section h2,.home-section h3,.home-section h4,
+#announcements h1,#announcements h2,#announcements h3,
+#login h1,#dashboard h1,#dashboard h2,#dashboard h3{
+  color:var(--navy)!important;
+}
+.home-section p,.home-section li,.home-section small,
+#announcements p,#login p,#login label,#dashboard p{
+  color:var(--navy)!important;
+}
+
+/* Hero — navy + white + gold */
+.hero,.hero-modern{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+}
+.hero h1,.hero h2,.hero h3,.hero p,.hero strong,.hero small,.hero span{
+  color:var(--white)!important;
+}
+.hero .eyebrow,.hero h1 span{color:var(--gold)!important}
+
+/* Cards — clean white cards with navy text and gold rule */
+.info-card,.feature-update,.events-card,
+.discover-strip>div,.media-card,.panel,.card,
+.paper,.paper-front,.paper-back,.publishing-studio,.admin-post-card{
+  background:var(--white)!important;
+  color:var(--navy)!important;
+  border:1px solid var(--gold)!important;
+  box-shadow:none!important;
+}
+.info-card h3,.feature-update h3,.events-card h3,
+.discover-strip b,.media-card h4,.panel h1,.card h3,
+.paper h3{color:var(--navy)!important}
+.info-card p,.feature-update p,.events-card p,
+.discover-strip span,.media-card p,.panel p,.card p,
+.paper p,.paper small{color:var(--navy)!important}
+
+/* Publication — navy feature band */
+.publication{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+}
+.publication .publication-intro h2,
+.publication .publication-intro p{color:var(--white)!important}
+.publication .publication-intro .eyebrow{color:var(--gold)!important}
+.publication .paper,.publication .paper *{color:var(--navy)!important}
+
+/* Featured media — navy */
+.featured-media,.featured-screen{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+}
+.featured-media h3,.featured-media p,.featured-media span,
+.featured-screen b,.featured-screen small,.featured-screen span{
+  color:var(--white)!important;
+}
+.featured-media .tag{color:var(--gold)!important}
+
+/* Bottom CTA */
+.home-cta{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+  border-top:4px solid var(--gold)!important;
+}
+.home-cta h2,.home-cta p{color:var(--white)!important}
+.home-cta .eyebrow{color:var(--gold)!important}
+
+/* Labels/accent text */
+.eyebrow,.tag,.kicker,.section-label{color:var(--gold)!important}
+
+/* Buttons */
+.primary,.btn.primary,button.primary{
+  background:var(--gold)!important;
+  color:var(--navy)!important;
+  border:1px solid var(--gold)!important;
+}
+.ghost,.btn.ghost,.secondary,button.secondary{
+  background:transparent!important;
+  color:var(--gold)!important;
+  border:1px solid var(--gold)!important;
+}
+a{color:var(--navy)}
+.hero a:not(.primary),.publication a:not(.publication-btn),
+.home-cta a{color:var(--gold)!important}
+
+/* Inputs */
+input,textarea,select{
+  background:var(--white)!important;
+  color:var(--navy)!important;
+  border:1px solid var(--navy)!important;
+}
+input::placeholder,textarea::placeholder{color:var(--navy)!important;opacity:.65}
+
+/* Footer */
+footer{
+  background:var(--navy)!important;
+  color:var(--white)!important;
+  border-top:4px solid var(--gold)!important;
+}
+footer *{color:var(--white)!important}
+
+/* Keep text visible */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,[data-reveal]{
+  opacity:1!important;
+  visibility:visible!important;
+}
+
+/* Remove decorative color clutter */
+.orb{opacity:.12!important}
