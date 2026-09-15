@@ -1,0 +1,8 @@
+LUNHS Portal v9
+1. Run v9-grade-policy-update.sql in Supabase SQL Editor.
+2. Upload/replace index.html, styles.css, config.js, app.js, lunhs-logo.png in GitHub lunhs root.
+3. Commit, wait for Pages, Ctrl+F5.
+4. Admin creates teacher/student, subject, and assignment.
+5. Teacher logs in, selects class, enters Q1-Q4, Save.
+6. Student logs in and sees My Grades.
+IMPORTANT: Student Section must exactly match the teacher assignment Section.

@@ -17,5 +17,23 @@ if(tab==='assignments'){let [a,t,s]=await Promise.all([sb.from('teacher_assignme
 if(tab==='grades'){let {data,error}=await sb.from('grades').select('school_year,section,q1,q2,q3,q4,subjects(name),student_id').limit(100);box.innerHTML=`<div class=tablewrap><table class=data><tr><th>Student UUID</th><th>Subject</th><th>Section</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.student_id)}</td><td>${esc(x.subjects?.name)}</td><td>${esc(x.section)}</td><td>${x.q1??'-'}</td><td>${x.q2??'-'}</td><td>${x.q3??'-'}</td><td>${x.q4??'-'}</td></tr>`).join('')}</table></div>${error?`<p class=error>${esc(error.message)}</p>`:''}`}
 }
 async function renderStudent(){let {data,error}=await sb.from('grades').select('q1,q2,q3,q4,school_year,subjects(name)').eq('student_id',me.id);$('#dashboardBody').innerHTML=`<div class=panel><h2>My Grades</h2>${error?`<p class=error>${esc(error.message)}</p>`:`<div class=tablewrap><table class=data><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.subjects?.name)}</td><td>${x.q1??'-'}</td><td>${x.q2??'-'}</td><td>${x.q3??'-'}</td><td>${x.q4??'-'}</td></tr>`).join('')}</table></div>`}</div>`}
-async function renderTeacher(){let {data,error}=await sb.from('teacher_assignments').select('id,section,subject_id,subjects(name)').eq('teacher_id',me.id);$('#dashboardBody').innerHTML=`<div class=panel><h2>My Teaching Assignments</h2>${error?`<p class=error>${esc(error.message)}</p>`:`<div class=tablewrap><table class=data><tr><th>Subject</th><th>Section</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.subjects?.name)}</td><td>${esc(x.section)}</td></tr>`).join('')}</table></div>`}<p>Grade encoding becomes available once students and assignments are configured.</p></div>`}
+async function renderTeacher(){
+ let {data,error}=await sb.from('teacher_assignments').select('id,section,subject_id,subjects(name)').eq('teacher_id',me.id);
+ $('#dashboardBody').innerHTML=`<div class=panel><h2>My Teaching Assignments</h2>${error?`<p class=error>${esc(error.message)}</p>`:`<label>Select Class<select id=tclass><option value="">Choose subject / section</option>${(data||[]).map(x=>`<option value="${x.subject_id}|${esc(x.section)}">${esc(x.subjects?.name)} — ${esc(x.section)}</option>`).join('')}</select></label><div id=gradeArea></div>`}</div>`;
+ if($('#tclass'))$('#tclass').onchange=loadTeacherClass;
+}
+async function loadTeacherClass(){
+ let v=$('#tclass').value;if(!v){$('#gradeArea').innerHTML='';return} let [sid,section]=v.split('|');
+ let {data:students,error}=await sb.from('profiles').select('id,display_name,school_id').eq('role','student').eq('section',section).order('display_name');
+ if(error){$('#gradeArea').innerHTML=`<p class=error>${esc(error.message)}</p>`;return}
+ let gm={}; if(students?.length){let {data:g}=await sb.from('grades').select('*').eq('subject_id',Number(sid)).in('student_id',students.map(x=>x.id));(g||[]).forEach(x=>gm[x.student_id]=x)}
+ $('#gradeArea').innerHTML=`<h3>Class List — ${esc(section)}</h3><p class=notice>Enter 60–100. Leave a quarter blank if not yet available.</p><div class=tablewrap><table class=data><tr><th>Student</th><th>ID/LRN</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th></th></tr>${(students||[]).map(s=>{let g=gm[s.id]||{};return `<tr data-student="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id)}</td>${['q1','q2','q3','q4'].map(q=>`<td><input class="${q}" type=number min=60 max=100 step=.01 value="${g[q]??''}"></td>`).join('')}<td><button class=primary data-savegrade="${s.id}">Save</button></td></tr>`}).join('')}</table></div>${students?.length?'':'<p>No students found in this section.</p>'}`;
+ document.querySelectorAll('[data-savegrade]').forEach(b=>b.onclick=()=>saveGrade(b.dataset.savegrade,Number(sid),section));
+}
+async function saveGrade(studentId,subjectId,section){
+ let row=document.querySelector(`tr[data-student="${studentId}"]`),v={};
+ for(let q of ['q1','q2','q3','q4']){let x=row.querySelector('.'+q).value;v[q]=x===''?null:Number(x);if(v[q]!==null&&(v[q]<60||v[q]>100)){alert('Grades must be from 60 to 100.');return}}
+ let {error}=await sb.from('grades').upsert({student_id:studentId,subject_id:subjectId,teacher_id:me.id,section,school_year:'2026-2027',...v},{onConflict:'student_id,subject_id,school_year'});
+ alert(error?'Could not save: '+error.message:'Grade saved successfully.');
+}
 (async()=>{let {data:{session}}=await sb.auth.getSession();if(session?.user)await openDashboard(session.user)})();
