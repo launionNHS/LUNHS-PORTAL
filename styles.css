@@ -262,3 +262,101 @@ footer h1,footer h2,footer h3,footer p,footer span,footer a,
 
 /* Avoid low-opacity text becoming unreadable */
 .view p,.view li,.view small,.card p,.panel p{opacity:1}
+
+
+/* v12.3 — GLOBAL READABILITY FIX
+   Explicit contrast for every public page instead of inherited/opacity-based text. */
+html,body,main,.view,section{
+  color:#172235;
+}
+main section:not(.hero):not(.home-hero),
+#home section:not(.hero):not(.home-hero){
+  color:#172235 !important;
+}
+main section:not(.hero):not(.home-hero) h1,
+main section:not(.hero):not(.home-hero) h2,
+main section:not(.hero):not(.home-hero) h3,
+main section:not(.hero):not(.home-hero) h4,
+main section:not(.hero):not(.home-hero) h5,
+#home section:not(.hero):not(.home-hero) h1,
+#home section:not(.hero):not(.home-hero) h2,
+#home section:not(.hero):not(.home-hero) h3,
+#home section:not(.hero):not(.home-hero) h4{
+  color:#0b2447 !important;
+  opacity:1 !important;
+}
+main section:not(.hero):not(.home-hero) p,
+main section:not(.hero):not(.home-hero) li,
+main section:not(.hero):not(.home-hero) small,
+main section:not(.hero):not(.home-hero) span:not(.tag):not(.eyebrow),
+#home section:not(.hero):not(.home-hero) p,
+#home section:not(.hero):not(.home-hero) li,
+#home section:not(.hero):not(.home-hero) small{
+  color:#445267 !important;
+  opacity:1 !important;
+}
+.card,.panel,.feature-card,.media-card,.publication-card,.event-card,
+.update-card,.facility-card,.office-card,.achievement-card{
+  background:#fff !important;
+  color:#172235 !important;
+}
+.card h1,.card h2,.card h3,.card h4,.card h5,
+.panel h1,.panel h2,.panel h3,.panel h4{
+  color:#0b2447 !important;
+}
+.card p,.card li,.card small,.card .description,
+.panel p,.panel li,.panel small{
+  color:#445267 !important;
+  opacity:1 !important;
+}
+a:not(header a):not(footer a):not(.primary){
+  color:#174d86;
+}
+.tag,.eyebrow,.kicker{
+  color:#765a2b !important;
+  opacity:1 !important;
+}
+
+/* Text placed on images/dark blocks must stay white. */
+.hero,.home-hero,.hero-overlay,.media-feature,.featured-media,
+[class*="dark"],[class*="navy"]{
+  color:#fff;
+}
+.hero *, .home-hero *,
+.hero-overlay *, .media-feature *, .featured-media *{
+  color:#fff !important;
+  opacity:1 !important;
+}
+
+/* Navigation/footer are dark institutional surfaces. */
+header,header *,footer,footer *{
+  color:#fff !important;
+}
+header .nav-active,header button:hover,header a:hover{
+  color:#f2dcae !important;
+}
+
+/* Reveal animation must never leave content invisible if JS fails or is delayed. */
+.reveal,.reveal-up,.fade-in,.animate-on-scroll,
+[data-reveal]{
+  opacity:1 !important;
+  visibility:visible !important;
+}
+.reveal.visible,.reveal-up.visible,.fade-in.visible,.animate-on-scroll.visible,
+[data-reveal].visible{
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Form readability */
+label{color:#25364d}
+input,select,textarea{color:#172235!important;background:#fff!important}
+input::placeholder,textarea::placeholder{color:#778395!important;opacity:1}
+
+/* Preserve button labels */
+button.primary,.primary,.publishing-studio button,#savePostBtn{
+  color:#fff !important;
+}
+button.secondary,.secondary{
+  color:#0b2447 !important;
+}
