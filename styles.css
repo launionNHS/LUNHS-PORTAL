@@ -629,3 +629,151 @@ button.secondary,.secondary{
 .reveal,.reveal * {
   visibility:visible !important;
 }
+
+
+/* =========================================================
+   v12.6 — ADAPTIVE LIGHT/DARK SECTION CONTRAST
+   Light surfaces -> dark text
+   Dark/blue surfaces -> light text
+   ========================================================= */
+
+/* LIGHT SURFACES */
+body,
+.home-section:not(.publication),
+.info-card,
+.discover-strip > div,
+.media-card,
+.paper,
+.panel,
+#announcements,
+#login,
+#dashboard,
+.publishing-studio,
+.admin-post-card {
+  color:#243447 !important;
+}
+
+.home-section:not(.publication) h1,
+.home-section:not(.publication) h2,
+.home-section:not(.publication) h3,
+.home-section:not(.publication) h4,
+.info-card h1,.info-card h2,.info-card h3,.info-card h4,
+.discover-strip b,
+.media-card h1,.media-card h2,.media-card h3,.media-card h4,
+.paper h1,.paper h2,.paper h3,.paper h4,
+.panel h1,.panel h2,.panel h3,
+#announcements h1,#announcements h2,#announcements h3,
+#login h1,#dashboard h1,#dashboard h2,#dashboard h3 {
+  color:#0B2447 !important;
+  opacity:1 !important;
+}
+
+.home-section:not(.publication) p,
+.home-section:not(.publication) li,
+.home-section:not(.publication) small,
+.info-card p,.info-card small,
+.discover-strip span,
+.media-card p,.media-card small,
+.paper p,.paper small,
+.panel p,.panel label,.panel small,
+#announcements p,#announcements small,
+#login p,#login label,#dashboard p,#dashboard small {
+  color:#3C4C5F !important;
+  opacity:1 !important;
+}
+
+/* DARK / NAVY / BLUE SURFACES */
+header,
+footer,
+.hero,
+.hero-modern,
+.home-cta,
+.publication,
+.feature-update,
+.events-card,
+.featured-media,
+.featured-screen,
+.school-mark,
+.float-card {
+  color:#F8FAFC !important;
+}
+
+header h1,header h2,header h3,header p,header b,header small,header span,header a,header button,
+footer h1,footer h2,footer h3,footer p,footer b,footer small,footer span,footer a,
+.hero h1,.hero h2,.hero h3,.hero h4,.hero p,.hero strong,.hero small,.hero span,
+.home-cta h1,.home-cta h2,.home-cta h3,.home-cta p,.home-cta strong,.home-cta small,.home-cta span,
+.publication h1,.publication h2,.publication h3,.publication h4,.publication p,.publication strong,.publication small,.publication span,
+.feature-update h1,.feature-update h2,.feature-update h3,.feature-update h4,.feature-update p,.feature-update strong,.feature-update small,.feature-update span,
+.events-card h1,.events-card h2,.events-card h3,.events-card h4,.events-card p,.events-card strong,.events-card small,.events-card span,
+.featured-media h1,.featured-media h2,.featured-media h3,.featured-media h4,.featured-media p,.featured-media strong,.featured-media b,.featured-media small,.featured-media span,
+.featured-screen h1,.featured-screen h2,.featured-screen h3,.featured-screen p,.featured-screen strong,.featured-screen b,.featured-screen small,.featured-screen span,
+.school-mark span,.float-card {
+  color:#F8FAFC !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Light gold accents on dark surfaces */
+.hero .eyebrow,
+.home-cta .eyebrow,
+.publication .eyebrow,
+.feature-update .tag,
+.events-card .tag,
+.featured-media .tag {
+  color:#F5DFA7 !important;
+}
+
+/* Warm readable links on dark surfaces */
+.hero a:not(.primary),
+.publication a:not(.publication-btn),
+.feature-update a,
+.events-card a,
+.home-cta a,
+.featured-media a {
+  color:#FFF1C9 !important;
+}
+
+/* EXCEPTIONS: light elements nested inside dark sections */
+.publication .paper,
+.publication .paper-front,
+.publication .paper-back {
+  color:#243447 !important;
+}
+.publication .paper *,
+.publication .paper-front *,
+.publication .paper-back * {
+  color:#3C4C5F !important;
+  text-shadow:none !important;
+}
+.publication .paper h1,.publication .paper h2,.publication .paper h3,.publication .paper h4,
+.publication .paper-front h1,.publication .paper-front h2,.publication .paper-front h3,.publication .paper-front h4 {
+  color:#0B2447 !important;
+}
+
+/* Blue cards nested inside otherwise light Home sections */
+#home .feature-update h1,#home .feature-update h2,#home .feature-update h3,#home .feature-update h4,
+#home .events-card h1,#home .events-card h2,#home .events-card h3,#home .events-card h4,
+#home .feature-update p,#home .events-card p {
+  color:#F8FAFC !important;
+}
+#home .feature-update .tag,#home .events-card .tag {color:#F5DFA7 !important;}
+#home .feature-update a,#home .events-card a {color:#FFF1C9 !important;}
+
+/* Media cards remain light */
+#mediaGrid .media-card h4 {color:#0B2447 !important;}
+#mediaGrid .media-card p {color:#3C4C5F !important;}
+
+/* Inputs always use light field + dark text */
+input,textarea,select {
+  background:#FFFFFF !important;
+  color:#172235 !important;
+}
+input::placeholder,textarea::placeholder {
+  color:#697789 !important;
+  opacity:1 !important;
+}
+
+/* Prevent animations from making readable text disappear */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,[data-reveal] {
+  visibility:visible !important;
+}
