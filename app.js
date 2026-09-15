@@ -400,3 +400,53 @@ setInterval(renderAdminPasswordResetPanel,1000);
     });
   },true);
 })();
+
+
+// v11.4 — final live-site Portal Login navigation override
+(function(){
+  function text(el){return String(el?.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');}
+  function actualLogin(){
+    const form=document.getElementById('loginForm') || [...document.querySelectorAll('form')].find(f=>f.querySelector('input[type="password"]'));
+    return form ? (form.closest('.panel,.card,.login-card,section') || form) : document.getElementById('login');
+  }
+  function openLogin(){
+    const form=document.getElementById('loginForm') || [...document.querySelectorAll('form')].find(f=>f.querySelector('input[type="password"]'));
+    const loginSection=form?.closest('section') || document.getElementById('login');
+    if(!loginSection)return;
+
+    // Make the actual login section visible regardless of the older .view implementation.
+    loginSection.hidden=false;
+    loginSection.style.removeProperty('display');
+    loginSection.classList.add('active');
+
+    // If the site uses mutually exclusive .view sections, only deactivate sibling views.
+    if(loginSection.classList.contains('view')){
+      document.querySelectorAll('.view').forEach(v=>{ if(v!==loginSection)v.classList.remove('active'); });
+    }
+
+    requestAnimationFrame(()=>{
+      const box=actualLogin() || loginSection;
+      const header=document.querySelector('header');
+      const offset=(header?.offsetHeight||0)+20;
+      window.scrollTo({
+        top:Math.max(0,box.getBoundingClientRect().top+window.scrollY-offset),
+        behavior:'smooth'
+      });
+      setTimeout(()=>{
+        (document.getElementById('schoolLogin') || box.querySelector('input:not([type="hidden"])'))?.focus({preventScroll:true});
+        box.classList.add('login-focus-pulse');
+        setTimeout(()=>box.classList.remove('login-focus-pulse'),1000);
+      },500);
+    });
+  }
+
+  // Capture phase ensures older navigation handlers cannot intercept Portal Login first.
+  document.addEventListener('click',function(e){
+    const el=e.target.closest('button,a'); if(!el || el.closest('form'))return;
+    if(text(el)==='portal login'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openLogin();
+    }
+  },true);
+})();
