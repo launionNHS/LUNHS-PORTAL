@@ -1,11 +1,32 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LUNHS School Portal</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
-<body><header><div class="brand"><img src="lunhs-logo.png"><div><b>LA UNION NATIONAL HIGH SCHOOL</b><small>Official School Portal</small></div></div>
-<nav><button data-view="home">Home</button><button data-view="announcements">Announcements</button><button data-view="login" id="loginNav">Portal Login</button><button data-view="dashboard" id="dashNav" hidden>Dashboard</button><button id="logout" hidden>Logout</button></nav></header>
+<body><header class="reference-header">
+  <div class="brand">
+    <img src="lunhs-logo.png" alt="LUNHS Logo">
+    <div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div>
+  </div>
+  <nav>
+    <button data-view="home">Home</button>
+    <a href="#welcomeSection">About</a>
+    <button data-view="announcements">Announcements</button>
+    <a href="#publication">Publications</a>
+    <a href="#mediaHub">Gallery</a>
+    <a href="#schoolUpdates">Academics</a>
+    <a href="#mediaHub">Downloads</a>
+    <a href="#schoolUpdates">Contact</a>
+    <button data-view="login" id="loginNav" class="portal-login-btn">👤 Portal Login</button>
+    <button data-view="dashboard" id="dashNav" hidden>Dashboard</button>
+    <button id="logout" hidden>Logout</button>
+  </nav>
+</header>
 <main>
 
 <section id="home" class="home-page">
   <div class="hero hero-modern">
+    <a class="hero-hotspot updates-hotspot" href="#schoolUpdates" aria-label="Explore School Updates"></a>
+    <a class="hero-hotspot publication-hotspot" href="#publication" aria-label="School Publication"></a>
+    <button class="hero-hotspot announcement-hotspot" data-view="announcements" aria-label="Announcements"></button>
+    
     <div class="hero-copy reveal">
       <span class="eyebrow">LA UNION NATIONAL HIGH SCHOOL</span>
       <h1>Learning today.<br><span>Leading tomorrow.</span></h1>
@@ -32,7 +53,7 @@
     </div>
   </div>
 
-  <section class="home-section reveal">
+  <section id="welcomeSection" class="home-section reveal">
     <div class="section-heading">
       <div><span class="eyebrow">AT A GLANCE</span><h2>Welcome to LUNHS</h2></div>
       <p>A school community where learners are encouraged to discover, participate, create, and succeed.</p>
