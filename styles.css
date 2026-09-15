@@ -360,3 +360,141 @@ button.primary,.primary,.publishing-studio button,#savePostBtn{
 button.secondary,.secondary{
   color:#0b2447 !important;
 }
+
+
+/* =========================================================
+   v12.4 — DEFINITIVE HIGH-CONTRAST READABILITY OVERRIDE
+   Every normal/light surface gets dark text.
+   Only explicitly dark surfaces get white text.
+   ========================================================= */
+
+/* Default readable text */
+html,body,main,#home,#announcements,#login,#dashboard,
+.view,section,.section,.content,.container{
+  color:#1b2a3a !important;
+}
+
+/* Light content areas */
+#home,
+#announcements,
+#login,
+#dashboard,
+.card,.panel,.feature-card,.update-card,.event-card,.publication-card,
+.facility-card,.office-card,.achievement-card,.media-card,.admin-post-card,
+.post-editor,.publishing-studio{
+  background-color:#ffffff;
+  color:#1b2a3a !important;
+}
+
+/* All normal headings */
+#home h1,#home h2,#home h3,#home h4,#home h5,#home h6,
+#announcements h1,#announcements h2,#announcements h3,#announcements h4,
+#login h1,#login h2,#login h3,
+#dashboard h1,#dashboard h2,#dashboard h3,#dashboard h4,
+.card h1,.card h2,.card h3,.card h4,.card h5,.card h6,
+.panel h1,.panel h2,.panel h3,.panel h4{
+  color:#0b2447 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  text-shadow:none !important;
+}
+
+/* All normal copy */
+#home p,#home li,#home small,#home label,
+#announcements p,#announcements li,#announcements small,#announcements label,
+#login p,#login li,#login small,#login label,
+#dashboard p,#dashboard li,#dashboard small,#dashboard label,
+.card p,.card li,.card small,.card span,
+.panel p,.panel li,.panel small,.panel span,
+.feature-card p,.update-card p,.event-card p,.publication-card p,
+.facility-card p,.office-card p,.achievement-card p,.media-card p{
+  color:#34465a !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  text-shadow:none !important;
+}
+
+/* Gold labels must be dark enough on white */
+.eyebrow,.tag,.kicker,.section-label{
+  color:#6e5222 !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Links on light backgrounds */
+main a:not(.primary):not(.button):not(.btn){
+  color:#0e4f8a !important;
+  opacity:1 !important;
+}
+
+/* Forms */
+input,textarea,select{
+  color:#172235 !important;
+  background:#fff !important;
+  border-color:#aeb9c6 !important;
+  opacity:1 !important;
+}
+input::placeholder,textarea::placeholder{
+  color:#657386 !important;
+  opacity:1 !important;
+}
+
+/* Explicit dark surfaces: white text ONLY here */
+header,footer,.hero,.home-hero,.hero-overlay,
+.media-feature,.featured-media,.media-viewer{
+  color:#ffffff !important;
+}
+header *,footer *,
+.hero *,.home-hero *,.hero-overlay *,
+.media-feature *,.featured-media *,.media-viewer *{
+  color:#ffffff !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Gold active nav remains readable */
+header nav button:hover,
+header nav button.nav-active,
+header nav a:hover,
+header nav a.nav-active{
+  color:#f3dba7 !important;
+}
+
+/* Cards inside Home must override any older white-text rules */
+#home .card:not(.media-feature):not(.featured-media),
+#home .feature-card,#home .update-card,#home .event-card,
+#home .publication-card,#home .facility-card,#home .office-card,
+#home .achievement-card,#home .media-card{
+  color:#1b2a3a !important;
+}
+#home .card:not(.media-feature):not(.featured-media) h1,
+#home .card:not(.media-feature):not(.featured-media) h2,
+#home .card:not(.media-feature):not(.featured-media) h3,
+#home .card:not(.media-feature):not(.featured-media) h4,
+#home .feature-card h3,#home .update-card h3,#home .event-card h3,
+#home .publication-card h3,#home .facility-card h3,#home .office-card h3,
+#home .achievement-card h3,#home .media-card h3{
+  color:#0b2447 !important;
+}
+#home .card:not(.media-feature):not(.featured-media) p,
+#home .feature-card p,#home .update-card p,#home .event-card p,
+#home .publication-card p,#home .facility-card p,#home .office-card p,
+#home .achievement-card p,#home .media-card p{
+  color:#34465a !important;
+}
+
+/* Never let scroll/reveal effects hide content */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,
+[data-reveal],[data-animate],.scroll-reveal{
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Buttons */
+button.primary,.primary,.btn-primary,#savePostBtn,
+.publishing-studio button:not(.secondary):not(.danger){
+  color:#fff !important;
+}
+button.secondary,.secondary{
+  color:#0b2447 !important;
+}
