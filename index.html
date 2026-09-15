@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>La Union National High School</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header><div class="brand"><img src="lunhs-logo.png" alt="LUNHS logo"><div><b>LA UNION NATIONAL HIGH SCHOOL</b><small>Official School Portal</small></div></div>
+<nav><button data-view="home">Home</button><button data-view="announcements">Announcements</button><button data-view="login" id="portalBtn">Portal Login</button><button data-view="dashboard" id="dashBtn" hidden>Dashboard</button><button id="logoutBtn" hidden>Logout</button></nav></header>
+<main>
+<section id="home" class="view active"><div class="hero"><h1>Welcome to LUNHS</h1><p>Learning, service, and excellence for every learner.</p><button class="primary" data-view="login">Open School Portal</button></div>
+<div class="grid"><article><h2>Announcements</h2><p>Stay informed about school notices and important updates.</p></article><article><h2>Student Portal</h2><p>Students can securely view their grades.</p></article><article><h2>Teacher Portal</h2><p>Teachers can access assigned classes and encode grades.</p></article></div></section>
+
+<section id="announcements" class="view"><h1>Announcements & Events</h1><div id="posts">Loading…</div></section>
+
+<section id="login" class="view"><div class="card narrow"><h1>Portal Login</h1><p>Use the email and password registered in LUNHS Supabase Authentication.</p>
+<form id="loginForm"><label>Email<input id="email" type="email" required autocomplete="username"></label><label>Password<input id="password" type="password" required autocomplete="current-password"></label><button class="primary" type="submit">Sign In</button></form><p id="loginMsg"></p></div></section>
+
+<section id="dashboard" class="view"><h1 id="welcome">Dashboard</h1><div id="profileCard" class="card"></div><div id="roleArea"></div></section>
+</main>
+<footer>La Union National High School • Cabadbaran City</footer>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>
