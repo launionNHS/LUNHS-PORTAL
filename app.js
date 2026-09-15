@@ -53,16 +53,57 @@ async function saveGrade(studentId,subjectId,section){
 }
 (async()=>{let {data:{session}}=await sb.auth.getSession();if(session?.user)await openDashboard(session.user)})();
 
-const forgotLink=document.getElementById('forgotPassword');
-if(forgotLink) forgotLink.onclick=async(e)=>{
-  e.preventDefault();
-  const entered=String(document.getElementById('schoolLogin')?.value||'').trim();
-  if(!entered.includes('@')){
-    alert('For Administrator password recovery, enter the Administrator email in the login box first.');
-    return;
+
+
+
+document.addEventListener('click', async (ev)=>{
+  const btn=ev.target.closest?.('.resetUserPassword');
+  if(!btn)return;
+  const name=btn.dataset.name;
+  const p=prompt(`Enter a NEW temporary password for ${name} (minimum 8 characters):`);
+  if(p===null)return;
+  if(p.length<8){alert('Password must be at least 8 characters.');return;}
+  const c=prompt(`Re-enter the new password for ${name}:`);
+  if(c!==p){alert('Passwords do not match. Nothing was changed.');return;}
+  btn.disabled=true; const oldText=btn.textContent; btn.textContent='Resetting...';
+  const {data,error}=await sb.functions.invoke('reset-school-user-password',{body:{user_id:btn.dataset.id,new_password:p}});
+  btn.disabled=false; btn.textContent=oldText;
+  if(error){
+    let detail=error.message||'Password reset failed.';
+    try{if(error.context&&typeof error.context.json==='function'){const b=await error.context.json();detail=b.error||b.message||detail}}catch(_){}
+    alert(detail); return;
   }
-  const redirectTo=new URL('reset-password.html',window.location.href).href;
-  const {error}=await sb.auth.resetPasswordForEmail(entered,{redirectTo});
+  if(!data?.ok){alert(data?.error||'Password reset failed.');return;}
+  alert(data.message+' The user can now sign in with the same School ID/LRN and the new password.');
+});
+
+
+// v10.5 — password management without recovery email.
+async function changeMyAdminPassword(){
+  const p=prompt('Enter your NEW Administrator password (minimum 8 characters):');
+  if(p===null)return;
+  if(p.length<8){alert('Password must be at least 8 characters.');return;}
+  const c=prompt('Re-enter the new Administrator password:');
+  if(c!==p){alert('Passwords do not match. Nothing was changed.');return;}
+  const {error}=await sb.auth.updateUser({password:p});
   if(error){alert(error.message);return;}
-  alert('Password recovery email requested. Open the newest recovery email and use its link.');
-};
+  alert('Administrator password changed successfully. Use the new password the next time you sign in.');
+}
+
+document.addEventListener('click',async(ev)=>{
+  const b=ev.target.closest?.('#changeAdminPassword');
+  if(!b)return;
+  await changeMyAdminPassword();
+});
+
+function addAdminPasswordCard(){
+  if(!me || me.role!=='admin')return;
+  const host=document.querySelector('#adminContent') || document.querySelector('main');
+  if(!host || document.getElementById('adminPasswordCard'))return;
+  const d=document.createElement('div');
+  d.id='adminPasswordCard';
+  d.className='card';
+  d.innerHTML='<h3>My Account</h3><p>Change the signed-in Administrator password without email recovery.</p><button id="changeAdminPassword" type="button">Change My Password</button>';
+  host.appendChild(d);
+}
+setInterval(addAdminPasswordCard,1200);
