@@ -367,3 +367,36 @@ setInterval(renderAdminPasswordResetPanel,1000);
     }
   },true);
 })();
+
+
+// v11.3 FIX: Portal Login first makes the login view visible, then scrolls to the login box.
+(function(){
+  const btn=document.getElementById('loginNav');
+  if(!btn)return;
+  btn.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    const login=document.getElementById('login');
+    if(!login)return;
+    login.classList.add('active');
+
+    // Update nav appearance.
+    document.querySelectorAll('nav button').forEach(b=>b.classList.remove('nav-active'));
+    btn.classList.add('nav-active');
+
+    requestAnimationFrame(()=>{
+      const box=document.getElementById('loginForm')?.closest('.panel') || document.getElementById('loginForm') || login;
+      const header=document.querySelector('header');
+      const offset=(header?.getBoundingClientRect().height||0)+18;
+      const y=box.getBoundingClientRect().top+window.scrollY-offset;
+      window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+      setTimeout(()=>{
+        document.getElementById('schoolLogin')?.focus({preventScroll:true});
+        box.classList.add('login-focus-pulse');
+        setTimeout(()=>box.classList.remove('login-focus-pulse'),900);
+      },450);
+    });
+  },true);
+})();
