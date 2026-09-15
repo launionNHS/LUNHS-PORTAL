@@ -1984,3 +1984,55 @@ input::placeholder,textarea::placeholder{
     background-position:center center !important;
   }
 }
+
+
+/* ==========================================================
+   v20 — ANIMATED GIF HOMEPAGE BANNER
+   ========================================================== */
+.hero.hero-modern{
+  position:relative !important;
+  display:block !important;
+  width:100% !important;
+  min-height:0 !important;
+  aspect-ratio:2000 / 767 !important;
+  padding:0 !important;
+  margin:0 !important;
+  background-image:url("lunhs-home-banner-animated.gif") !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  overflow:hidden !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+/* Prevent duplicated static hero content over the GIF */
+.hero.hero-modern > .hero-copy,
+.hero.hero-modern > .hero-visual{
+  display:none !important;
+}
+
+.hero.hero-modern::before,
+.hero.hero-modern::after{
+  display:none !important;
+}
+
+#home.home-page{
+  padding-top:0 !important;
+}
+
+/* Mobile/tablet handling */
+@media(max-width:900px){
+  .hero.hero-modern{
+    aspect-ratio:16 / 8.5 !important;
+    background-size:cover !important;
+    background-position:center !important;
+  }
+}
+@media(max-width:600px){
+  .hero.hero-modern{
+    aspect-ratio:4 / 3 !important;
+    background-size:cover !important;
+    background-position:center !important;
+  }
+}
