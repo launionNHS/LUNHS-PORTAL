@@ -1430,3 +1430,503 @@ input::placeholder,textarea::placeholder{
   visibility:visible !important;
   transform:none !important;
 }
+
+
+/* ==========================================================
+   v17 — HERO UPGRADE
+   Larger, more animated logo side while keeping the simple
+   green + white website theme.
+   ========================================================== */
+
+.hero.hero-modern{
+  min-height:650px;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) minmax(500px,.95fr);
+  align-items:center;
+  gap:42px;
+  overflow:hidden;
+  padding:60px 4vw !important;
+  position:relative;
+}
+
+.hero-copy{
+  position:relative;
+  z-index:3;
+}
+
+.hero-visual{
+  min-height:570px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  isolation:isolate;
+}
+
+/* large circular graphic behind the seal */
+.hero-visual::before,
+.hero-visual::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.hero-visual::before{
+  width:470px;
+  height:470px;
+  border:3px solid #146B3A;
+  animation:lunhsRingPulse 4s ease-in-out infinite;
+}
+.hero-visual::after{
+  width:525px;
+  height:525px;
+  border:1px dashed #146B3A;
+  opacity:.45;
+  animation:lunhsRingRotate 24s linear infinite;
+}
+
+/* larger school logo card */
+.school-mark{
+  width:390px !important;
+  height:390px !important;
+  max-width:none !important;
+  border-radius:50% !important;
+  border:2px solid #146B3A !important;
+  display:flex !important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:2;
+  background:#fff !important;
+  animation:lunhsLogoFloat 4.5s ease-in-out infinite;
+}
+
+.school-mark img{
+  width:270px !important;
+  height:270px !important;
+  max-width:none !important;
+  object-fit:contain;
+  animation:lunhsLogoBreathe 4.5s ease-in-out infinite;
+}
+
+.school-mark span{
+  margin-top:10px;
+  color:#146B3A !important;
+  font-weight:800;
+  letter-spacing:2px;
+  font-size:17px;
+}
+
+/* floating feature cards */
+.hero .float-card{
+  position:absolute !important;
+  z-index:5;
+  background:#fff !important;
+  color:#146B3A !important;
+  border:1px solid #146B3A !important;
+  border-radius:10px !important;
+  padding:16px 22px !important;
+  font-size:17px !important;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.fc-one{
+  top:75px !important;
+  left:0 !important;
+  animation:lunhsCardOne 4s ease-in-out infinite !important;
+}
+.fc-two{
+  top:250px !important;
+  right:-8px !important;
+  animation:lunhsCardTwo 4.7s ease-in-out infinite !important;
+}
+.fc-three{
+  bottom:45px !important;
+  left:35px !important;
+  animation:lunhsCardThree 4.3s ease-in-out infinite !important;
+}
+
+/* subtle green decorative arcs */
+.hero-visual .orb{
+  display:block !important;
+  position:absolute;
+  border-radius:50%;
+  background:transparent !important;
+  border:12px solid #146B3A;
+  opacity:.08 !important;
+  z-index:0;
+}
+.hero-visual .orb-a{
+  width:430px;
+  height:430px;
+  transform:translate(70px,-25px);
+}
+.hero-visual .orb-b{
+  width:330px;
+  height:330px;
+  transform:translate(-65px,65px);
+}
+
+/* animations */
+@keyframes lunhsLogoFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-14px)}
+}
+@keyframes lunhsLogoBreathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.035)}
+}
+@keyframes lunhsRingPulse{
+  0%,100%{transform:scale(1);opacity:.75}
+  50%{transform:scale(1.035);opacity:1}
+}
+@keyframes lunhsRingRotate{
+  from{transform:rotate(0deg)}
+  to{transform:rotate(360deg)}
+}
+@keyframes lunhsCardOne{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(8px,-10px)}
+}
+@keyframes lunhsCardTwo{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(-10px,-8px)}
+}
+@keyframes lunhsCardThree{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(8px,9px)}
+}
+
+/* responsive */
+@media(max-width:1050px){
+  .hero.hero-modern{
+    grid-template-columns:1fr !important;
+    text-align:center;
+  }
+  .hero-visual{
+    min-height:560px;
+    width:min(100%,650px);
+    margin:auto;
+  }
+}
+@media(max-width:650px){
+  .hero.hero-modern{
+    padding:38px 20px !important;
+  }
+  .hero-visual{min-height:430px}
+  .school-mark{
+    width:280px !important;
+    height:280px !important;
+  }
+  .school-mark img{
+    width:190px !important;
+    height:190px !important;
+  }
+  .hero-visual::before{width:330px;height:330px}
+  .hero-visual::after{width:370px;height:370px}
+  .hero .float-card{
+    font-size:13px !important;
+    padding:10px 12px !important;
+  }
+  .fc-one{top:35px !important;left:0 !important}
+  .fc-two{top:190px !important;right:0 !important}
+  .fc-three{bottom:25px !important;left:10px !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .school-mark,.school-mark img,.hero-visual::before,.hero-visual::after,
+  .fc-one,.fc-two,.fc-three{
+    animation:none !important;
+  }
+}
+
+
+/* ==========================================================
+   v18 — HERO MATCHED TO APPROVED REFERENCE
+   Clean green/white composition with large animated seal,
+   sweeping rings, floating cards, and larger right-side visual.
+   ========================================================== */
+
+.hero.hero-modern{
+  min-height:720px !important;
+  display:grid !important;
+  grid-template-columns:minmax(520px,.95fr) minmax(620px,1.05fr) !important;
+  gap:28px !important;
+  align-items:center !important;
+  padding:45px 3.2vw 30px !important;
+  background:#fff !important;
+  overflow:hidden !important;
+}
+
+/* Left side */
+.hero-copy{
+  z-index:5;
+  max-width:900px;
+}
+.hero-copy .eyebrow{
+  display:none !important;
+}
+.hero-copy h1{
+  font-family:Georgia,"Times New Roman",serif !important;
+  font-size:clamp(64px,6.2vw,118px) !important;
+  line-height:.92 !important;
+  letter-spacing:-4px !important;
+  margin:0 0 38px !important;
+  color:#146B3A !important;
+  font-weight:700 !important;
+}
+.hero-copy h1 span{
+  color:#435269 !important;
+}
+.hero-copy p{
+  max-width:850px;
+  font-size:clamp(19px,1.45vw,27px) !important;
+  line-height:1.55 !important;
+  color:#222 !important;
+}
+.hero-actions{
+  display:flex !important;
+  gap:18px !important;
+  margin-top:28px !important;
+}
+.hero-actions .btn{
+  min-width:230px;
+  padding:16px 26px !important;
+  border-radius:9px !important;
+  font-weight:700 !important;
+  text-align:center;
+}
+.hero-actions .primary{
+  background:#146B3A !important;
+  color:#fff !important;
+}
+.hero-actions .ghost{
+  background:#fff !important;
+  color:#146B3A !important;
+  border:1px solid #146B3A !important;
+}
+.hero-stats{
+  display:grid !important;
+  grid-template-columns:repeat(3,1fr);
+  max-width:760px;
+  margin-top:42px !important;
+  border:0 !important;
+}
+.hero-stats>div{
+  padding:0 22px !important;
+  border-right:1px solid #d7d7d7;
+}
+.hero-stats>div:first-child{padding-left:0 !important}
+.hero-stats>div:last-child{border-right:0}
+.hero-stats strong{
+  display:block;
+  color:#146B3A !important;
+  font-size:21px !important;
+}
+.hero-stats small{
+  color:#333 !important;
+  font-size:14px !important;
+}
+
+/* Right visual */
+.hero-visual{
+  min-height:650px !important;
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:visible !important;
+  isolation:isolate;
+}
+
+/* sweeping circular design */
+.hero-visual::before{
+  content:"" !important;
+  position:absolute !important;
+  width:570px !important;
+  height:570px !important;
+  border-radius:50% !important;
+  border:5px solid #146B3A !important;
+  outline:25px solid rgba(20,107,58,.11) !important;
+  background:transparent !important;
+  animation:v18Pulse 4.5s ease-in-out infinite !important;
+  z-index:0;
+}
+.hero-visual::after{
+  content:"" !important;
+  position:absolute !important;
+  width:650px !important;
+  height:650px !important;
+  border-radius:50% !important;
+  border:2px dashed rgba(20,107,58,.55) !important;
+  animation:v18Rotate 30s linear infinite !important;
+  z-index:0;
+}
+
+/* seal */
+.school-mark{
+  width:455px !important;
+  height:455px !important;
+  border-radius:50% !important;
+  border:0 !important;
+  background:#fff !important;
+  position:relative !important;
+  z-index:3 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  animation:v18Float 4.8s ease-in-out infinite !important;
+}
+.school-mark img{
+  width:390px !important;
+  height:390px !important;
+  object-fit:contain !important;
+}
+.school-mark span{
+  position:absolute !important;
+  bottom:-68px !important;
+  left:50% !important;
+  transform:translateX(-50%) !important;
+  min-width:350px !important;
+  padding:12px 28px !important;
+  border-radius:30px !important;
+  border:1px solid rgba(20,107,58,.25) !important;
+  background:#fff !important;
+  color:#146B3A !important;
+  font-size:20px !important;
+  font-weight:800 !important;
+  letter-spacing:2px !important;
+  text-align:center !important;
+}
+
+/* green sweeping arcs using existing orbs */
+.hero-visual .orb{
+  display:block !important;
+  position:absolute !important;
+  border-radius:50% !important;
+  background:transparent !important;
+  pointer-events:none !important;
+}
+.hero-visual .orb-a{
+  width:610px !important;
+  height:610px !important;
+  border:38px solid rgba(20,107,58,.13) !important;
+  border-left-color:rgba(20,107,58,.55) !important;
+  border-bottom-color:rgba(20,107,58,.55) !important;
+  transform:rotate(-28deg) !important;
+  z-index:1 !important;
+}
+.hero-visual .orb-b{
+  width:700px !important;
+  height:700px !important;
+  border:18px solid transparent !important;
+  border-right-color:rgba(20,107,58,.75) !important;
+  border-bottom-color:rgba(20,107,58,.75) !important;
+  transform:rotate(18deg) !important;
+  z-index:1 !important;
+}
+
+/* floating cards */
+.hero .float-card{
+  position:absolute !important;
+  z-index:7 !important;
+  background:#fff !important;
+  color:#146B3A !important;
+  border:1px solid rgba(20,107,58,.7) !important;
+  border-radius:10px !important;
+  padding:17px 24px !important;
+  font-size:18px !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+}
+.fc-one{
+  top:88px !important;
+  left:4px !important;
+  animation:v18CardA 4s ease-in-out infinite !important;
+}
+.fc-two{
+  top:290px !important;
+  right:-20px !important;
+  animation:v18CardB 4.7s ease-in-out infinite !important;
+}
+.fc-three{
+  bottom:75px !important;
+  left:5px !important;
+  animation:v18CardC 4.3s ease-in-out infinite !important;
+}
+
+@keyframes v18Float{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-13px) scale(1.015)}
+}
+@keyframes v18Pulse{
+  0%,100%{transform:scale(1);opacity:.9}
+  50%{transform:scale(1.035);opacity:1}
+}
+@keyframes v18Rotate{
+  from{transform:rotate(0)}
+  to{transform:rotate(360deg)}
+}
+@keyframes v18CardA{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(10px,-10px)}
+}
+@keyframes v18CardB{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(-12px,-7px)}
+}
+@keyframes v18CardC{
+  0%,100%{transform:translate(0,0)}
+  50%{transform:translate(10px,8px)}
+}
+
+/* Responsive */
+@media(max-width:1180px){
+  .hero.hero-modern{
+    grid-template-columns:1fr !important;
+  }
+  .hero-copy{
+    max-width:900px;
+    margin:auto;
+    text-align:center;
+  }
+  .hero-copy p,.hero-stats{margin-left:auto !important;margin-right:auto !important}
+  .hero-actions{justify-content:center}
+  .hero-visual{
+    width:min(100%,760px);
+    margin:auto;
+  }
+}
+@media(max-width:700px){
+  .hero.hero-modern{
+    min-height:auto !important;
+    padding:34px 18px 55px !important;
+  }
+  .hero-copy h1{
+    font-size:clamp(52px,16vw,78px) !important;
+    letter-spacing:-2px !important;
+  }
+  .hero-copy p{font-size:17px !important}
+  .hero-actions{flex-direction:column}
+  .hero-actions .btn{width:100%;min-width:0}
+  .hero-stats{grid-template-columns:1fr;gap:18px}
+  .hero-stats>div{border-right:0;padding:0 !important}
+  .hero-visual{min-height:490px !important}
+  .hero-visual::before{width:350px !important;height:350px !important;outline-width:15px !important}
+  .hero-visual::after{width:410px !important;height:410px !important}
+  .hero-visual .orb-a{width:390px !important;height:390px !important;border-width:24px !important}
+  .hero-visual .orb-b{width:440px !important;height:440px !important;border-width:12px !important}
+  .school-mark{width:290px !important;height:290px !important}
+  .school-mark img{width:250px !important;height:250px !important}
+  .school-mark span{bottom:-55px !important;min-width:260px !important;font-size:14px !important;padding:10px 16px !important}
+  .hero .float-card{font-size:12px !important;padding:9px 11px !important}
+  .fc-one{top:48px !important;left:0 !important}
+  .fc-two{top:215px !important;right:0 !important}
+  .fc-three{bottom:45px !important;left:0 !important}
+}
+@media(prefers-reduced-motion:reduce){
+  .school-mark,.hero-visual::before,.hero-visual::after,.fc-one,.fc-two,.fc-three{
+    animation:none !important;
+  }
+}
