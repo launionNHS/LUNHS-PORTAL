@@ -1,86 +1,21 @@
-const cfg=window.LUNHS_CONFIG||{};
-const msg=document.getElementById('loginMsg');
-let sb=null;
-try{
-  if(!cfg.url||!cfg.key) throw new Error("Missing Supabase configuration.");
-  sb=window.supabase.createClient(cfg.url,cfg.key);
-}catch(e){ console.error(e); }
-
-function show(id){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const target=document.getElementById(id);
-  if(target) target.classList.add('active');
-  if(id==='announcements') loadPosts();
-  window.scrollTo({top:0,behavior:'smooth'});
+const C=window.LUNHS_CONFIG, sb=window.supabase.createClient(C.url,C.key); let me=null;
+const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function show(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('#'+id)?.classList.add('active');if(id==='announcements')loadPublicPosts();scrollTo(0,0)}
+document.addEventListener('click',e=>{let b=e.target.closest('[data-view]');if(b)show(b.dataset.view);let t=e.target.closest('[data-tab]');if(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderAdminTab(t.dataset.tab)}})
+$('#logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
+$('#loginForm').onsubmit=async e=>{e.preventDefault();$('#loginMsg').textContent='Signing in…';let {data,error}=await sb.auth.signInWithPassword({email:$('#email').value.trim(),password:$('#password').value});if(error){$('#loginMsg').className='error';$('#loginMsg').textContent=error.message;return}await openDashboard(data.user)};
+async function profile(uid){return await sb.from('profiles').select('*').eq('id',uid).single()}
+async function openDashboard(u){let {data:p,error}=await profile(u.id);if(error||!p){$('#loginMsg').className='error';$('#loginMsg').textContent='Signed in, but profile could not be read: '+(error?.message||'not found');return}me=p;$('#loginNav').hidden=true;$('#dashNav').hidden=false;$('#logout').hidden=false;$('#welcome').textContent='Welcome, '+p.display_name;$('#identity').textContent=`${p.role.toUpperCase()} • ${p.school_id||''}`;if(p.role==='admin')renderAdmin();if(p.role==='teacher')renderTeacher();if(p.role==='student')renderStudent();show('dashboard')}
+async function loadPublicPosts(){let {data,error}=await sb.from('posts').select('*').eq('published',true).order('created_at',{ascending:false});$('#publicPosts').innerHTML=error?`<p class=error>${esc(error.message)}</p>`:(data?.length?data.map(p=>`<article class=post><small>${esc(p.type)}</small><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p></article>`).join(''):'<article>No announcements yet.</article>')}
+function renderAdmin(){$('#dashboardBody').innerHTML=`<div class=tabs><button class="tab active" data-tab=overview>Overview</button><button class=tab data-tab=posts>Announcements</button><button class=tab data-tab=subjects>Subjects</button><button class=tab data-tab=profiles>Users</button><button class=tab data-tab=assignments>Assignments</button><button class=tab data-tab=grades>Grades</button></div><div id=adminContent></div>`;renderAdminTab('overview')}
+async function renderAdminTab(tab){let box=$('#adminContent');if(!box)return;box.innerHTML='Loading…';
+if(tab==='overview'){let [p,s,g,po]=await Promise.all([sb.from('profiles').select('id',{count:'exact',head:true}),sb.from('subjects').select('id',{count:'exact',head:true}),sb.from('grades').select('id',{count:'exact',head:true}),sb.from('posts').select('id',{count:'exact',head:true})]);box.innerHTML=`<div class=stats><div class=stat><b>${p.count??0}</b><p>Profiles</p></div><div class=stat><b>${s.count??0}</b><p>Subjects</p></div><div class=stat><b>${g.count??0}</b><p>Grade Records</p></div><div class=stat><b>${po.count??0}</b><p>Posts</p></div></div><div class=notice>Auth accounts are created securely in Supabase Authentication. This browser portal never uses a secret/service-role key.</div>`}
+if(tab==='posts'){let {data}=await sb.from('posts').select('*').order('created_at',{ascending:false});box.innerHTML=`<div class=panel><h2>New Announcement / Event</h2><form id=postForm><div class=formgrid><label>Type<select id=ptype><option>Announcement</option><option>Event</option></select></label><label>Title<input id=ptitle required></label></div><label>Details<textarea id=pbody></textarea></label><button class=primary>Publish</button><span id=pmsg></span></form></div><div class=tablewrap><table class=data><tr><th>Type</th><th>Title</th><th>Date</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.type)}</td><td>${esc(x.title)}</td><td>${new Date(x.created_at).toLocaleDateString()}</td></tr>`).join('')}</table></div>`;$('#postForm').onsubmit=async e=>{e.preventDefault();let {error}=await sb.from('posts').insert({type:$('#ptype').value,title:$('#ptitle').value,body:$('#pbody').value,published:true,author_id:me.id});$('#pmsg').textContent=error?error.message:' Published!';if(!error)renderAdminTab('posts')}}
+if(tab==='subjects'){let {data}=await sb.from('subjects').select('*').order('grade_level').order('name');box.innerHTML=`<div class=panel><h2>Add Subject</h2><form id=subForm class=formgrid><label>Subject<input id=sname required></label><label>Grade Level<input id=sgrade placeholder="8"></label><label>&nbsp;<button class=primary>Add Subject</button></label></form><p id=smsg></p></div><div class=tablewrap><table class=data><tr><th>Subject</th><th>Grade Level</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.grade_level)}</td></tr>`).join('')}</table></div>`;$('#subForm').onsubmit=async e=>{e.preventDefault();let {error}=await sb.from('subjects').insert({name:$('#sname').value,grade_level:$('#sgrade').value});$('#smsg').textContent=error?error.message:'Subject added.';if(!error)renderAdminTab('subjects')}}
+if(tab==='profiles'){let {data,error}=await sb.from('profiles').select('display_name,school_id,role,grade_level,section').order('display_name');box.innerHTML=`<div class=notice>To add a new login: create the user first in Supabase Authentication, then add the matching UUID to the profiles table. A secure automated account creator can be added later with a server-side Edge Function.</div><div class=tablewrap><table class=data><tr><th>Name</th><th>ID</th><th>Role</th><th>Grade</th><th>Section</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.display_name)}</td><td>${esc(x.school_id)}</td><td>${esc(x.role)}</td><td>${esc(x.grade_level)}</td><td>${esc(x.section)}</td></tr>`).join('')}</table></div>${error?`<p class=error>${esc(error.message)}</p>`:''}`}
+if(tab==='assignments'){let {data,error}=await sb.from('teacher_assignments').select('id,section,teacher_id,subjects(name)');box.innerHTML=`<div class=notice>Teacher assignments are displayed here. Assignment creation will be enabled after teacher profiles and subjects are entered.</div><div class=tablewrap><table class=data><tr><th>Teacher UUID</th><th>Subject</th><th>Section</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.teacher_id)}</td><td>${esc(x.subjects?.name)}</td><td>${esc(x.section)}</td></tr>`).join('')}</table></div>${error?`<p class=error>${esc(error.message)}</p>`:''}`}
+if(tab==='grades'){let {data,error}=await sb.from('grades').select('school_year,section,q1,q2,q3,q4,subjects(name),student_id').limit(100);box.innerHTML=`<div class=tablewrap><table class=data><tr><th>Student UUID</th><th>Subject</th><th>Section</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.student_id)}</td><td>${esc(x.subjects?.name)}</td><td>${esc(x.section)}</td><td>${x.q1??'-'}</td><td>${x.q2??'-'}</td><td>${x.q3??'-'}</td><td>${x.q4??'-'}</td></tr>`).join('')}</table></div>${error?`<p class=error>${esc(error.message)}</p>`:''}`}
 }
-document.addEventListener('click',e=>{
-  const b=e.target.closest('[data-view]');
-  if(b){ e.preventDefault(); show(b.dataset.view); }
-});
-document.getElementById('logoutBtn').onclick=async()=>{ if(sb) await sb.auth.signOut(); setLoggedOut(); show('home'); };
-
-function setLoggedOut(){
-  document.getElementById('dashBtn').hidden=true;
-  document.getElementById('logoutBtn').hidden=true;
-  document.getElementById('portalBtn').hidden=false;
-}
-function setLoggedIn(){
-  document.getElementById('dashBtn').hidden=false;
-  document.getElementById('logoutBtn').hidden=false;
-  document.getElementById('portalBtn').hidden=true;
-}
-
-document.getElementById('loginForm').addEventListener('submit',async e=>{
-  e.preventDefault();
-  msg.className=''; msg.textContent='Signing in…';
-  if(!sb){msg.className='error';msg.textContent='Supabase configuration could not be loaded.';return;}
-  const email=document.getElementById('email').value.trim();
-  const password=document.getElementById('password').value;
-  const {data,error}=await sb.auth.signInWithPassword({email,password});
-  if(error){msg.className='error';msg.textContent=error.message;return;}
-  msg.className='ok';msg.textContent='Login successful.';
-  await openDashboard(data.user);
-});
-
-async function openDashboard(user){
-  const {data:p,error}=await sb.from('profiles').select('id,role,display_name,school_id,grade_level,section').eq('id',user.id).single();
-  if(error||!p){
-    msg.className='error'; msg.textContent='Signed in, but no matching LUNHS profile was found.';
-    return;
-  }
-  setLoggedIn();
-  document.getElementById('welcome').textContent=`Welcome, ${p.display_name}`;
-  document.getElementById('profileCard').innerHTML=`<b>${esc(p.display_name)}</b><p>Role: ${esc(p.role)}${p.school_id?' • ID: '+esc(p.school_id):''}${p.grade_level?' • Grade '+esc(p.grade_level):''}${p.section?' • '+esc(p.section):''}</p>`;
-  if(p.role==='admin') renderAdmin();
-  else if(p.role==='student') await renderStudent(user.id);
-  else renderTeacher();
-  show('dashboard');
-}
-function renderAdmin(){
-  document.getElementById('roleArea').innerHTML=`<div class="card"><h2>Administrator</h2><p>Your administrator login is working. This dashboard is connected to Supabase.</p><div class="admin-actions"><button data-view="announcements">View Announcements</button></div><p><b>Next:</b> secure user creation, teacher assignments, subjects, and grade management can be added without exposing a Supabase secret key.</p></div>`;
-}
-function renderTeacher(){
-  document.getElementById('roleArea').innerHTML=`<div class="card"><h2>Teacher Portal</h2><p>Your teacher account is connected. Grade encoding will be enabled after teacher assignments are configured.</p></div>`;
-}
-async function renderStudent(uid){
-  const {data,error}=await sb.from('grades').select('q1,q2,q3,q4,school_year,subjects(name)').eq('student_id',uid);
-  let html='<div class="card"><h2>My Grades</h2>';
-  if(error) html+=`<p>${esc(error.message)}</p>`;
-  else if(!data?.length) html+='<p>No grades have been posted yet.</p>';
-  else html+='<div style="overflow:auto"><table width="100%" cellpadding="10"><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>'+data.map(g=>`<tr><td>${esc(g.subjects?.name||'Subject')}</td><td>${g.q1??'-'}</td><td>${g.q2??'-'}</td><td>${g.q3??'-'}</td><td>${g.q4??'-'}</td></tr>`).join('')+'</table></div>';
-  document.getElementById('roleArea').innerHTML=html+'</div>';
-}
-async function loadPosts(){
-  const box=document.getElementById('posts');
-  if(!sb){box.innerHTML='<div class="post">Announcements are temporarily unavailable.</div>';return;}
-  const {data,error}=await sb.from('posts').select('type,title,body,created_at').eq('published',true).order('created_at',{ascending:false});
-  if(error){box.innerHTML=`<div class="post">${esc(error.message)}</div>`;return;}
-  box.innerHTML=data?.length?data.map(p=>`<article class="post"><small>${esc(p.type||'Announcement')}</small><h3>${esc(p.title)}</h3><p>${esc(p.body||'')}</p></article>`).join(''):'<div class="post">No announcements posted yet.</div>';
-}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-
-(async()=>{
-  if(!sb) return;
-  const {data:{session}}=await sb.auth.getSession();
-  if(session?.user){ await openDashboard(session.user); }
-})();
+async function renderStudent(){let {data,error}=await sb.from('grades').select('q1,q2,q3,q4,school_year,subjects(name)').eq('student_id',me.id);$('#dashboardBody').innerHTML=`<div class=panel><h2>My Grades</h2>${error?`<p class=error>${esc(error.message)}</p>`:`<div class=tablewrap><table class=data><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.subjects?.name)}</td><td>${x.q1??'-'}</td><td>${x.q2??'-'}</td><td>${x.q3??'-'}</td><td>${x.q4??'-'}</td></tr>`).join('')}</table></div>`}</div>`}
+async function renderTeacher(){let {data,error}=await sb.from('teacher_assignments').select('id,section,subject_id,subjects(name)').eq('teacher_id',me.id);$('#dashboardBody').innerHTML=`<div class=panel><h2>My Teaching Assignments</h2>${error?`<p class=error>${esc(error.message)}</p>`:`<div class=tablewrap><table class=data><tr><th>Subject</th><th>Section</th></tr>${(data||[]).map(x=>`<tr><td>${esc(x.subjects?.name)}</td><td>${esc(x.section)}</td></tr>`).join('')}</table></div>`}<p>Grade encoding becomes available once students and assignments are configured.</p></div>`}
+(async()=>{let {data:{session}}=await sb.auth.getSession();if(session?.user)await openDashboard(session.user)})();
