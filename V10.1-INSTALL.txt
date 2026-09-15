@@ -1,0 +1,33 @@
+LUNHS PORTAL v10.1 — NO VISIBLE EMAIL FOR STUDENTS/TEACHERS
+
+FIXED
+• Portal Login now shows School ID / LRN + Password.
+• Create Student/Teacher Account has NO email field.
+• Student login: LRN + Password.
+• Teacher login: Employee/Teacher ID + Password.
+• An internal Supabase authentication address is generated automatically and is never shown to the user.
+
+UPDATE GITHUB
+Replace these files in your lunhs repository:
+1. index.html
+2. app.js
+3. styles.css
+4. config.js
+5. lunhs-logo.png
+
+Also deploy create-school-user-index.ts to:
+Supabase > Edge Functions > create-school-user
+
+After GitHub Pages finishes deploying, press Ctrl+F5.
+
+IMPORTANT ABOUT THE EXISTING ADMIN
+Your original Administrator Auth account was created with an email before ID-login was introduced.
+Do not sign the Administrator out until its login is migrated to ADMIN-001 in the next migration step.
+New students/teachers created with v10.1 are designed for ID/LRN login.
+
+TEST
+While still signed in as Administrator:
+1. Create a NEW student with a unique LRN and password.
+2. Confirm the student appears in Authentication > Users and public.profiles.
+3. Open the portal in an Incognito/Private window.
+4. Sign in using the student's LRN and password.
