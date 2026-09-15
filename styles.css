@@ -132,3 +132,68 @@ nav .nav-active:after,header .nav-active:after{content:"";position:absolute;left
 
 /* v12 Admin Publishing Studio */
 .publishing-studio{margin-top:24px;padding:28px}.studio-head,.studio-list-head{display:flex;justify-content:space-between;align-items:center;gap:20px}.studio-head h2{font-family:Georgia,"Times New Roman",serif;color:#0b1f39;margin:3px 0 8px}.studio-head p{max-width:680px;opacity:.7}.publishing-studio button{cursor:pointer}.post-editor{margin:26px 0;padding:24px;background:#f8f6f1;border:1px solid rgba(16,43,78,.09);border-radius:10px}.post-editor label{display:block;font-weight:700;font-size:.84rem;margin-bottom:15px}.post-editor input:not([type=checkbox]),.post-editor select,.post-editor textarea{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:12px 13px;border:1px solid #d8dee7;border-radius:7px;background:#fff;font:inherit}.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.publish-check{display:flex!important;align-items:center;gap:8px}.editor-actions,.admin-post-actions{display:flex;gap:9px;flex-wrap:wrap}.publishing-studio button{border:0;border-radius:7px;padding:10px 15px;background:#102b4e;color:#fff;font-weight:750}.publishing-studio button.secondary{background:#e8edf3;color:#102b4e}.publishing-studio button.danger{background:#8a2831}.admin-posts-list{display:grid;gap:12px;margin-top:16px}.admin-post-card{display:grid;grid-template-columns:130px 1fr auto;gap:17px;align-items:center;padding:14px;border:1px solid rgba(16,43,78,.1);border-radius:9px;background:#fff}.admin-post-thumb{height:82px;background:#edf1f5;border-radius:7px;display:grid;place-items:center;overflow:hidden;font-size:.7rem;font-weight:800;opacity:.85}.admin-post-thumb img{width:100%;height:100%;object-fit:cover}.admin-post-info h4{margin:5px 0}.admin-post-info p{margin:0 0 5px;font-size:.82rem;opacity:.68}.admin-post-info small{font-weight:700;color:#876b32}@media(max-width:750px){.editor-grid{grid-template-columns:1fr}.studio-head{align-items:flex-start}.admin-post-card{grid-template-columns:90px 1fr}.admin-post-actions{grid-column:1/-1}.publishing-studio{padding:18px}}
+
+
+/* v12.1 — Elegant Academic School Theme
+   LUNHS: scholarly navy, institutional blue, restrained gold, warm ivory */
+:root{
+  --school-navy:#0b2447;
+  --school-blue:#193f6f;
+  --school-blue-soft:#eaf0f7;
+  --school-gold:#b28a45;
+  --school-gold-soft:#efe5d2;
+  --school-ivory:#fbfaf7;
+  --school-paper:#f5f3ee;
+  --school-ink:#172235;
+  --school-muted:#667386;
+  --school-line:#d9dee5;
+}
+html{background:var(--school-ivory)}
+body{background:linear-gradient(180deg,#fff 0%,var(--school-ivory) 38%,var(--school-paper) 100%);color:var(--school-ink)}
+header{
+  background:rgba(11,36,71,.97)!important;
+  border-bottom:3px solid var(--school-gold);
+  box-shadow:0 5px 20px rgba(5,20,42,.14);
+}
+header,header a,header button{color:#fff}
+nav button{background:transparent!important;border-radius:3px!important}
+nav button:hover,nav button.nav-active{background:rgba(255,255,255,.10)!important;color:#f4dfb4!important}
+h1,h2,h3,.hero-title{font-family:Georgia,"Times New Roman",serif;color:var(--school-navy);letter-spacing:-.015em}
+.hero,.home-hero{
+  background:linear-gradient(120deg,rgba(7,29,58,.97),rgba(25,63,111,.91))!important;
+  border-bottom:5px solid var(--school-gold);
+}
+.hero h1,.hero h2,.hero p,.home-hero h1,.home-hero h2,.home-hero p{color:#fff}
+.eyebrow,.tag{color:#87672f!important;letter-spacing:.12em;text-transform:uppercase}
+.card,.panel,.publishing-studio{
+  background:#fff!important;
+  border:1px solid var(--school-line)!important;
+  border-radius:6px!important;
+  box-shadow:0 7px 22px rgba(11,36,71,.065)!important;
+}
+.card:hover{box-shadow:0 11px 28px rgba(11,36,71,.10)!important}
+.primary,button.primary,.publishing-studio button,#savePostBtn{
+  background:var(--school-navy)!important;color:#fff!important;
+  border:1px solid var(--school-navy)!important;border-radius:4px!important;
+}
+.primary:hover,button.primary:hover,.publishing-studio button:hover{background:var(--school-blue)!important}
+button.secondary,.secondary{background:#fff!important;color:var(--school-navy)!important;border:1px solid #b9c4d1!important}
+.publishing-studio button.danger{background:#7b3038!important;border-color:#7b3038!important}
+input,select,textarea{
+  border-color:#cbd3dd!important;border-radius:4px!important;
+  background:#fff!important;color:var(--school-ink)!important;
+}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(178,138,69,.25)!important;border-color:var(--school-gold)!important}
+.post-editor{background:var(--school-ivory)!important;border-color:#e1ddd4!important;border-radius:5px!important}
+.admin-post-card{border-radius:5px!important;border-left:3px solid var(--school-gold)!important}
+.admin-post-thumb{border-radius:3px!important;background:var(--school-blue-soft)!important}
+section{scroll-margin-top:100px}
+footer{background:var(--school-navy)!important;color:#e9edf3!important;border-top:4px solid var(--school-gold)}
+/* restrained academic details */
+.section-title:after,.publishing-studio h2:after{
+  content:"";display:block;width:54px;height:2px;background:var(--school-gold);margin-top:9px;
+}
+@media(max-width:760px){
+  header{border-bottom-width:2px}
+  .card,.panel,.publishing-studio{border-radius:4px!important}
+}
