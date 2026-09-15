@@ -1,0 +1,32 @@
+LUNHS PORTAL v9.2 — AUTHENTICATED ACCOUNT CREATION FIX
+
+This fixes the “You must be signed in” problem.
+
+A. REPLACE THE EDGE FUNCTION
+1. Supabase Dashboard > Edge Functions > create-school-user.
+2. Replace ALL existing code with create-school-user-index.ts from this ZIP.
+3. Deploy the function.
+4. Do not put SUPABASE_SERVICE_ROLE_KEY in GitHub/config.js. It is used only inside Supabase's server environment.
+
+B. UPDATE GITHUB
+Replace these files in the ROOT of the lunhs repository:
+- index.html
+- styles.css
+- config.js
+- app.js
+- lunhs-logo.png
+Commit the changes, wait for GitHub Pages, then Ctrl+F5.
+
+C. REFRESH THE ADMIN SESSION
+1. Log out of the LUNHS portal.
+2. Ctrl+F5.
+3. Log in again as Administrator.
+4. Admin > Users > create ONE test teacher.
+
+SUCCESS CHECK
+The teacher must appear in BOTH:
+- Supabase > Authentication > Users
+- Supabase > Table Editor > profiles
+The UUID must match in both places.
+
+If creation fails, v9.2 displays the actual function error rather than a false success.

@@ -1,0 +1,24 @@
+LUNHS PORTAL v10 — SCHOOL ID / LRN LOGIN
+
+WHAT CHANGED
+- Students and teachers no longer need personal email accounts.
+- Admin creates an account using Name, unique School ID/LRN, password, grade/section.
+- Login uses School ID/LRN + Password.
+- The system creates an internal Supabase Auth address automatically.
+- Duplicate School IDs show a friendly error.
+
+INSTALL
+1. Supabase > Edge Functions > create-school-user.
+2. Replace ALL function code with create-school-user-index.ts and Deploy.
+3. In GitHub repository lunhs, replace the website files from this ZIP.
+4. Commit and wait for GitHub Pages deployment.
+5. Ctrl+F5, then sign in again.
+
+IMPORTANT FOR EXISTING ADMIN
+The existing Administrator account was originally created with a real email, so v10's School-ID login mapping does not automatically match that old Auth account. Keep an admin-email fallback or migrate the Admin credential before removing email login completely. If your Admin login stops working after deploying v10, restore v9.2 and request the Admin migration patch.
+
+TEST
+Create a NEW test student:
+School ID/LRN: unique value
+Password: at least 8 characters
+Then log out and use that School ID/LRN and password.
