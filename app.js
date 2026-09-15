@@ -1,11 +1,15 @@
 const C=window.LUNHS_CONFIG, sb=window.supabase.createClient(C.url,C.key); let me=null;
 function normalizeSchoolId(v){return String(v||'').trim().toLowerCase().replace(/[^a-z0-9._-]/g,'-')}
 function internalEmail(id){return normalizeSchoolId(id)+'@accounts.lunhs.local'}
+function loginIdentifier(value){
+  const v=String(value||'').trim();
+  return v.includes('@') ? v.toLowerCase() : internalEmail(v);
+}
 const $=s=>document.querySelector(s), esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(id){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('#'+id)?.classList.add('active');if(id==='announcements')loadPublicPosts();scrollTo(0,0)}
 document.addEventListener('click',e=>{let b=e.target.closest('[data-view]');if(b)show(b.dataset.view);let t=e.target.closest('[data-tab]');if(t){document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderAdminTab(t.dataset.tab)}})
 $('#logout').onclick=async()=>{await sb.auth.signOut();location.reload()};
-$('#loginForm').onsubmit=async e=>{e.preventDefault();$('#loginMsg').textContent='Signing in…';let {data,error}=await sb.auth.signInWithPassword({email:internalEmail($('#schoolLogin').value.trim()),password:$('#password').value});if(error){$('#loginMsg').className='error';$('#loginMsg').textContent=error.message;return}await openDashboard(data.user)};
+$('#loginForm').onsubmit=async e=>{e.preventDefault();$('#loginMsg').textContent='Signing in…';let {data,error}=await sb.auth.signInWithPassword({email:loginIdentifier($('#schoolLogin').value),password:$('#password').value});if(error){$('#loginMsg').className='error';$('#loginMsg').textContent=error.message;return}await openDashboard(data.user)};
 async function profile(uid){return await sb.from('profiles').select('*').eq('id',uid).single()}
 async function openDashboard(u){let {data:p,error}=await profile(u.id);if(error||!p){$('#loginMsg').className='error';$('#loginMsg').textContent='Signed in, but profile could not be read: '+(error?.message||'not found');return}me=p;$('#loginNav').hidden=true;$('#dashNav').hidden=false;$('#logout').hidden=false;$('#welcome').textContent='Welcome, '+p.display_name;$('#identity').textContent=`${p.role.toUpperCase()} • ${p.school_id||''}`;if(p.role==='admin')renderAdmin();if(p.role==='teacher')renderTeacher();if(p.role==='student')renderStudent();show('dashboard')}
 async function loadPublicPosts(){let {data,error}=await sb.from('posts').select('*').eq('published',true).order('created_at',{ascending:false});$('#publicPosts').innerHTML=error?`<p class=error>${esc(error.message)}</p>`:(data?.length?data.map(p=>`<article class=post><small>${esc(p.type)}</small><h3>${esc(p.title)}</h3><p>${esc(p.body)}</p></article>`).join(''):'<article>No announcements yet.</article>')}
