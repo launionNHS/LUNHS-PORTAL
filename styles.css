@@ -197,3 +197,68 @@ footer{background:var(--school-navy)!important;color:#e9edf3!important;border-to
   header{border-bottom-width:2px}
   .card,.panel,.publishing-studio{border-radius:4px!important}
 }
+
+
+/* v12.2 — Text visibility / contrast correction */
+body, main, section, .view, .panel, .card{
+  color:#172235;
+}
+#announcements{
+  background:#fbfaf7;
+  color:#172235 !important;
+}
+#announcements h1,
+#announcements h2,
+#announcements h3,
+#announcements h4{
+  color:#0b2447 !important;
+}
+#announcements p,
+#announcements li,
+#announcements small,
+#announcements label,
+#announcements .muted,
+#announcements .post-body,
+#announcements .announcement-body{
+  color:#465568 !important;
+  opacity:1 !important;
+}
+#announcements a{
+  color:#193f6f !important;
+}
+#announcements .card,
+#announcements article,
+#announcements .post,
+#announcements .announcement{
+  background:#ffffff !important;
+  color:#172235 !important;
+  border-color:#d9dee5 !important;
+}
+#announcements .tag,
+#announcements .eyebrow{
+  color:#765a2b !important;
+}
+#login{
+  background:#fbfaf7 !important;
+  color:#172235 !important;
+}
+#login h1,#login h2,#login label{color:#0b2447 !important}
+#login p,#login small{color:#465568 !important;opacity:1 !important}
+#dashboard{color:#172235 !important}
+#dashboard h1,#dashboard h2,#dashboard h3,#dashboard h4{color:#0b2447 !important}
+
+/* Protect text on dark/navy surfaces */
+header, header *, footer, footer *,
+.hero, .hero *, .home-hero, .home-hero *{
+  --local-text:#fff;
+}
+header h1,header h2,header h3,header p,header span,header a,header button,
+footer h1,footer h2,footer h3,footer p,footer span,footer a,
+.hero h1,.hero h2,.hero h3,.hero p,.hero span,.hero a,
+.home-hero h1,.home-hero h2,.home-hero h3,.home-hero p,.home-hero span,.home-hero a{
+  color:#fff !important;
+  opacity:1;
+}
+
+/* Avoid low-opacity text becoming unreadable */
+.view p,.view li,.view small,.card p,.panel p{opacity:1}
