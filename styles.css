@@ -1111,3 +1111,201 @@ footer *{
   opacity:1!important;
   visibility:visible!important;
 }
+
+
+/* ==========================================================
+   v15.1 — FINAL READABILITY / CONTRAST FIX
+   GREEN + WHITE ONLY — NO TEXT SHADOWS
+   Rule:
+   WHITE background = GREEN text
+   GREEN background = WHITE text
+   ========================================================== */
+
+:root{
+  --lunhs-green:#146B3A;
+  --lunhs-white:#FFFFFF;
+}
+
+/* Absolutely remove text shadows */
+html *, body *{
+  text-shadow:none !important;
+}
+
+/* ---------- WHITE BACKGROUNDS ---------- */
+body,
+main,
+#home,
+.home-page,
+.home-section,
+#announcements,
+#login,
+#dashboard,
+.info-card,
+.feature-update,
+.events-card,
+.discover-strip > div,
+.media-card,
+.panel,
+.card,
+.paper,
+.paper-front,
+.paper-back,
+.publishing-studio,
+.admin-post-card,
+.media-meta,
+.media-section-title{
+  background-color:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+}
+
+/* Force readable GREEN text on every white content surface */
+.home-section h1,.home-section h2,.home-section h3,.home-section h4,
+.home-section p,.home-section li,.home-section small,.home-section b,.home-section strong,
+.section-heading h1,.section-heading h2,.section-heading h3,.section-heading p,
+.info-card h1,.info-card h2,.info-card h3,.info-card h4,.info-card p,.info-card span,.info-card small,
+.feature-update h1,.feature-update h2,.feature-update h3,.feature-update h4,.feature-update p,.feature-update span,.feature-update small,
+.events-card h1,.events-card h2,.events-card h3,.events-card h4,.events-card p,.events-card span,.events-card small,
+.discover-strip b,.discover-strip span,
+.media-card h1,.media-card h2,.media-card h3,.media-card h4,.media-card p,.media-card span,.media-card small,
+.media-meta h4,.media-meta p,
+.media-section-title h3,.media-section-title span,
+.paper h1,.paper h2,.paper h3,.paper h4,.paper p,.paper span,.paper small,
+.panel h1,.panel h2,.panel h3,.panel p,.panel label,.panel small,
+#announcements h1,#announcements h2,#announcements h3,#announcements h4,#announcements p,#announcements li,#announcements small,
+#login h1,#login h2,#login h3,#login p,#login label,#login small,
+#dashboard h1,#dashboard h2,#dashboard h3,#dashboard h4,#dashboard p,#dashboard li,#dashboard small{
+  color:var(--lunhs-green) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* ---------- GREEN BACKGROUNDS ---------- */
+header,
+footer,
+.hero,
+.hero-modern,
+.publication,
+.featured-media,
+.featured-screen,
+.home-cta,
+.school-mark{
+  background-color:var(--lunhs-green) !important;
+  color:var(--lunhs-white) !important;
+}
+
+/* Force WHITE text on every green content surface */
+header *, footer *,
+.hero h1,.hero h2,.hero h3,.hero h4,.hero p,.hero span,.hero b,.hero strong,.hero small,
+.hero-modern h1,.hero-modern h2,.hero-modern h3,.hero-modern h4,.hero-modern p,.hero-modern span,.hero-modern b,.hero-modern strong,.hero-modern small,
+.publication > .publication-intro h1,
+.publication > .publication-intro h2,
+.publication > .publication-intro h3,
+.publication > .publication-intro p,
+.publication > .publication-intro span,
+.featured-media > .featured-copy h1,
+.featured-media > .featured-copy h2,
+.featured-media > .featured-copy h3,
+.featured-media > .featured-copy h4,
+.featured-media > .featured-copy p,
+.featured-media > .featured-copy span,
+.featured-screen *,
+.home-cta h1,.home-cta h2,.home-cta h3,.home-cta h4,.home-cta p,.home-cta span,.home-cta small,
+.school-mark *{
+  color:var(--lunhs-white) !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+
+/* Hero buttons */
+.hero .btn.primary{
+  background:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+  border:1px solid var(--lunhs-white) !important;
+}
+.hero .btn.ghost{
+  background:transparent !important;
+  color:var(--lunhs-white) !important;
+  border:1px solid var(--lunhs-white) !important;
+}
+
+/* Publication button */
+.publication .publication-btn{
+  background:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+  border:1px solid var(--lunhs-white) !important;
+}
+
+/* Publication paper is WHITE, therefore GREEN text */
+.publication .publication-showcase .paper,
+.publication .publication-showcase .paper *{
+  background-color:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+}
+
+/* Media filter chips: white by default, green active */
+.media-chips button{
+  background:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+  border:1px solid var(--lunhs-green) !important;
+}
+.media-chips button.active,
+.media-chips button:hover{
+  background:var(--lunhs-green) !important;
+  color:var(--lunhs-white) !important;
+}
+
+/* Tags on white cards */
+.feature-update .tag,
+.events-card .tag,
+.media-card .tag{
+  color:var(--lunhs-green) !important;
+}
+
+/* Featured tag is on green */
+.featured-media .featured-copy .tag{
+  color:var(--lunhs-white) !important;
+}
+
+/* Links on white backgrounds */
+.feature-update a,
+.events-card a,
+.media-card a,
+#announcements a,
+#login a{
+  color:var(--lunhs-green) !important;
+  font-weight:700;
+}
+
+/* Forms */
+input,textarea,select{
+  background:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+  border:1px solid var(--lunhs-green) !important;
+  box-shadow:none !important;
+}
+input::placeholder,textarea::placeholder{
+  color:var(--lunhs-green) !important;
+  opacity:.7 !important;
+}
+
+/* Flat appearance */
+.info-card,.feature-update,.events-card,
+.discover-strip > div,.media-card,.panel,.card,
+.paper,.featured-media,.school-mark,.float-card,
+input,textarea,select,button,.btn{
+  box-shadow:none !important;
+}
+
+/* Floating hero labels: WHITE cards with GREEN text */
+.hero .float-card{
+  background:var(--lunhs-white) !important;
+  color:var(--lunhs-green) !important;
+  border:1px solid var(--lunhs-green) !important;
+}
+
+/* Ensure reveal animations never leave text invisible */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,
+[data-reveal],.reveal *{
+  opacity:1 !important;
+  visibility:visible !important;
+}
