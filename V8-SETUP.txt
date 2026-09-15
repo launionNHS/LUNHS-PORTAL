@@ -1,0 +1,36 @@
+LUNHS PORTAL v8 - FULL ACCOUNT CREATION SETUP
+
+1. SUPABASE SQL
+Run v8-policy-update.sql in SQL Editor.
+
+2. CREATE THE EDGE FUNCTION
+Supabase Dashboard > Edge Functions > Deploy a new function.
+Name it: create-school-user
+Paste the complete contents of create-school-user-index.ts as the function code and deploy.
+
+IMPORTANT:
+The function uses Supabase's server-side secret environment automatically.
+Never copy an sb_secret or service_role key into config.js, GitHub, or browser JavaScript.
+
+3. GITHUB
+Replace index.html, styles.css, config.js, app.js and lunhs-logo.png in your lunhs repository.
+Commit and wait for GitHub Pages.
+Press Ctrl+F5.
+
+4. ADMIN WORKFLOW
+Admin > Users:
+- choose Student or Teacher
+- enter full name, school ID/LRN, email, temporary password
+- grade/section for students
+- Create Account
+
+Admin > Subjects:
+- add subjects
+
+Admin > Assignments:
+- select teacher
+- select subject
+- enter section
+- Assign
+
+Teacher grade-entry UI is the next component; v8 prepares secure accounts and assignments.

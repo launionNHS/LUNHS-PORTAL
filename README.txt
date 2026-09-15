@@ -1,16 +1,26 @@
-LUNHS School Portal v6
+LUNHS SCHOOL PORTAL v7
 
-UPLOAD TO GITHUB
-1. Extract this ZIP.
-2. Upload index.html, styles.css, config.js, app.js, and lunhs-logo.png to the ROOT of the GitHub repository named lunhs.
-3. Commit the changes.
-4. GitHub > repository Settings > Pages > Deploy from branch > main > /(root).
-5. Wait for deployment, then refresh the site with Ctrl+F5.
+WHAT'S NEW
+- Working Supabase email/password login
+- Admin dashboard tabs and database counts
+- Publish announcements/events
+- Add subjects
+- View user profiles
+- View teacher assignments
+- View grade records
+- Student own-grade dashboard
+- Teacher assignment dashboard
+- No secret/service_role key in browser code
 
-LOGIN
-Use the email/password created in Supabase Authentication.
-ADMIN-001 is the internal school ID, not the login username.
+INSTALL
+1. Run v7-policy-update.sql in Supabase SQL Editor once.
+2. Extract this ZIP.
+3. Replace the files in the ROOT of your GitHub 'lunhs' repository.
+4. Commit.
+5. Wait for GitHub Pages deployment.
+6. Open the site and press Ctrl+F5.
+7. Sign in using your Supabase Authentication email/password.
 
-SECURITY
-config.js contains only a browser-safe publishable key.
-Never put a Supabase secret/service_role key in GitHub or browser JavaScript.
+IMPORTANT
+Creating Auth users from a public GitHub Pages browser app requires a secure server-side function.
+For now, create student/teacher Auth accounts in Supabase Authentication, then create matching profile rows.
