@@ -391,3 +391,142 @@ setInterval(renderAdminPasswordResetPanel,1000);
     setTimeout(()=>document.getElementById('schoolLogin')?.focus({preventScroll:true}),500);
   },true);
 })();
+
+
+// v12 — Admin Publishing Studio
+(function(){
+  let editingId=null, currentMediaUrl='', currentThumbUrl='';
+
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function safeName(name){return String(name||'file').replace(/[^a-zA-Z0-9._-]/g,'-')}
+  async function uploadMedia(file){
+    if(!file)return '';
+    const path=`posts/${Date.now()}-${crypto.randomUUID()}-${safeName(file.name)}`;
+    const {error}=await sb.storage.from('school-media').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+    if(error)throw error;
+    return sb.storage.from('school-media').getPublicUrl(path).data.publicUrl;
+  }
+  async function removeStorageUrl(url){
+    if(!url || !url.includes('/school-media/'))return;
+    try{
+      const marker='/school-media/';
+      const path=decodeURIComponent(url.split(marker)[1].split('?')[0]);
+      await sb.storage.from('school-media').remove([path]);
+    }catch(_){}
+  }
+  function studioHost(){
+    return document.querySelector('#adminContent') || document.querySelector('#admin') || document.querySelector('main');
+  }
+  async function renderStudio(){
+    if(!me || me.role!=='admin')return;
+    const host=studioHost(); if(!host || document.getElementById('publishingStudio'))return;
+    const wrap=document.createElement('section');
+    wrap.id='publishingStudio';wrap.className='publishing-studio card';
+    wrap.innerHTML=`
+      <div class="studio-head"><div><span class="eyebrow">ADMINISTRATION</span><h2>Publishing Studio</h2><p>Create and manage Events, Student Updates, School Publications, Achievements, pictures and videos.</p></div>
+      <button id="newPostBtn" type="button">+ New Post</button></div>
+      <form id="postEditor" class="post-editor">
+        <input id="postId" type="hidden">
+        <div class="editor-grid">
+          <label>Category<select id="postCategory">
+            <option>Event</option><option>Students Update</option><option>School Publication</option><option>Achievement</option>
+          </select></label>
+          <label>Media Type<select id="postMediaType">
+            <option value="image">Picture</option><option value="video">Video Upload</option><option value="youtube">YouTube Link</option>
+          </select></label>
+        </div>
+        <label>Title<input id="postTitle" required maxlength="180" placeholder="Post title"></label>
+        <label>Description<textarea id="postBody" rows="6" placeholder="Write the story, event details, publication description, or announcement…"></textarea></label>
+        <div class="editor-grid">
+          <label>Picture / Video<input id="postMediaFile" type="file" accept="image/*,video/mp4,video/webm"></label>
+          <label>Cover / Thumbnail<input id="postThumbFile" type="file" accept="image/*"></label>
+        </div>
+        <label>YouTube or Media URL<input id="postMediaUrl" type="url" placeholder="https://…"></label>
+        <label class="publish-check"><input id="postPublished" type="checkbox" checked> Publish immediately</label>
+        <div class="editor-actions"><button id="savePostBtn" type="submit">Publish / Save Post</button><button id="cancelEditBtn" type="button" class="secondary">Clear</button></div>
+        <p id="postEditorMsg"></p>
+      </form>
+      <div class="studio-list-head"><h3>Manage Posts</h3><button id="refreshPostsBtn" type="button" class="secondary">Refresh</button></div>
+      <div id="adminPostsList" class="admin-posts-list"><p>Loading posts…</p></div>`;
+    host.appendChild(wrap);
+    bindStudio(); await loadAdminPosts();
+  }
+  function clearEditor(){
+    editingId=null;currentMediaUrl='';currentThumbUrl='';
+    document.getElementById('postEditor')?.reset();
+    const pub=document.getElementById('postPublished');if(pub)pub.checked=true;
+    const msg=document.getElementById('postEditorMsg');if(msg)msg.textContent='';
+  }
+  async function loadAdminPosts(){
+    const list=document.getElementById('adminPostsList');if(!list)return;
+    const {data,error}=await sb.from('posts').select('*').order('created_at',{ascending:false});
+    if(error){list.innerHTML=`<p>${esc(error.message)}</p>`;return}
+    if(!data?.length){list.innerHTML='<p>No posts yet. Create your first school post above.</p>';return}
+    list.innerHTML=data.map(p=>`
+      <article class="admin-post-card" data-id="${p.id}">
+        <div class="admin-post-thumb">${p.thumbnail_url?`<img src="${esc(p.thumbnail_url)}" alt="">`:p.media_url&&p.media_type==='image'?`<img src="${esc(p.media_url)}" alt="">`:'<span>MEDIA</span>'}</div>
+        <div class="admin-post-info"><span class="tag">${esc(p.category||p.type||'Post')}</span><h4>${esc(p.title)}</h4><p>${esc((p.body||'').slice(0,180))}</p><small>${p.published?'Published':'Draft'}</small></div>
+        <div class="admin-post-actions">
+          <button data-action="edit" type="button">Edit</button>
+          <button data-action="toggle" type="button">${p.published?'Unpublish':'Publish'}</button>
+          <button data-action="delete" type="button" class="danger">Delete</button>
+        </div>
+      </article>`).join('');
+    list._posts=data;
+  }
+  function bindStudio(){
+    document.getElementById('newPostBtn')?.addEventListener('click',()=>{clearEditor();document.getElementById('postTitle')?.focus()});
+    document.getElementById('cancelEditBtn')?.addEventListener('click',clearEditor);
+    document.getElementById('refreshPostsBtn')?.addEventListener('click',loadAdminPosts);
+
+    document.getElementById('postEditor')?.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const msg=document.getElementById('postEditorMsg'),save=document.getElementById('savePostBtn');
+      const title=document.getElementById('postTitle').value.trim(), body=document.getElementById('postBody').value.trim(),
+        category=document.getElementById('postCategory').value, media_type=document.getElementById('postMediaType').value,
+        mediaFile=document.getElementById('postMediaFile').files[0], thumbFile=document.getElementById('postThumbFile').files[0],
+        enteredUrl=document.getElementById('postMediaUrl').value.trim(), published=document.getElementById('postPublished').checked;
+      if(!title){msg.textContent='Enter a title.';return}
+      save.disabled=true;msg.textContent='Saving post…';
+      try{
+        let media_url=enteredUrl||currentMediaUrl,thumbnail_url=currentThumbUrl;
+        if(mediaFile)media_url=await uploadMedia(mediaFile);
+        if(thumbFile)thumbnail_url=await uploadMedia(thumbFile);
+        const payload={title,body,category,type:category==='Event'?'Event':'Announcement',media_type,media_url:media_url||null,thumbnail_url:thumbnail_url||null,published,author_id:me.id};
+        let error;
+        if(editingId)({error}=await sb.from('posts').update(payload).eq('id',editingId));
+        else ({error}=await sb.from('posts').insert(payload));
+        if(error)throw error;
+        msg.textContent=editingId?'Post updated successfully.':'Post created successfully.';
+        clearEditor();await loadAdminPosts();
+      }catch(err){msg.textContent=err.message||'Could not save post.'}
+      finally{save.disabled=false}
+    });
+
+    document.getElementById('adminPostsList')?.addEventListener('click',async e=>{
+      const btn=e.target.closest('button[data-action]');if(!btn)return;
+      const card=btn.closest('.admin-post-card'), id=Number(card.dataset.id), list=document.getElementById('adminPostsList'),
+        p=(list._posts||[]).find(x=>Number(x.id)===id);if(!p)return;
+      if(btn.dataset.action==='edit'){
+        editingId=id;currentMediaUrl=p.media_url||'';currentThumbUrl=p.thumbnail_url||'';
+        document.getElementById('postCategory').value=p.category||p.type||'Event';
+        document.getElementById('postMediaType').value=p.media_type||'image';
+        document.getElementById('postTitle').value=p.title||'';
+        document.getElementById('postBody').value=p.body||'';
+        document.getElementById('postMediaUrl').value=p.media_url||'';
+        document.getElementById('postPublished').checked=!!p.published;
+        document.getElementById('postEditorMsg').textContent='Editing existing post.';
+        document.getElementById('publishingStudio').scrollIntoView({behavior:'smooth'});
+      }else if(btn.dataset.action==='toggle'){
+        const {error}=await sb.from('posts').update({published:!p.published}).eq('id',id);
+        if(error)alert(error.message);else await loadAdminPosts();
+      }else if(btn.dataset.action==='delete'){
+        if(!confirm(`Delete "${p.title}"? This cannot be undone.`))return;
+        const {error}=await sb.from('posts').delete().eq('id',id);
+        if(error){alert(error.message);return}
+        await removeStorageUrl(p.media_url);await removeStorageUrl(p.thumbnail_url);await loadAdminPosts();
+      }
+    });
+  }
+  setInterval(renderStudio,900);
+})();
