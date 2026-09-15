@@ -920,3 +920,194 @@ footer *{color:var(--white)!important}
 
 /* Remove decorative color clutter */
 .orb{opacity:.12!important}
+
+
+/* ==========================================================
+   v15 — SIMPLE GREEN + WHITE THEME
+   No text shadows. Clean, flat school website.
+   ========================================================== */
+:root{
+  --green:#146B3A;
+  --white:#FFFFFF;
+}
+
+/* Global: remove text shadows and extra visual effects */
+*,*::before,*::after{
+  text-shadow:none !important;
+}
+html,body{
+  background:var(--white)!important;
+  color:var(--green)!important;
+}
+body,button,input,textarea,select{
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+/* Header */
+header{
+  background:var(--green)!important;
+  color:var(--white)!important;
+  border:0!important;
+  border-bottom:2px solid var(--white)!important;
+  box-shadow:none!important;
+}
+header *,header button{
+  color:var(--white)!important;
+  text-shadow:none!important;
+}
+header button{
+  background:transparent!important;
+  border:0!important;
+}
+header button:hover,header button:focus{
+  background:var(--white)!important;
+  color:var(--green)!important;
+}
+
+/* White main areas */
+main,#home,#announcements,#login,#dashboard,
+.home-page,.home-section,.media-hub,.updates-wrap{
+  background:var(--white)!important;
+  color:var(--green)!important;
+}
+.home-section h1,.home-section h2,.home-section h3,.home-section h4,
+.home-section p,.home-section li,.home-section small,
+#announcements h1,#announcements h2,#announcements h3,#announcements p,
+#login h1,#login p,#login label,
+#dashboard h1,#dashboard h2,#dashboard h3,#dashboard p{
+  color:var(--green)!important;
+  text-shadow:none!important;
+}
+
+/* Green feature areas */
+.hero,.hero-modern,
+.publication,
+.featured-media,.featured-screen,
+.home-cta{
+  background:var(--green)!important;
+  color:var(--white)!important;
+  box-shadow:none!important;
+}
+.hero *,
+.publication .publication-intro *,
+.featured-media h1,.featured-media h2,.featured-media h3,.featured-media h4,
+.featured-media p,.featured-media span,.featured-media small,.featured-media b,
+.featured-screen *,
+.home-cta *{
+  color:var(--white)!important;
+  text-shadow:none!important;
+}
+
+/* Cards */
+.info-card,.feature-update,.events-card,
+.discover-strip>div,.media-card,.panel,.card,
+.paper,.paper-front,.paper-back,
+.publishing-studio,.admin-post-card{
+  background:var(--white)!important;
+  color:var(--green)!important;
+  border:1px solid var(--green)!important;
+  box-shadow:none!important;
+}
+.info-card *, .feature-update *, .events-card *,
+.discover-strip>div *, .media-card *,
+.panel *, .card *, .paper *, .paper-front *, .paper-back *{
+  color:var(--green)!important;
+  text-shadow:none!important;
+}
+
+/* Publication paper remains white/green */
+.publication .paper,
+.publication .paper-front,
+.publication .paper-back{
+  background:var(--white)!important;
+}
+.publication .paper *,
+.publication .paper-front *,
+.publication .paper-back *{
+  color:var(--green)!important;
+}
+
+/* Labels/tags */
+.eyebrow,.tag,.kicker,.section-label{
+  color:var(--green)!important;
+}
+.hero .eyebrow,
+.publication .publication-intro .eyebrow,
+.featured-media .tag,
+.home-cta .eyebrow{
+  color:var(--white)!important;
+}
+
+/* Links */
+a{color:var(--green)!important}
+.hero a:not(.primary),
+.publication .publication-intro a,
+.featured-media a,
+.home-cta a{
+  color:var(--white)!important;
+}
+
+/* Buttons */
+.primary,.btn.primary,button.primary{
+  background:var(--green)!important;
+  color:var(--white)!important;
+  border:1px solid var(--green)!important;
+  box-shadow:none!important;
+}
+.hero .primary,.publication .publication-btn{
+  background:var(--white)!important;
+  color:var(--green)!important;
+  border:1px solid var(--white)!important;
+}
+.ghost,.btn.ghost,.secondary,button.secondary{
+  background:transparent!important;
+  color:var(--green)!important;
+  border:1px solid var(--green)!important;
+  box-shadow:none!important;
+}
+.hero .ghost{
+  color:var(--white)!important;
+  border-color:var(--white)!important;
+}
+
+/* Inputs */
+input,textarea,select{
+  background:var(--white)!important;
+  color:var(--green)!important;
+  border:1px solid var(--green)!important;
+  box-shadow:none!important;
+}
+input::placeholder,textarea::placeholder{
+  color:var(--green)!important;
+  opacity:.65!important;
+}
+
+/* Footer */
+footer{
+  background:var(--green)!important;
+  color:var(--white)!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+footer *{
+  color:var(--white)!important;
+  text-shadow:none!important;
+}
+
+/* Flat design: no card shadows */
+.card,.panel,.info-card,.feature-update,.events-card,
+.media-card,.paper,.school-mark,.float-card,.featured-media{
+  box-shadow:none!important;
+}
+
+/* Decorative floating elements simplified */
+.orb{display:none!important}
+.float-card,.school-mark{
+  box-shadow:none!important;
+}
+
+/* Keep content visible */
+.reveal,.reveal-up,.fade-in,.fade-up,.animate-on-scroll,[data-reveal]{
+  opacity:1!important;
+  visibility:visible!important;
+}
