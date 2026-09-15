@@ -52,3 +52,17 @@ async function saveGrade(studentId,subjectId,section){
  alert(error?'Could not save: '+error.message:'Grade saved successfully.');
 }
 (async()=>{let {data:{session}}=await sb.auth.getSession();if(session?.user)await openDashboard(session.user)})();
+
+const forgotLink=document.getElementById('forgotPassword');
+if(forgotLink) forgotLink.onclick=async(e)=>{
+  e.preventDefault();
+  const entered=String(document.getElementById('schoolLogin')?.value||'').trim();
+  if(!entered.includes('@')){
+    alert('For Administrator password recovery, enter the Administrator email in the login box first.');
+    return;
+  }
+  const redirectTo=new URL('reset-password.html',window.location.href).href;
+  const {error}=await sb.auth.resetPasswordForEmail(entered,{redirectTo});
+  if(error){alert(error.message);return;}
+  alert('Password recovery email requested. Open the newest recovery email and use its link.');
+};

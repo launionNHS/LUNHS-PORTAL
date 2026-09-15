@@ -1,0 +1,30 @@
+LUNHS PORTAL v10.2 — DUAL LOGIN RECOVERY
+
+LOGIN NOW ACCEPTS:
+• Existing Administrator: original Admin EMAIL + password
+• Students: LRN / School ID + password
+• Teachers: Employee / Teacher ID + password
+
+Students and teachers still do NOT need personal email addresses.
+
+HOW TO UPDATE
+1. In GitHub, open the lunhs repository.
+2. Replace index.html and app.js with the v10.2 files.
+3. You may also replace styles.css, config.js and lunhs-logo.png with the included copies.
+4. Commit the changes.
+5. Wait for GitHub Pages deployment.
+6. Open the site and press Ctrl+F5.
+
+ADMIN RECOVERY
+Use the ORIGINAL ADMIN EMAIL ADDRESS and the existing Admin password.
+Do NOT enter ADMIN-001 yet for the old Administrator account.
+
+STUDENT / TEACHER
+Use School ID/LRN/Employee ID + password.
+
+EDGE FUNCTION
+The included create-school-user-index.ts is retained for Student/Teacher account creation.
+If you already deployed the v10.1 function successfully, you do not need to redeploy it just for dual login.
+
+IMPORTANT
+Do not delete the existing Administrator from Supabase Authentication or public.profiles.
