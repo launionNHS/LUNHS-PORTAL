@@ -335,3 +335,35 @@ setInterval(renderAdminPasswordResetPanel,1000);
   });
   setActive();
 })();
+
+
+// v11.2 — Portal Login goes directly to the actual login box.
+(function(){
+  function findLoginBox(){
+    return document.querySelector('#loginForm') ||
+           document.querySelector('.login-card') ||
+           document.querySelector('.portal-login') ||
+           document.querySelector('form:has(input[type="password"])') ||
+           document.querySelector('#login');
+  }
+  function scrollToLoginBox(){
+    const box=findLoginBox(); if(!box)return;
+    const header=document.querySelector('header')||document.querySelector('nav');
+    const offset=(header?.getBoundingClientRect().height||0)+18;
+    const y=box.getBoundingClientRect().top+window.scrollY-offset;
+    window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+    setTimeout(()=>{
+      const first=box.querySelector('input:not([type="hidden"]):not([disabled])');
+      if(first) first.focus({preventScroll:true});
+      box.classList.add('login-focus-pulse');
+      setTimeout(()=>box.classList.remove('login-focus-pulse'),900);
+    },550);
+  }
+  document.addEventListener('click',e=>{
+    const el=e.target.closest('a,button'); if(!el)return;
+    const text=String(el.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');
+    if(['login','portal login','log in','sign in'].includes(text) && !el.closest('form')){
+      e.preventDefault(); e.stopImmediatePropagation(); scrollToLoginBox();
+    }
+  },true);
+})();

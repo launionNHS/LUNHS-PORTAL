@@ -110,3 +110,10 @@ nav .nav-active,header .nav-active{position:relative}
 nav .nav-active:after,header .nav-active:after{content:"";position:absolute;left:18%;right:18%;bottom:-7px;height:2px;background:#b99854;border-radius:2px;animation:navLine .3s ease}
 @keyframes navLine{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
+
+/* v11.2 login destination emphasis */
+.login-focus-pulse{animation:loginFocusPulse .85s ease}
+@keyframes loginFocusPulse{
+  0%,100%{box-shadow:inherit}
+  45%{box-shadow:0 0 0 5px rgba(185,152,84,.18),0 18px 45px rgba(16,43,78,.12)}
+}
