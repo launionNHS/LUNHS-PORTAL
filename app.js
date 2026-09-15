@@ -373,3 +373,21 @@ setInterval(renderAdminPasswordResetPanel,1000);
     addEventListener('load',()=>setTimeout(openPortalLogin,150));
   }
 })();
+
+
+// v11.6 — Portal Login is already visible; navigation only scrolls to it.
+(function(){
+  document.addEventListener('click',function(e){
+    const el=e.target.closest('a,button'); if(!el || el.closest('form'))return;
+    const t=String(el.textContent||'').trim().toLowerCase().replace(/\s+/g,' ');
+    if(t!=='portal login')return;
+    e.preventDefault();
+    const form=document.getElementById('loginForm');
+    const target=form?.closest('.panel,.card') || form || document.getElementById('login');
+    if(!target)return;
+    const header=document.querySelector('header');
+    const offset=(header?.getBoundingClientRect().height||0)+20;
+    window.scrollTo({top:Math.max(0,target.getBoundingClientRect().top+scrollY-offset),behavior:'smooth'});
+    setTimeout(()=>document.getElementById('schoolLogin')?.focus({preventScroll:true}),500);
+  },true);
+})();

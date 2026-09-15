@@ -117,3 +117,14 @@ nav .nav-active:after,header .nav-active:after{content:"";position:absolute;left
   0%,100%{box-shadow:inherit}
   45%{box-shadow:0 0 0 5px rgba(185,152,84,.18),0 18px 45px rgba(16,43,78,.12)}
 }
+
+/* v11.6 — Portal Login is permanently visible on the public page */
+#login{
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  position:relative !important;
+  scroll-margin-top:110px;
+}
+#login.view{display:block !important}
+#login #loginForm{display:block !important}
