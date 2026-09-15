@@ -214,3 +214,12 @@ document.addEventListener('click',async(e)=>{
 });
 
 setInterval(renderAdminPasswordResetPanel,1000);
+
+// v10.8 home scroll animation
+(function(){
+  const reveal=()=>document.querySelectorAll('.reveal').forEach(el=>{
+    const r=el.getBoundingClientRect();
+    if(r.top < innerHeight-70) el.classList.add('visible');
+  });
+  addEventListener('scroll',reveal,{passive:true}); addEventListener('load',reveal); reveal();
+})();

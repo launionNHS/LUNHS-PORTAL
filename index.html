@@ -3,8 +3,105 @@
 <body><header><div class="brand"><img src="lunhs-logo.png"><div><b>LA UNION NATIONAL HIGH SCHOOL</b><small>Official School Portal</small></div></div>
 <nav><button data-view="home">Home</button><button data-view="announcements">Announcements</button><button data-view="login" id="loginNav">Portal Login</button><button data-view="dashboard" id="dashNav" hidden>Dashboard</button><button id="logout" hidden>Logout</button></nav></header>
 <main>
-<section id="home" class="view active"><div class="hero"><h1>Welcome to LUNHS</h1><p>Official information and secure academic portal.</p><button class="primary" data-view="login">Open Portal</button></div>
-<div class="cards"><article><h2>Announcements</h2><p>School notices and events.</p></article><article><h2>Student Access</h2><p>Secure grade viewing.</p></article><article><h2>Teacher Access</h2><p>Assigned subjects and grade encoding.</p></article></div></section>
+
+<section id="home" class="home-page">
+  <div class="hero hero-modern">
+    <div class="hero-copy reveal">
+      <span class="eyebrow">LA UNION NATIONAL HIGH SCHOOL</span>
+      <h1>Learning today.<br><span>Leading tomorrow.</span></h1>
+      <p>Welcome to the official school portal of La Union National High School — a digital space for school updates, activities, achievements, publications, and our growing learning community.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#schoolUpdates">Explore School Updates</a>
+        <a class="btn ghost" href="#publication">School Publication</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong>Learn</strong><small>Quality Education</small></div>
+        <div><strong>Connect</strong><small>School Community</small></div>
+        <div><strong>Grow</strong><small>Skills & Character</small></div>
+      </div>
+    </div>
+    <div class="hero-visual reveal">
+      <div class="orb orb-a"></div><div class="orb orb-b"></div>
+      <div class="school-mark">
+        <img src="lunhs-logo.png" alt="LUNHS Logo">
+        <span>Official School Portal</span>
+      </div>
+      <div class="float-card fc-one">📢 Announcements</div>
+      <div class="float-card fc-two">🏆 Achievements</div>
+      <div class="float-card fc-three">📚 Learning</div>
+    </div>
+  </div>
+
+  <section class="home-section reveal">
+    <div class="section-heading">
+      <div><span class="eyebrow">AT A GLANCE</span><h2>Welcome to LUNHS</h2></div>
+      <p>A school community where learners are encouraged to discover, participate, create, and succeed.</p>
+    </div>
+    <div class="info-grid">
+      <article class="info-card"><span class="info-icon">🎓</span><h3>Student-Centered Learning</h3><p>Supporting meaningful learning experiences, responsible citizenship, and lifelong skills.</p></article>
+      <article class="info-card"><span class="info-icon">💻</span><h3>Technology & Innovation</h3><p>Using digital resources and school facilities to strengthen teaching and learning.</p></article>
+      <article class="info-card"><span class="info-icon">🤝</span><h3>Community Partnership</h3><p>Building stronger connections among learners, families, teachers, and community partners.</p></article>
+    </div>
+  </section>
+
+  <section id="schoolUpdates" class="home-section updates-wrap reveal">
+    <div class="section-heading">
+      <div><span class="eyebrow">WHAT'S HAPPENING</span><h2>Students Update & Events</h2></div>
+      <p>Stay informed about student achievements, campus activities, announcements, programs, and upcoming school events.</p>
+    </div>
+    <div class="update-grid">
+      <article class="feature-update">
+        <span class="tag">STUDENTS UPDATE</span>
+        <h3>Celebrating student learning and achievement</h3>
+        <p>Highlights from academic activities, competitions, organizations, school programs, and other learner accomplishments can be featured here.</p>
+        <a href="#announcements">View latest updates →</a>
+      </article>
+      <article class="feature-update events-card">
+        <span class="tag">EVENTS</span>
+        <h3>Be part of our school activities</h3>
+        <p>See important school dates, programs, celebrations, competitions, training activities, and community events.</p>
+        <a href="#announcements">See announcements & events →</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="publication" class="home-section publication reveal">
+    <div class="publication-intro">
+      <span class="eyebrow">CAMPUS JOURNALISM</span>
+      <h2>School Publication</h2>
+      <p>A dedicated space for campus journalism — featuring student stories, school news, editorials, feature articles, photographs, literary works, and future digital issues.</p>
+      <a class="btn publication-btn" href="#publicationIssues">Browse Publication</a>
+    </div>
+    <div id="publicationIssues" class="publication-showcase">
+      <div class="paper paper-back"></div>
+      <div class="paper paper-front">
+        <span>LUNHS</span>
+        <h3>School Publication</h3>
+        <p>Voices • Stories • Campus News</p>
+        <small>Digital issue space</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section reveal">
+    <div class="section-heading">
+      <div><span class="eyebrow">DISCOVER OUR SCHOOL</span><h2>Learning Beyond the Classroom</h2></div>
+      <p>Explore the people, spaces, activities, and facilities that make up the LUNHS learning environment.</p>
+    </div>
+    <div class="discover-strip">
+      <div>🔬 <b>Laboratories</b><span>Spaces for exploration and practical learning.</span></div>
+      <div>🏫 <b>School Offices</b><span>Services supporting learners and the school community.</span></div>
+      <div>🎨 <b>Student Activities</b><span>Programs that develop talent, leadership, and teamwork.</span></div>
+      <div>🏅 <b>Achievements</b><span>Celebrating milestones of learners and teachers.</span></div>
+    </div>
+  </section>
+
+  <section class="home-cta reveal">
+    <img src="lunhs-logo.png" alt="">
+    <div><span class="eyebrow">LA UNION NATIONAL HIGH SCHOOL</span><h2>Learn. Participate. Achieve.</h2><p>Stay connected with our school community through the LUNHS online portal.</p></div>
+  </section>
+</section>
+
 <section id="announcements" class="view"><h1>Announcements & Events</h1><div id="publicPosts"></div></section>
 <section id="login" class="view"><div class="panel narrow"><h1>Portal Login</h1><form id="loginForm"><label>Email or School ID / LRN<input id="schoolLogin" type="text" autocomplete="username" placeholder="Admin email or School ID / LRN" required></label><label>Password<input id="password" type="password" required></label><button class="primary">Sign In</button></form><p><a href="#" id="adminForgot">Administrator forgot password?</a></p><p id="loginMsg"></p></div></section>
 <section id="dashboard" class="view"><div class="dashhead"><div><h1 id="welcome">Dashboard</h1><p id="identity"></p></div></div><div id="dashboardBody"></div></section>
