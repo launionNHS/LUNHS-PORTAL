@@ -2187,3 +2187,123 @@ input::placeholder,textarea::placeholder{
 .portal-panel input{display:block;width:100%;margin-top:7px;padding:13px}
 .portal-panel button{width:100%;padding:14px}
 @media(max-width:850px){.page-grid{grid-template-columns:1fr}.page-hero{padding-top:45px}}
+
+
+/* ==========================================================
+   v22.1 — HEADER / NAVIGATION FIT FIX
+   ========================================================== */
+
+/* Give the header enough horizontal room without overlapping */
+.reference-header{
+  min-height:82px !important;
+  padding:8px 2.2vw !important;
+  display:grid !important;
+  grid-template-columns:auto minmax(0,1fr) !important;
+  align-items:center !important;
+  column-gap:24px !important;
+  overflow:visible !important;
+}
+
+/* School identity: logo + school name on ONE line */
+.reference-header .brand{
+  min-width:max-content !important;
+  width:auto !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:10px !important;
+  margin:0 !important;
+}
+.reference-header .brand img{
+  width:58px !important;
+  height:58px !important;
+  object-fit:contain !important;
+  flex:0 0 58px !important;
+  background:transparent !important;
+}
+.reference-header .brand b{
+  display:block !important;
+  white-space:nowrap !important;
+  font-size:clamp(16px,1.25vw,22px) !important;
+  line-height:1.05 !important;
+}
+.reference-header .brand small{
+  display:block !important;
+  white-space:nowrap !important;
+  font-size:10px !important;
+  margin-top:5px !important;
+}
+
+/* Navigation fits into the available width */
+.reference-header nav{
+  width:100% !important;
+  min-width:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:nowrap !important;
+  gap:clamp(2px,.35vw,7px) !important;
+  overflow:visible !important;
+}
+.reference-header nav a,
+.reference-header nav button{
+  flex:0 1 auto !important;
+  min-width:0 !important;
+  min-height:42px !important;
+  padding:0 clamp(6px,.55vw,11px) !important;
+  font-size:clamp(11px,.82vw,14px) !important;
+  white-space:nowrap !important;
+}
+
+/* Portal Login gets reserved space and cannot overlap Contact */
+.reference-header nav .portal-login-btn{
+  flex:0 0 auto !important;
+  margin-left:8px !important;
+  padding:0 15px !important;
+  min-width:122px !important;
+  border-radius:9px !important;
+  position:static !important;
+  transform:none !important;
+  z-index:auto !important;
+}
+
+/* Intermediate screens: wrap navigation below identity rather than overlap */
+@media(max-width:1280px){
+  .reference-header{
+    grid-template-columns:1fr !important;
+    row-gap:8px !important;
+    padding:10px 18px !important;
+  }
+  .reference-header .brand{
+    justify-self:center !important;
+  }
+  .reference-header nav{
+    justify-content:center !important;
+    flex-wrap:wrap !important;
+  }
+}
+
+/* Phones */
+@media(max-width:700px){
+  .reference-header .brand b{
+    font-size:16px !important;
+  }
+  .reference-header .brand small{
+    font-size:9px !important;
+  }
+  .reference-header .brand img{
+    width:48px !important;
+    height:48px !important;
+    flex-basis:48px !important;
+  }
+  .reference-header nav{
+    gap:3px !important;
+  }
+  .reference-header nav a{
+    font-size:12px !important;
+    padding:0 7px !important;
+  }
+  .reference-header nav .portal-login-btn{
+    min-width:auto !important;
+    padding:0 12px !important;
+  }
+}
