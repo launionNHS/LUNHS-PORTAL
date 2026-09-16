@@ -1,0 +1,24 @@
+LUNHS PORTAL v12.3 — GLOBAL TEXT VISIBILITY FIX
+
+This is a site-wide correction, not only Announcements.
+
+Fixed:
+- Home page headings, paragraphs and card text
+- Students Update & Events
+- School Publication
+- Learning Beyond the Classroom
+- Laboratories / Offices / Activities / Achievements
+- Media Hub text
+- Announcements
+- Portal Login
+- Dashboard/Admin panels
+- Form labels and placeholders
+- White text on navy/dark sections
+- Navy/dark text on white/ivory sections
+- Reveal-animation text that could remain opacity:0 if JavaScript failed
+
+INSTALL:
+Replace ONLY styles.css in the LUNHS-PORTAL GitHub repository.
+Commit changes, wait for GitHub Pages deployment, then Ctrl+F5.
+
+No Supabase, SQL, Storage, or Edge Function changes are required.

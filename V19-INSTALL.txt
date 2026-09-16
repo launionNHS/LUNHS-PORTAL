@@ -1,0 +1,19 @@
+LUNHS PORTAL v19 — EXACT APPROVED BANNER DESIGN
+
+The approved website design image is now used directly as the homepage hero banner.
+
+FILES TO REPLACE/UPLOAD:
+1. styles.css
+2. lunhs-home-banner.png
+
+IMPORTANT:
+Both files must be placed in the ROOT of the LUNHS-PORTAL repository,
+beside index.html.
+
+The old HTML hero content is hidden so it will not duplicate the words/logo
+already contained in the banner image.
+
+No Supabase, SQL, login, grade, teacher, student, or admin changes.
+
+After uploading:
+Commit changes -> wait for GitHub Pages -> Ctrl+F5.

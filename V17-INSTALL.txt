@@ -1,0 +1,19 @@
+LUNHS PORTAL v17 — BIGGER ANIMATED HERO LOGO
+
+Applied to the existing website:
+- Larger logo side
+- Large circular green rings around school seal
+- Gentle floating logo animation
+- Slow rotating outer ring
+- Soft pulsing inner ring
+- Animated Announcements, Achievements and Learning cards
+- Responsive mobile layout
+- Keeps simple green/white theme
+- No text shadows
+- No card shadows
+
+INSTALL:
+Replace ONLY styles.css in the LUNHS-PORTAL GitHub repository.
+Commit the file, wait for GitHub Pages deployment, then Ctrl+F5.
+
+No Supabase, SQL, login, grades, or database changes.

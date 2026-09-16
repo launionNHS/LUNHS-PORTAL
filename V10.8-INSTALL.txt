@@ -1,0 +1,17 @@
+LUNHS PORTAL v10.8 — ANIMATED INFORMATIVE HOME
+
+Changes:
+- Redesigned Home page with a more informative animated hero.
+- Added school overview / learning / technology / community sections.
+- Removed the old Student Access and Teacher Access feature boxes from Home.
+- Replaced them with Students Update and Events.
+- Added a dedicated School Publication / Campus Journalism area.
+- Added laboratories, school offices, student activities, and achievements discovery cards.
+- Added responsive scroll/floating animations with reduced-motion accessibility support.
+- Authentication, Admin password reset, Student/Teacher password features from v10.7 are preserved.
+
+INSTALL:
+Upload/replace the website files in your LUNHS GitHub repository.
+Important files changed: index.html, styles.css, app.js.
+Keep config.js and your Supabase Edge Functions.
+Commit, wait for GitHub Pages, then Ctrl+F5.

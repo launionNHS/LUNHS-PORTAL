@@ -1,0 +1,28 @@
+LUNHS PORTAL v10.9 — SCHOOL MEDIA HUB
+
+NEW:
+- Video-platform-inspired School Media Hub, branded for LUNHS.
+- Featured 16:9 media viewer.
+- Thumbnail/card feed.
+- All / Events / Students Update / School Publication / Achievements filters.
+- Search.
+- Smooth hover, reveal, scrolling, player and card transitions.
+- Supports images, direct video URLs, and YouTube links in the media feed.
+- Responsive mobile layout.
+- Existing v10.8/v10.7 authentication and password features are preserved.
+
+INSTALL:
+1. Upload/replace index.html, styles.css and app.js in GitHub.
+2. Run V10.9-MEDIA-SQL.sql ONCE in Supabase SQL Editor.
+3. Keep your existing Edge Functions.
+4. Commit GitHub changes, wait for Pages, then Ctrl+F5.
+
+MEDIA STORAGE:
+The SQL creates a public Supabase Storage bucket named school-media.
+Only authenticated Admin users are permitted by policy to upload/update/delete objects.
+Public visitors can view published media.
+
+NOTE:
+The public Media Hub is ready to display post fields:
+category, media_type, media_url, thumbnail_url.
+Existing text-only posts still work.

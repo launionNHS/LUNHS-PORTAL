@@ -1,0 +1,20 @@
+LUNHS PORTAL v14 — SIMPLE 3-COLOR THEME
+
+Only three main colors:
+NAVY BLUE #0B2447
+GOLD      #B99854
+WHITE     #FFFFFF
+
+Design:
+- White main page for clean readability
+- Navy header, hero, publication feature, featured media, CTA and footer
+- White cards with thin gold borders
+- Navy text on white
+- White text on navy
+- Gold only for accents, labels, borders and primary buttons
+- Removed heavy shadows/color clutter
+
+INSTALL:
+Replace ONLY styles.css in the LUNHS-PORTAL repository.
+Commit, wait for GitHub Pages, then Ctrl+F5.
+No Supabase or SQL changes.

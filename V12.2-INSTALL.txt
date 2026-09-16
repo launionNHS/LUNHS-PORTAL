@@ -1,0 +1,19 @@
+LUNHS Portal v12.2 — TEXT VISIBILITY FIX
+
+The live Announcements section was checked. The section exists, but the elegant theme introduced low-contrast/inherited text colors in some areas.
+
+FIXES:
+- Dark readable text on Announcements
+- Navy headings
+- Improved paragraph and small-text contrast
+- White cards with readable content
+- Correct link/tag colors
+- Login and Dashboard text contrast
+- Keeps white text on dark navy header/hero/footer
+- Removes problematic low-opacity text
+
+INSTALL:
+Replace styles.css in the LUNHS-PORTAL GitHub repository.
+Commit -> wait for GitHub Pages -> Ctrl+F5.
+
+No SQL/Supabase changes.

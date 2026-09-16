@@ -1,0 +1,18 @@
+LUNHS PORTAL v16 — SIMPLE CLEAN THEME
+
+Simplified:
+- Main background: white
+- Normal text: dark/black
+- Headings and accents: green
+- Header/footer: green with white text
+- White cards with simple green borders
+- No text shadows
+- No card shadows
+- No section-by-section contrasting colors
+- Hero is white and simple
+- Decorative color effects removed
+
+INSTALL:
+Replace ONLY styles.css in LUNHS-PORTAL.
+Commit, wait for GitHub Pages, then Ctrl+F5.
+No Supabase or SQL changes.

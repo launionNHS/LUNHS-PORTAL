@@ -2169,3 +2169,21 @@ input::placeholder,textarea::placeholder{
     background-position:center !important;
   }
 }
+
+/* v22 MULTI-PAGE */
+.reference-header nav a.active{border-bottom:2px solid #fff!important}
+.standalone-page{min-height:calc(100vh - 160px);background:#fff!important}
+.page-hero{padding:70px max(24px,8vw) 55px;background:#f7fbf8!important;border-bottom:1px solid #dcebe2}
+.page-hero span{font-size:13px;font-weight:800;letter-spacing:2px;color:#146B3A!important}
+.page-hero h1{font:700 clamp(42px,6vw,76px)/1 Georgia,serif;margin:12px 0 18px;color:#146B3A!important}
+.page-hero p{max-width:850px;font-size:19px;line-height:1.7;color:#333!important}
+.page-content{max-width:1180px;margin:auto;padding:55px 24px 80px}
+.page-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.page-grid article,.news-item,.contact-card,.empty-state{border:1px solid #d5e4da;background:#fff;padding:28px;margin-bottom:18px}
+.page-grid h2,.news-item h2,.contact-card h2,.empty-state h2{color:#146B3A!important}
+.news-item>span{font-size:12px;font-weight:800;letter-spacing:1px;color:#146B3A!important}
+.portal-panel{max-width:520px;margin:auto}
+.portal-panel label{display:block;margin:18px 0;color:#222!important}
+.portal-panel input{display:block;width:100%;margin-top:7px;padding:13px}
+.portal-panel button{width:100%;padding:14px}
+@media(max-width:850px){.page-grid{grid-template-columns:1fr}.page-hero{padding-top:45px}}

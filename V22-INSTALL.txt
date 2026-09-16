@@ -1,0 +1,18 @@
+LUNHS Portal v22 — Multi-Page Website
+
+Separate pages:
+Home: index.html
+About: about.html
+Announcements: announcements.html
+Publications: publications.html
+Gallery: gallery.html
+Academics: academics.html
+Downloads: downloads.html
+Contact: contact.html
+Portal Login: portal.html
+
+Announcements/Publications/Gallery use your existing Supabase published posts.
+
+INSTALL:
+Upload/replace ALL files from this ZIP into the root of the LUNHS-PORTAL GitHub repository.
+No SQL/database changes required.

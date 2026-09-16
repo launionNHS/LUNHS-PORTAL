@@ -1,0 +1,16 @@
+LUNHS v11.3 — PORTAL LOGIN VISIBILITY FIX
+
+Why the previous version failed:
+The Login section uses the site's .view system and is hidden until it becomes active.
+The previous direct-scroll code tried to scroll to the login form while it was still hidden.
+
+v11.3 fixes this:
+1. Click Portal Login.
+2. Login view becomes active/visible.
+3. Browser scrolls directly to the Portal Login box.
+4. School ID/LRN/Admin email field receives focus.
+
+INSTALL:
+Replace app.js in GitHub with this v11.3 app.js.
+No Supabase, SQL, or Edge Function changes are required.
+Commit, wait for GitHub Pages, then Ctrl+F5.

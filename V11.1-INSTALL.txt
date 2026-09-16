@@ -1,0 +1,15 @@
+LUNHS PORTAL v11.1 — ONE-PAGE NAVIGATION
+
+Updated navigation:
+- Home smoothly scrolls to the Home portion.
+- Announcements smoothly scrolls to the Announcements portion.
+- Login smoothly scrolls to the Login/Portal portion.
+- Navigation highlights the active section while scrolling.
+- Fixed-header offset prevents headings from being hidden.
+- Formal/elegant v11 design and v10.9 Media Hub are retained.
+- Supabase authentication/password functions are unchanged.
+
+INSTALL:
+Replace index.html, app.js, and styles.css in your GitHub repository.
+Keep config.js and both Supabase Edge Functions unchanged.
+Commit, wait for GitHub Pages to deploy, then press Ctrl+F5.

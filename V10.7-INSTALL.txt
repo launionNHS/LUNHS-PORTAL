@@ -1,0 +1,45 @@
+LUNHS PORTAL v10.7 — ADMIN PASSWORD RESET FIX
+
+THIS VERSION FIXES THE ADMIN RESET WORKFLOW.
+
+NEW ADMIN PANEL
+Admin sees a dedicated Password Management panel containing:
+- Student/Teacher selector
+- New Password
+- Confirm Password
+- Reset Selected User Password
+
+INSTALL — BOTH STEPS ARE REQUIRED
+
+STEP 1: GITHUB
+Replace app.js with the v10.7 app.js.
+Commit and wait for GitHub Pages.
+Press Ctrl+F5.
+
+STEP 2: SUPABASE EDGE FUNCTION
+Open:
+Edge Functions > reset-school-user-password
+
+Replace ALL existing code with:
+reset-school-user-password-index.ts
+
+Deploy it.
+
+DO NOT create a different function name.
+It must be exactly:
+reset-school-user-password
+
+TEST
+1. Sign in as Administrator.
+2. Open the Admin dashboard.
+3. Find Password Management.
+4. Select a Student or Teacher.
+5. Enter a new password of at least 8 characters.
+6. Enter it again.
+7. Click Reset Selected User Password.
+8. Log out or use a private/incognito window.
+9. Test the selected user with the SAME LRN/School ID/Teacher ID + NEW password.
+
+NO EMAIL IS REQUIRED FOR STUDENT/TEACHER RESET.
+
+Administrator email recovery remains separate.

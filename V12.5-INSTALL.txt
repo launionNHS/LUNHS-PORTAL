@@ -1,0 +1,25 @@
+LUNHS PORTAL v12.5 — BLUE BACKGROUND TEXT CONTRAST FIX
+
+The live site was checked again. The issue is that previous global CSS made some headings/text dark blue even when their parent section has a blue/dark background.
+
+v12.5 explicitly separates:
+DARK/BLUE AREAS -> WHITE TEXT
+LIGHT/WHITE AREAS -> DARK NAVY TEXT
+
+Specifically corrected:
+- Main hero
+- Students Update card
+- Events card
+- School Publication blue area
+- Featured Media
+- Bottom Learn.Participate.Achieve CTA
+- Floating hero cards
+- Publication paper exception
+- Media cards exception
+- Normal white Home sections
+
+INSTALL:
+Replace ONLY styles.css in the LUNHS-PORTAL GitHub repository.
+Commit -> wait for GitHub Pages -> Ctrl+F5.
+
+No SQL, Supabase, Storage, or Edge Function changes.

@@ -1,0 +1,21 @@
+LUNHS PORTAL v12.4 — DEFINITIVE TEXT READABILITY FIX
+
+I rechecked the live site's full content, including:
+Home, Students Update & Events, School Publication, Learning Beyond the Classroom,
+Media Hub, Announcements, Portal Login and Dashboard.
+
+This version uses explicit high-contrast colors instead of relying on inherited colors:
+- White/light areas: dark navy headings + dark blue-gray body text
+- Dark navy areas: white text
+- Gold labels darkened for readability
+- Forms/placeholders made readable
+- Home cards explicitly protected from older white-text rules
+- Reveal/fade effects cannot leave content invisible
+
+INSTALL:
+Replace ONLY styles.css in your GitHub LUNHS-PORTAL repository.
+Commit changes.
+Wait for GitHub Pages.
+Press Ctrl+F5.
+
+No SQL, Supabase, Storage or Edge Function changes.

@@ -1,0 +1,27 @@
+LUNHS PORTAL v12 — ADMIN PUBLISHING STUDIO
+
+Administrator can now:
+- Create Event posts
+- Create Students Update posts
+- Create School Publication posts
+- Create Achievement posts
+- Add title and full description
+- Upload a picture
+- Upload MP4/WebM video
+- Upload a separate cover/thumbnail
+- Paste a YouTube/media URL
+- Save as Draft or Publish immediately
+- Edit existing posts
+- Publish/Unpublish posts
+- Delete posts and their uploaded media
+
+INSTALL:
+1. Upload/replace app.js and styles.css from v12 in the GitHub LUNHS-PORTAL repository.
+2. Run V12-PUBLISHING-SQL.sql ONCE in Supabase SQL Editor.
+3. Keep existing Edge Functions unchanged.
+4. Commit GitHub changes, wait for Pages, Ctrl+F5.
+5. Sign in as Administrator. Publishing Studio appears in the Admin area.
+
+SECURITY:
+Only authenticated users whose profiles.role is admin can create/update/delete posts or upload/delete school media.
+Public visitors can view published posts/media.

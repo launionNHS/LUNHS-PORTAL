@@ -1,0 +1,19 @@
+LUNHS PORTAL v11.5 — CLEAN PORTAL LOGIN FIX
+
+The live page was checked and the Portal Login form exists.
+The real problem was multiple older navigation patches in app.js intercepting the same Portal Login click.
+
+v11.5 removes those stacked patches and uses ONE navigation controller.
+
+EXPECTED:
+Portal Login -> reveals Portal Login section -> scrolls to login box -> focuses ID/LRN/Admin email field.
+Home -> Home section.
+Announcements -> Announcements section.
+
+INSTALL:
+Replace ONLY app.js in the LUNHS-PORTAL GitHub repository.
+Commit changes.
+Wait for GitHub Pages.
+Hard refresh with Ctrl+F5.
+
+No Supabase, SQL, Storage, or Edge Function changes.

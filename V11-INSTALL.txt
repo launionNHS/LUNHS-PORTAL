@@ -1,0 +1,18 @@
+LUNHS PORTAL v11 — FORMAL & ELEGANT HOME
+
+Design refinement:
+- Formal institutional visual style.
+- Deep navy, restrained gold, white and warm neutral palette.
+- Elegant serif headings with clean readable body text.
+- More restrained animations and transitions.
+- Refined official-looking hero and school seal presentation.
+- Cleaner cards, borders, spacing and shadows.
+- Students Update, Events, School Publication and Media Hub retained.
+- Media/video features from v10.9 retained.
+- Authentication and password management retained.
+
+INSTALL:
+Replace styles.css from this package.
+For a complete synchronized copy, you may upload all package files.
+Keep Supabase Edge Functions unchanged.
+Commit GitHub changes and Ctrl+F5 after GitHub Pages updates.

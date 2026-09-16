@@ -1,0 +1,21 @@
+LUNHS v11.6 — ALWAYS-VISIBLE PORTAL LOGIN
+
+The live website source already contains the Portal Login form, but CSS/view logic can hide it visually.
+
+This version fixes that at the CSS level:
+- Portal Login section is permanently visible on the public page.
+- Portal Login navigation scrolls directly to the login form.
+- It no longer depends on activating/hiding .view sections.
+
+UPLOAD THESE 3 FILES TO GITHUB:
+1. index.html
+2. styles.css
+3. app.js
+
+IMPORTANT:
+Do not replace only app.js this time. styles.css is required for the visibility fix.
+
+Then:
+Commit changes -> wait for GitHub Pages -> Ctrl+F5.
+
+No Supabase/SQL/Edge Function changes.

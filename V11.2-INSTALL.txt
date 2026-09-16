@@ -1,0 +1,6 @@
+LUNHS v11.2
+Portal Login now scrolls directly to the actual login form/card and automatically focuses the first login field.
+
+Replace app.js and styles.css in GitHub.
+No Supabase or Edge Function changes are required.
+Commit, wait for GitHub Pages, then Ctrl+F5.

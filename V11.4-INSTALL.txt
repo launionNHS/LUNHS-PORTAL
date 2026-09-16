@@ -1,0 +1,20 @@
+LUNHS PORTAL v11.4 — LIVE SITE PORTAL LOGIN FIX
+
+Verified live site:
+https://lolitodeloso-afk.github.io/LUNHS-PORTAL/
+
+The live page contains:
+- Portal Login button in the top navigation
+- Portal Login form below Announcements & Events
+
+FIX:
+Portal Login now overrides older navigation handlers, makes the actual login section visible, scrolls directly to the form, and focuses the School ID/LRN/Admin email field.
+
+INSTALL:
+1. Replace ONLY app.js in the LUNHS-PORTAL GitHub repository.
+2. Commit the change.
+3. Wait for GitHub Pages deployment.
+4. Open the live site and press Ctrl+F5.
+5. Click Portal Login.
+
+No SQL, Supabase, Storage, or Edge Function changes are required.

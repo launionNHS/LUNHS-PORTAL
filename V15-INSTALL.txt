@@ -1,0 +1,24 @@
+LUNHS PORTAL v15 — SIMPLE GREEN & WHITE
+
+Colors:
+GREEN #146B3A
+WHITE #FFFFFF
+
+Changes:
+- Only green and white theme
+- No text shadows
+- No card shadows
+- Flat, clean design
+- White sections use green text
+- Green sections use white text
+- Simple green borders
+- Simplified navigation and buttons
+- Removed decorative hero orbs
+
+INSTALL:
+Replace ONLY styles.css in LUNHS-PORTAL.
+Commit changes.
+Wait for GitHub Pages.
+Press Ctrl+F5.
+
+No SQL or Supabase changes.

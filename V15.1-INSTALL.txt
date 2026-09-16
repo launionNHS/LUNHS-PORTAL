@@ -1,0 +1,30 @@
+LUNHS PORTAL v15.1 — READABILITY FIX
+
+I checked the live page content and applied explicit contrast rules.
+
+RULE:
+WHITE BACKGROUND = GREEN TEXT
+GREEN BACKGROUND = WHITE TEXT
+
+Also fixed:
+- Hero heading and paragraph
+- Hero buttons and floating labels
+- Welcome cards
+- Students Update and Events cards
+- School Publication and its white paper
+- Learning Beyond the Classroom
+- Media Hub, featured media, media cards and filter buttons
+- Bottom CTA
+- Announcements
+- Portal Login
+- Dashboard
+- Forms/placeholders
+- No text shadows
+- No card shadows
+- Reveal animations cannot hide text
+
+INSTALL:
+Replace ONLY styles.css in the LUNHS-PORTAL GitHub repository.
+Commit changes, wait for GitHub Pages, then press Ctrl+F5.
+
+No Supabase/SQL changes are required.

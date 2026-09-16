@@ -1,0 +1,18 @@
+LUNHS PORTAL v12.1 — ELEGANT SCHOOL THEME
+
+Design:
+- Scholarly deep navy
+- Institutional blue
+- Restrained antique gold accents
+- Warm ivory/paper backgrounds
+- Formal serif headings
+- Cleaner rectangular academic cards
+- Softer shadows and borders
+- Formal Admin Publishing Studio styling
+- Responsive/mobile styling retained
+
+INSTALL:
+Replace styles.css in your LUNHS-PORTAL GitHub repository with the v12.1 styles.css.
+You may also upload the full package if preferred.
+No Supabase SQL or Edge Function changes are required.
+After committing, wait for GitHub Pages and press Ctrl+F5.

@@ -1,0 +1,32 @@
+LUNHS PORTAL v21 — EXACT APPROVED HOMEPAGE
+
+This version matches the approved screenshot closely while keeping the website functional.
+
+REAL HEADER:
+- School logo/name
+- Home
+- About
+- Announcements
+- Publications
+- Gallery
+- Academics
+- Downloads
+- Contact
+- Portal Login
+
+HERO:
+- Uses the approved artwork (cropped below its mock header)
+- Existing duplicate hero HTML is hidden
+- Explore School Updates is clickable
+- School Publication is clickable
+- Announcements on the hero is clickable
+
+UPLOAD/REPLACE:
+1. index.html
+2. styles.css
+3. lunhs-exact-home-hero.jpg
+
+Keep all three in the root of LUNHS-PORTAL beside app.js/config.js.
+
+No Supabase, SQL, grades, authentication, or account changes.
+After upload: Commit -> wait for GitHub Pages -> Ctrl+F5.

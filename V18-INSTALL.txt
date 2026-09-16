@@ -1,0 +1,22 @@
+LUNHS PORTAL v18 — APPROVED HERO DESIGN
+
+This version applies the approved reference style to the actual website hero:
+- Very large right-side LUNHS seal
+- Multiple green circular/sweeping rings
+- Animated rotating dotted ring
+- Floating Announcements, Achievements, and Learning cards
+- Large editorial-style hero heading
+- Green “Learning today.” and slate “Leading tomorrow.”
+- Simple green/white buttons
+- Learn / Connect / Grow row retained
+- Responsive mobile layout
+- No text shadows
+- No heavy shadows
+- Existing website content and portal functions retained
+
+INSTALL:
+Replace ONLY styles.css in your LUNHS-PORTAL GitHub repository.
+Commit the change, wait for GitHub Pages deployment, then Ctrl+F5.
+
+The included hero-design-reference.png is only a reference image.
+No Supabase, SQL, authentication, grades, or database changes.

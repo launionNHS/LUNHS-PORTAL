@@ -1,0 +1,25 @@
+LUNHS PORTAL v20 — ANIMATED GIF BANNER
+
+The animated GIF is now used as the homepage hero/banner background.
+
+UPLOAD/REPLACE THESE TWO FILES IN THE ROOT OF LUNHS-PORTAL:
+1. styles.css
+2. lunhs-home-banner-animated.gif
+
+Keep both beside index.html.
+
+The old HTML hero content is hidden so it does not duplicate the text/logo in the GIF.
+
+No changes to:
+- Supabase
+- Portal Login
+- Admin
+- Teachers
+- Students
+- Grades
+- Database
+- Announcements
+- Media Hub
+
+After upload:
+Commit changes -> wait for GitHub Pages -> Ctrl+F5.

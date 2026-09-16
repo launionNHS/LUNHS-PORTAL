@@ -1,0 +1,16 @@
+LUNHS PORTAL v12.6 — ADAPTIVE CONTRAST
+
+Design rule:
+WHITE / IVORY / LIGHT BACKGROUND = DARK NAVY TEXT
+NAVY / BLUE / DARK BACKGROUND = WHITE / LIGHT TEXT
+
+Nested exceptions are handled too:
+- light publication paper inside blue publication section -> dark text
+- blue Students Update/Event cards inside light section -> light text
+- light Media cards -> dark text
+- inputs -> white background and dark text
+
+INSTALL:
+Replace ONLY styles.css in LUNHS-PORTAL.
+Commit changes, wait for GitHub Pages, then Ctrl+F5.
+No SQL/Supabase changes.
