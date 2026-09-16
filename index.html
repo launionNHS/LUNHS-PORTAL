@@ -155,11 +155,19 @@
 <section id="announcements" class="view"><h1>Announcements & Events</h1><div id="publicPosts"></div></section>
 <section id="login" class="view"><div class="panel narrow"><h1>Portal Login</h1><form id="loginForm"><label>Email or School ID / LRN<input id="schoolLogin" type="text" autocomplete="username" placeholder="Admin email or School ID / LRN" required></label><label>Password<input id="password" type="password" required></label><button class="primary">Sign In</button></form><p><a href="#" id="adminForgot">Administrator forgot password?</a></p><p id="loginMsg"></p></div></section>
 <section id="dashboard" class="view"><div class="dashhead"><div><h1 id="welcome">Dashboard</h1><p id="identity"></p></div></div><div id="dashboardBody"></div></section>
-</main><footer>La Union National High School • Cabadbaran City</footer><script src="config.js"></script><script src="app.js"></script><script>(async()=>{try{const s=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),u=(await s.auth.getUser()).data.user;if(u){const{data:p}=await s.from("profiles").select("role").eq("id",u.id).single();if(p?.role==="admin")document.getElementById("cmsNav").hidden=false}}catch(e){}})();</script><button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
+<section class="app-shell"><h2>Explore LUNHS</h2><div class="app-grid"><a class="app-card" href="calendar.html"><h3>School Calendar</h3><p>Activities, examinations and important dates.</p></a><a class="app-card" href="achievements.html"><h3>Achievements</h3><p>Celebrate learners, teachers and school accomplishments.</p></a><a class="app-card" href="facilities.html"><h3>Facilities</h3><p>Explore laboratories, offices and learning spaces.</p></a><a class="app-card" href="resources.html"><h3>Learning Resources</h3><p>Access school and learning resources.</p></a><a class="app-card" href="search.html"><h3>Search</h3><p>Find school content quickly.</p></a></div></section></main><footer>La Union National High School • Cabadbaran City</footer><script src="config.js"></script><script src="app.js"></script><script>(async()=>{try{const s=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),u=(await s.auth.getUser()).data.user;if(u){const{data:p}=await s.from("profiles").select("role").eq("id",u.id).single();if(p?.role==="admin")document.getElementById("cmsNav").hidden=false}}catch(e){}})();</script><button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
 let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});
 installBtn?.addEventListener("click",async()=>{if(!lunhsPrompt)return;lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true});
 window.addEventListener("appinstalled",()=>{if(installBtn)installBtn.hidden=true});
-</script></body></html>
+</script>
+<script>
+window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+</script>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
+<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
+</nav></body></html>

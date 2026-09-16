@@ -1,0 +1,23 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Manage School Data | LUNHS</title><link rel="stylesheet" href="styles.css"><link rel="manifest" href="manifest.webmanifest"></head><body><header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><b>La Union National High School</b></div><nav><a href="index.html">Home</a><a href="announcements.html">News</a><a href="calendar.html">Calendar</a><a href="resources.html">Resources</a><a href="portal.html">Portal Login</a></nav></header><main class="app-shell"><h1 class="app-page-title">Calendar, Resources & School Features</h1><p class="app-muted">Quick publishing forms. Administrator login is required.</p>
+<div class="app-grid">
+<form class="app-card" id="eventForm"><h3>Add Calendar Event</h3><input class="app-input" name="title" placeholder="Event title" required><input class="app-input" name="event_date" type="date" required><input class="app-input" name="location" placeholder="Location"><textarea class="app-input" name="description" placeholder="Description"></textarea><button class="app-btn">Add Event</button></form>
+<form class="app-card" id="resourceForm"><h3>Add Resource</h3><input class="app-input" name="title" placeholder="Title" required><input class="app-input" name="url" placeholder="https://..." required><textarea class="app-input" name="description" placeholder="Description"></textarea><button class="app-btn">Add Resource</button></form>
+<form class="app-card" id="achievementForm"><h3>Add Achievement</h3><input class="app-input" name="title" placeholder="Title" required><input class="app-input" name="achievement_date" type="date"><input class="app-input" name="image_url" placeholder="Image URL"><textarea class="app-input" name="description" placeholder="Description"></textarea><button class="app-btn">Add Achievement</button></form>
+<form class="app-card" id="facilityForm"><h3>Add Facility</h3><input class="app-input" name="name" placeholder="Facility name" required><input class="app-input" name="image_url" placeholder="Image URL"><textarea class="app-input" name="description" placeholder="Description"></textarea><button class="app-btn">Add Facility</button></form>
+<form class="app-card" id="alertForm"><h3>Emergency Banner</h3><input class="app-input" name="message" placeholder="Emergency / important message"><label><input name="active" type="checkbox"> Active</label><button class="app-btn">Save Banner</button></form>
+</div><p id="msg"></p></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script>
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key),msg=document.getElementById("msg");
+async function guard(){let {data:{user}}=await sb.auth.getUser();if(!user)return location.href="portal.html";let {data:p}=await sb.from("profiles").select("role").eq("id",user.id).single();if(p?.role!=="admin")location.href="dashboard.html"}guard();
+function bind(id,table,fields){document.getElementById(id).onsubmit=async e=>{e.preventDefault();let fd=new FormData(e.target),obj={};fields.forEach(k=>obj[k]=fd.get(k)||null);let {error}=await sb.from(table).insert(obj);msg.textContent=error?error.message:"Saved successfully.";if(!error)e.target.reset()}}
+bind("eventForm","school_events",["title","event_date","location","description"]);bind("resourceForm","school_resources",["title","url","description"]);bind("achievementForm","achievements",["title","achievement_date","image_url","description"]);bind("facilityForm","facilities",["name","image_url","description"]);
+document.getElementById("alertForm").onsubmit=async e=>{e.preventDefault();let f=new FormData(e.target),obj={id:1,message:f.get("message")||"",active:f.get("active")==="on"};let {error}=await sb.from("emergency_banner").upsert(obj);msg.textContent=error?error.message:"Banner saved."}
+</script><script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));</script>
+<script>
+window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+</script>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
+<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
+</nav></body></html>

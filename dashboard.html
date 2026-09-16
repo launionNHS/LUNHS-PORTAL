@@ -1,7 +1,17 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>LUNHS Portal Dashboard</title><link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="manifest" href="manifest.webmanifest">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+function enhanceStudent(){
+ if(profile?.role!=="student")return;
+ let c=document.getElementById("studentProfileCard");if(c)c.innerHTML=`<b>${esc(profile.display_name)}</b><div>${esc(profile.school_id||"")}</div><div>Grade ${esc(profile.grade_level||"")} • ${esc(profile.section||"")}</div>`;
+ let n=document.getElementById("studentNotifications");if(n)n.innerHTML='<div class="notification-item">New announcements and newly posted grades appear in your portal.</div>';
+}
+document.addEventListener("input",e=>{if(e.target.id==="studentSearch"){let q=e.target.value.toLowerCase();document.querySelectorAll("#classRows tr").forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}});
+document.getElementById("printGrades")?.addEventListener("click",()=>print());
+document.getElementById("exportGrades")?.addEventListener("click",()=>{let rows=[["Student","School ID/LRN","Term 1","Term 2","Term 3"]];document.querySelectorAll("#classRows tr").forEach(tr=>{if(tr.dataset.id){let td=tr.querySelectorAll("td"),v=[...tr.querySelectorAll("input")].map(x=>x.value);rows.push([td[0].innerText,td[1].innerText,...v])}});let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="LUNHS-gradebook.csv";a.click()});
+setTimeout(enhanceStudent,800);
+</script><link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b5d35">
 <link rel="apple-touch-icon" href="lunhs-logo.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,9 +28,9 @@
  <p id="status"></p>
 
  <section id="studentPanel" hidden>
-  <div class="portal-title-row"><div><h2>My Grades</h2><p>View your recorded quarterly grades.</p></div>
+  <div class="portal-title-row"><div><h2>My Grades</h2><p>View Term 1–Term 3 grades and your final averages.</p></div>
   <label>School Year <select id="studentSY"><option>2026-2027</option></select></label></div>
-  <div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Term 1</th><th>Term 2</th><th>Term 3</th><th>Final Average</th></tr></thead><tbody id="studentGrades"></tbody></table></div>
+  <div class="app-grid" style="margin:14px 0"><div class="app-card"><h3>Student Profile</h3><div id="studentProfileCard"></div></div><div class="app-card"><h3>Grade Summary</h3><div id="gradeSummary">Your averages will appear after grades load.</div></div><div class="app-card"><h3>Notifications</h3><div id="studentNotifications">Checking updates…</div></div></div><div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Term 1</th><th>Term 2</th><th>Term 3</th><th>Final Average</th></tr></thead><tbody id="studentGrades"></tbody></table></div>
  </section>
 
  <section id="teacherPanel" hidden>
@@ -30,12 +40,12 @@
    <label>School Year<input id="teacherSY" value="2026-2027"></label>
    <button class="primary" id="loadClass">Load Students</button>
   </div>
-  <div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>School ID / LRN</th><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr></thead><tbody id="classRows"></tbody></table></div>
+  <div class="app-card" style="margin:14px 0"><h3>Gradebook Tools</h3><input id="studentSearch" class="app-input" placeholder="Search student name or LRN"><div class="actions" style="margin-top:10px"><button type="button" id="exportGrades">Export CSV</button><button type="button" id="printGrades">Print Gradebook</button></div></div><div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>School ID / LRN</th><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr></thead><tbody id="classRows"></tbody></table></div>
   <button class="primary save-grades" id="saveGrades" hidden>Save Grades</button><p id="gradeMsg"></p>
  </section>
 
  <section id="adminPanel" hidden>
-  <h2>Administrator Dashboard</h2><div class="admin-actions"><a class="dashboard-card" href="admin-mps.html"><b>MPS Grade Analytics</b><span>View MPS per subject, per grade level, and overall per subject.</span></a>
+  <h2>Administrator Dashboard</h2><div class="admin-actions"><a class="dashboard-card" href="admin.html"><b>School Management Center</b><span>Calendar, resources, achievements, facilities and emergency banner.</span></a><a class="dashboard-card" href="admin-mps.html"><b>MPS Grade Analytics</b><span>View MPS per subject, per grade level, and overall per subject.</span></a>
    <a class="dashboard-card" href="admin-cms.html"><b>Manage Website</b><span>Edit pages and publish announcements/publications.</span></a>
    <a class="dashboard-card" href="admin-users.html"><b>Manage Accounts</b><span>Create Student and Teacher accounts and manage assignments.</span></a>
    <a class="dashboard-card" href="admin-reset-password.html"><b>Password Management</b><span>Reset Student or Teacher passwords.</span></a>
@@ -100,4 +110,12 @@ let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});
 installBtn?.addEventListener("click",async()=>{if(!lunhsPrompt)return;lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true});
 window.addEventListener("appinstalled",()=>{if(installBtn)installBtn.hidden=true});
-</script></body></html>
+</script>
+<script>
+window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+</script>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
+<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
+</nav></body></html>

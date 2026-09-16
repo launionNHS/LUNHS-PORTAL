@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>School Management | LUNHS</title><link rel="stylesheet" href="styles.css"><link rel="manifest" href="manifest.webmanifest"></head><body><header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><b>La Union National High School</b></div><nav><a href="index.html">Home</a><a href="announcements.html">News</a><a href="calendar.html">Calendar</a><a href="resources.html">Resources</a><a href="portal.html">Portal Login</a></nav></header><main class="app-shell"><h1 class="app-page-title">School Management Center</h1><p class="app-muted">Administrator tools for the upgraded portal.</p><div class="app-grid">
+<a class="app-card" href="admin-cms.html"><h3>Website Publishing</h3><p>Announcements and publications.</p></a>
+<a class="app-card" href="admin-users.html"><h3>Accounts & Classes</h3><p>Students, teachers and assignments.</p></a>
+<a class="app-card" href="admin-mps.html"><h3>MPS Analytics</h3><p>Subject and grade-level performance.</p></a>
+<a class="app-card" href="admin-school-data.html"><h3>Calendar & Resources</h3><p>Events, resources, achievements, facilities and emergency banner.</p></a>
+<a class="app-card" href="admin-reset-password.html"><h3>Password Management</h3><p>Reset student and teacher passwords.</p></a>
+</div></main><script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));</script>
+<script>
+window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+</script>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
+<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
+</nav></body></html>

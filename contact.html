@@ -18,4 +18,12 @@ let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});
 installBtn?.addEventListener("click",async()=>{if(!lunhsPrompt)return;lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true});
 window.addEventListener("appinstalled",()=>{if(installBtn)installBtn.hidden=true});
-</script></body></html>
+</script>
+<script>
+window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+</script>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
+<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
+</nav></body></html>
