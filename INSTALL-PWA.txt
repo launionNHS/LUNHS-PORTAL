@@ -1,0 +1,27 @@
+LUNHS PORTAL — v30.1 + INSTALL APP
+
+BASE:
+This package uses the exact v30.1 Mobile Portrait/Landscape ZIP supplied by the user.
+
+ADDED ONLY:
+- Installable PWA support
+- manifest.webmanifest
+- service-worker.js
+- Install LUNHS App button
+- LUNHS logo as app icon
+- Standalone app mode
+- Basic static-page caching
+
+The original v30.1 website design/content is retained.
+The portal remains ONLINE. Supabase login, grades, MPS, accounts and live content still require internet.
+
+PUBLISH:
+Upload/replace ALL files in this ZIP to GitHub LUNHS-PORTAL.
+
+ANDROID:
+Chrome -> open site -> Install LUNHS App, or browser menu -> Install app/Add to Home screen.
+
+IPHONE/IPAD:
+Safari -> Share -> Add to Home Screen.
+
+No new Supabase SQL is required.

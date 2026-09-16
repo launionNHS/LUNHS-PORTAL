@@ -104,8 +104,8 @@ $("assign").onclick=async()=>{const {error}=await sb.from("teacher_assignments")
 <button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
 <script>
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
-let lunhsInstallPrompt=null,ib=document.getElementById("lunhsInstallApp");
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsInstallPrompt=e;ib.hidden=false});
-ib?.addEventListener("click",async()=>{if(!lunhsInstallPrompt)return;lunhsInstallPrompt.prompt();await lunhsInstallPrompt.userChoice;lunhsInstallPrompt=null;ib.hidden=true});
-window.addEventListener("appinstalled",()=>{if(ib)ib.hidden=true});
+let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});
+installBtn?.addEventListener("click",async()=>{if(!lunhsPrompt)return;lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true});
+window.addEventListener("appinstalled",()=>{if(installBtn)installBtn.hidden=true});
 </script></body></html>

@@ -1,7 +1,7 @@
 {
   "name": "La Union National High School Portal",
   "short_name": "LUNHS Portal",
-  "description": "Official online school portal of La Union National High School.",
+  "description": "Online school portal of La Union National High School.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
