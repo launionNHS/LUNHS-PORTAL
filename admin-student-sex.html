@@ -1,0 +1,24 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Student Male/Female Grouping | LUNHS</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><div><b>La Union National High School</b><small>STUDENT ROSTER MANAGEMENT</small></div></div><nav><a href="admin.html">Admin</a><a href="dashboard.html">Dashboard</a></nav></header>
+<main class="standalone-page"><section class="page-hero"><span>ADMINISTRATION</span><h1>Arrange Students by Male / Female</h1><p>Assign a roster group to existing student accounts. Teachers will automatically see Male and Female groups during manual grade entry.</p></section>
+<section class="page-content"><div class="app-card"><div class="grade-controls"><label>Grade Level<select id="grade"><option value="">All</option></select></label><label>Section<select id="section"><option value="">All</option></select></label><button id="load" class="primary">Load Students</button></div><p id="msg"></p></div>
+<div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>LRN / School ID</th><th>Grade</th><th>Section</th><th>Group</th></tr></thead><tbody id="rows"></tbody></table></div>
+<div class="actions" style="margin-top:14px"><button id="save" class="primary" hidden>Save Male/Female Arrangement</button></div></section></main>
+<script src="config.js"></script><script>
+const sb=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),$=x=>document.getElementById(x);let students=[];
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function clean(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9, ]/g," ").trim()}
+function surname(s){let n=clean(s);if(n.includes(","))return n.split(",")[0].trim();let p=n.split(/\s+/);return p[p.length-1]||""}
+function first(s){let n=clean(s);if(n.includes(","))return (n.split(",")[1]||"").trim().split(/\s+/)[0]||"";return n.split(/\s+/)[0]||""}
+async function init(){let u=(await sb.auth.getUser()).data.user;if(!u){location.href="portal.html";return}let {data:p}=await sb.from("profiles").select("role").eq("id",u.id).single();if(p?.role!=="admin"){location.href="dashboard.html";return}
+let {data,error}=await sb.from("profiles").select("id,display_name,school_id,grade_level,section,sex").eq("role","student");if(error){$("msg").textContent=error.message;return}students=data||[];
+let grades=[...new Set(students.map(s=>s.grade_level).filter(Boolean))].sort(),sections=[...new Set(students.map(s=>s.section).filter(Boolean))].sort();
+$("grade").innerHTML='<option value="">All</option>'+grades.map(x=>`<option>${esc(x)}</option>`).join("");$("section").innerHTML='<option value="">All</option>'+sections.map(x=>`<option>${esc(x)}</option>`).join("");render()}
+function render(){let g=$("grade").value,sec=$("section").value,list=students.filter(s=>(!g||s.grade_level===g)&&(!sec||s.section===sec)).sort((a,b)=>surname(a.display_name).localeCompare(surname(b.display_name))||first(a.display_name).localeCompare(first(b.display_name)));
+$("rows").innerHTML=list.map(s=>`<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td><td>${esc(s.grade_level||"")}</td><td>${esc(s.section||"")}</td><td><select class="sex"><option value="">Not set</option><option value="Male" ${s.sex==="Male"?"selected":""}>Male</option><option value="Female" ${s.sex==="Female"?"selected":""}>Female</option></select></td></tr>`).join("")||'<tr><td colspan="5">No students found.</td></tr>';$("save").hidden=!list.length}
+$("load").onclick=render;$("grade").onchange=render;$("section").onchange=render;
+$("save").onclick=async()=>{let rows=[...document.querySelectorAll("#rows tr[data-id]")];$("msg").textContent="Saving…";for(const tr of rows){let sex=tr.querySelector(".sex").value||null,{error}=await sb.from("profiles").update({sex}).eq("id",tr.dataset.id);if(error){$("msg").textContent=error.message;return}let s=students.find(x=>x.id===tr.dataset.id);if(s)s.sex=sex}$("msg").textContent="Student Male/Female arrangement saved successfully.";render()};
+init();
+</script></body></html>

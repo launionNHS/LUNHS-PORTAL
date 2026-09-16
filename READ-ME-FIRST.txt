@@ -1,20 +1,25 @@
-LUNHS v32.3 — FIRST NAME + SURNAME MATCHING
+LUNHS v32.5 — STUDENT MALE/FEMALE ARRANGEMENT
 
-The E-Class Record importer now matches learners primarily by:
-1. FIRST NAME
-2. SURNAME
+PURPOSE
+Existing students can be classified as Male or Female BEFORE teachers encode grades manually.
 
-Middle names and middle initials are ignored.
-Common suffixes and punctuation are ignored.
-DepEd format "SURNAME, FIRST NAME MIDDLE NAME" is supported.
-Portal format "FIRST NAME MIDDLE NAME SURNAME" is supported.
+INSTALL
+1. Run V32.5-STUDENT-SEX-GROUPING.sql once in Supabase SQL Editor.
+2. Upload/replace these website files in GitHub:
+   - dashboard.html
+   - admin.html
+   - admin-student-sex.html
+   - service-worker.js
 
-If more than one portal learner has the same first name and surname, the importer marks
-the record AMBIGUOUS instead of guessing.
+ADMIN WORKFLOW
+Admin > Student Male/Female Arrangement
+Choose Grade/Section > Load Students > set each learner to Male/Female > Save.
 
-UPDATE ONLY:
-Replace in GitHub:
-- dashboard.html
-- service-worker.js
+TEACHER MANUAL GRADEBOOK
+When a teacher loads a class, students automatically appear:
+MALE — alphabetical by surname, then first name
+FEMALE — alphabetical by surname, then first name
+SEX NOT SET — students the admin has not classified yet
 
-No Supabase SQL is required.
+The official DepEd E-Class Record is NOT changed.
+E-Class Record matching remains based on FIRST NAME + SURNAME.

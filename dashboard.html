@@ -9,6 +9,7 @@
 .ecr-status-ok{font-weight:800;color:#12633e}.ecr-status-warn{font-weight:800;color:#9a6700}.ecr-status-bad{font-weight:800;color:#a11}
 .ecr-preview input{width:78px}.ecr-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.ecr-summary span{padding:6px 9px;border-radius:999px;background:#edf7f1}
 @media(max-width:600px){.ecr-actions{flex-direction:column}.ecr-actions button,.ecr-actions label{width:100%}}
+.sex-divider td{background:#eaf4ee!important;color:#0b5d35;font-weight:900;letter-spacing:.08em;text-align:left!important}
 </style></head><body>
 <header class="reference-header"><div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
 <nav><a href="index.html">Home</a><span id="roleBadge"></span><button id="logout">Logout</button></nav></header>
@@ -68,6 +69,25 @@ function parseName(s, excel=false){
  }
  return {first,surname};
 }
+
+function surnameKey(name){
+ const raw=cleanName(name);
+ if(raw.includes(",")) return raw.split(",")[0].trim();
+ const p=raw.split(" ").filter(Boolean);
+ return p[p.length-1]||"";
+}
+function firstKey(name){
+ const raw=cleanName(name);
+ if(raw.includes(",")) return (raw.split(",")[1]||"").trim().split(" ")[0]||"";
+ return raw.split(" ").filter(Boolean)[0]||"";
+}
+function alphaBySurname(a,b){
+ return surnameKey(a.display_name||a.excelName).localeCompare(surnameKey(b.display_name||b.excelName)) ||
+        firstKey(a.display_name||a.excelName).localeCompare(firstKey(b.display_name||b.excelName));
+}
+function sexOrder(v){v=String(v||"").toLowerCase();return v==="male"?0:v==="female"?1:2}
+function sexText(v){v=String(v||"").toLowerCase();return v==="male"?"MALE":v==="female"?"FEMALE":"SEX NOT SET"}
+
 function bestStudentMatch(excelName,students){
  const ex=parseName(excelName,true);
  if(!ex.first||!ex.surname)return {student:null,status:"Name incomplete"};
@@ -99,9 +119,16 @@ let finals=[];$("studentGrades").innerHTML=(data||[]).map(g=>{let vals=[g.term1,
 $("studentSY").onchange=loadStudentGrades;
 async function loadAssignments(){const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,subjects(name,grade_level)").eq("teacher_id",user.id);if(error){$("gradeMsg").textContent=error.message;return}assignments=data||[];$("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — Grade ${esc(a.subjects?.grade_level||"")} ${esc(a.section)}</option>`).join("")||'<option>No assignment</option>'}
 async function loadClass(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027";
-let q=sb.from("profiles").select("id,display_name,school_id,section,grade_level").eq("role","student").eq("section",a.section);if(a.subjects?.grade_level)q=q.eq("grade_level",String(a.subjects.grade_level));const {data:students,error}=await q.order("display_name");if(error){$("gradeMsg").textContent=error.message;return}
-const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);const gm=new Map((grades||[]).map(g=>[g.student_id,g]));currentStudents=students||[];
-$("classRows").innerHTML=currentStudents.map(s=>{let g=gm.get(s.id)||{};return `<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`}).join("")||'<tr><td colspan="5">No students found in this class.</td></tr>';$("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";clearEcr()}
+let q=sb.from("profiles").select("id,display_name,school_id,section,grade_level,sex").eq("role","student").eq("section",a.section);if(a.subjects?.grade_level)q=q.eq("grade_level",String(a.subjects.grade_level));const {data:students,error}=await q.order("display_name");if(error){$("gradeMsg").textContent=error.message;return}
+const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);const gm=new Map((grades||[]).map(g=>[g.student_id,g]));currentStudents=(students||[]).sort((a,b)=>sexOrder(a.sex)-sexOrder(b.sex)||alphaBySurname(a,b));
+let rosterHtml="",lastGroup="";
+for(const s of currentStudents){
+ let group=sexText(s.sex);
+ if(group!==lastGroup){rosterHtml+=`<tr class="sex-divider"><td colspan="5"><b>${group}</b></td></tr>`;lastGroup=group}
+ let g=gm.get(s.id)||{};
+ rosterHtml+=`<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`;
+}
+$("classRows").innerHTML=rosterHtml||'<tr><td colspan="5">No students found in this class.</td></tr>';$("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";clearEcr()}
 $("loadClass").onclick=loadClass;
 async function saveVisibleGrades(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027",rows=[...document.querySelectorAll("#classRows tr[data-id]")],payload=[];
 for(const tr of rows){let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};for(const inp of tr.querySelectorAll(".grade-input")){if(inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[inp.dataset.q]=v}else obj[inp.dataset.q]=null}payload.push(obj)}
@@ -116,23 +143,51 @@ $("ecrFile").onchange=async e=>{
   const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellFormula:true});const required=["INPUT","TERM1","TERM2","TERM3","SUMMARY OF GRADES"],missing=required.filter(x=>!wb.SheetNames.includes(x));if(missing.length)throw new Error("This does not match the prescribed Three-Term E-Class Record. Missing sheet(s): "+missing.join(", "));
   const sh=wb.Sheets["SUMMARY OF GRADES"],grid=XLSX.utils.sheet_to_json(sh,{header:1,defval:null,raw:true});let header=grid.findIndex(r=>String(r?.[1]||"").toUpperCase().includes("LEARNERS"));if(header<0)throw new Error("Learners table was not found in SUMMARY OF GRADES.");
   const meta={gradeSection:grid?.[7]?.[10]||"",teacher:grid?.[8]?.[10]||"",subject:grid?.[8]?.[22]||"",schoolYear:grid?.[7]?.[22]||""};
-  ecrRows=[];for(let i=header+1;i<grid.length;i++){
+  ecrRows=[];let currentSex="";
+  for(let i=header+1;i<grid.length;i++){
    let r=grid[i]||[],name=String(r[1]||"").trim();
-   if(!name||/^(male|female)\s*$/i.test(name))continue;
+   if(/^male\s*$/i.test(name)){currentSex="Male";continue}
+   if(/^female\s*$/i.test(name)){currentSex="Female";continue}
+   if(!name)continue;
    let t1=numGrade(r[5]),t2=numGrade(r[9]),t3=numGrade(r[13]);
    if(t1===null&&t2===null&&t3===null)continue;
    let m=bestStudentMatch(name,currentStudents);
-   ecrRows.push({excelName:name,t1,t2,t3,student:m.student,status:m.status})
+   ecrRows.push({excelName:name,t1,t2,t3,sex:currentSex||"Unspecified",student:m.student,status:m.status})
   }
+  ecrRows.sort((a,b)=>{
+    const order={Male:0,Female:1,Unspecified:2};
+    return (order[a.sex]-order[b.sex]) ||
+      surnameKey(a.excelName).localeCompare(surnameKey(b.excelName)) ||
+      firstKey(a.excelName).localeCompare(firstKey(b.excelName));
+  });
   let matched=ecrRows.filter(x=>x.student).length,unmatched=ecrRows.length-matched;
   $("ecrMeta").innerHTML=`<div class="ecr-summary"><span>Subject: <b>${esc(meta.subject||"Not detected")}</b></span><span>Class: <b>${esc(meta.gradeSection||"Not detected")}</b></span><span>School Year: <b>${esc(meta.schoolYear||"Not detected")}</b></span><span>Matched: <b>${matched}</b></span><span>Needs review: <b>${unmatched}</b></span></div>`;
-  $("ecrPreview").innerHTML=`<table class="grade-table"><thead><tr><th>E-Class Record Learner</th><th>Portal Match</th><th>T1</th><th>T2</th><th>T3</th><th>Status</th></tr></thead><tbody>${ecrRows.map((x,i)=>`<tr><td>${esc(x.excelName)}</td><td>${x.student?esc(x.student.display_name):"—"}</td><td>${x.t1??"—"}</td><td>${x.t2??"—"}</td><td>${x.t3??"—"}</td><td class="${x.student?"ecr-status-ok":"ecr-status-warn"}">${x.status}</td></tr>`).join("")}</tbody></table>`;
+  let previewRows="",lastSex="";
+  for(const x of ecrRows){
+   if(x.sex!==lastSex){previewRows+=`<tr class="sex-divider"><td colspan="6"><b>${esc(x.sex).toUpperCase()}</b></td></tr>`;lastSex=x.sex}
+   previewRows+=`<tr><td>${esc(x.excelName)}</td><td>${x.student?esc(x.student.display_name):"—"}</td><td>${x.t1??"—"}</td><td>${x.t2??"—"}</td><td>${x.t3??"—"}</td><td class="${x.student?"ecr-status-ok":"ecr-status-warn"}">${x.status}</td></tr>`
+  }
+  $("ecrPreview").innerHTML=`<table class="grade-table"><thead><tr><th>E-Class Record Learner</th><th>Portal Match</th><th>T1</th><th>T2</th><th>T3</th><th>Status</th></tr></thead><tbody>${previewRows}</tbody></table>`;
   $("ecrMsg").innerHTML=matched?`<span class="ecr-status-ok">Preview ready.</span> Only matched learners will be imported. Review before confirming.`:'<span class="ecr-status-bad">No learners matched automatically. Check that the correct Grade/Section was loaded. Matching now uses the learner’s first name and surname. Middle names and middle initials are ignored.</span>';$("confirmImport").hidden=!matched;$("clearImport").hidden=false;
  }catch(err){$("ecrMsg").innerHTML=`<span class="ecr-status-bad">${esc(err.message)}</span>`;$("confirmImport").hidden=true}
 };
 $("confirmImport").onclick=()=>{
- let applied=0;for(const x of ecrRows.filter(x=>x.student)){let tr=document.querySelector(`#classRows tr[data-id="${x.student.id}"]`);if(!tr)continue;for(const [q,v] of [["term1",x.t1],["term2",x.t2],["term3",x.t3]]){if(v!==null){let inp=tr.querySelector(`input[data-q="${q}"]`);if(inp)inp.value=v}}applied++}
- $("ecrMsg").innerHTML=`<span class="ecr-status-ok">${applied} matched learner(s) copied to the gradebook.</span> Review the values, then click <b>Save Grades</b> to write them to the portal.`;$("confirmImport").hidden=true;window.scrollTo({top:$("classRows").getBoundingClientRect().top+scrollY-100,behavior:"smooth"})
+ let applied=0,tbody=$("classRows"),ordered=[],seen=new Set(),lastSex="",rowMap=new Map([...tbody.querySelectorAll("tr[data-id]")].map(tr=>[tr.dataset.id,tr]));
+ for(const x of ecrRows.filter(x=>x.student)){
+  let tr=rowMap.get(x.student.id);if(!tr)continue;
+  for(const [q,v] of [["term1",x.t1],["term2",x.t2],["term3",x.t3]]){if(v!==null){let inp=tr.querySelector(`input[data-q="${q}"]`);if(inp)inp.value=v}}
+  ordered.push({tr,sex:x.sex,name:x.student.display_name});seen.add(x.student.id);applied++;
+ }
+ ordered.sort((a,b)=>({Male:0,Female:1,Unspecified:2}[a.sex]-({Male:0,Female:1,Unspecified:2}[b.sex]))||surnameKey(a.name).localeCompare(surnameKey(b.name))||firstKey(a.name).localeCompare(firstKey(b.name)));
+ tbody.innerHTML="";
+ for(const x of ordered){
+  if(x.sex!==lastSex){let d=document.createElement("tr");d.className="sex-divider";d.innerHTML=`<td colspan="5"><b>${esc(x.sex).toUpperCase()}</b></td>`;tbody.appendChild(d);lastSex=x.sex}
+  tbody.appendChild(x.tr);
+ }
+ let remaining=currentStudents.filter(s=>!seen.has(s.id)).sort((a,b)=>alphaBySurname(a,b));
+ if(remaining.length){let d=document.createElement("tr");d.className="sex-divider";d.innerHTML='<td colspan="5"><b>NOT MATCHED / NOT IN E-CLASS RECORD</b></td>';tbody.appendChild(d);for(const s of remaining){let tr=rowMap.get(s.id);if(tr)tbody.appendChild(tr)}}
+ $("ecrMsg").innerHTML=`<span class="ecr-status-ok">${applied} matched learner(s) copied to the gradebook.</span> The gradebook is now grouped by the existing MALE/FEMALE sections in the E-Class Record and arranged alphabetically by surname. Review, then click <b>Save Grades</b>.`;
+ $("confirmImport").hidden=true;window.scrollTo({top:$("classRows").getBoundingClientRect().top+scrollY-100,behavior:"smooth"})
 };
 document.addEventListener("input",e=>{if(e.target.id==="studentSearch"){let q=e.target.value.toLowerCase();document.querySelectorAll("#classRows tr").forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}});
 $("printGrades").onclick=()=>print();$("exportGrades").onclick=()=>{let rows=[["Student","School ID/LRN","Term 1","Term 2","Term 3"]];document.querySelectorAll("#classRows tr[data-id]").forEach(tr=>{let td=tr.querySelectorAll("td"),v=[...tr.querySelectorAll("input")].map(x=>x.value);rows.push([td[0].innerText,td[1].innerText,...v])});let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="LUNHS-gradebook.csv";a.click()};
