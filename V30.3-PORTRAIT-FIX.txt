@@ -1,0 +1,16 @@
+v30.3 STRICT PHONE PORTRAIT FIX
+
+Based on v30.2 / original user v30.1.
+No homepage redesign.
+
+Phone portrait changes:
+- No overlapping navigation buttons.
+- 2-column mobile navigation; 1 column on very narrow phones.
+- Action/button groups stack vertically.
+- Buttons cannot exceed screen width.
+- Fixed Install App button spans safely across bottom.
+- Added bottom clearance so Install App does not cover page controls.
+- Long labels/URLs wrap rather than widen the page.
+- Cache bumped so installed PWA receives the fix.
+
+Upload/replace all files on GitHub Pages.
