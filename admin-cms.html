@@ -5,7 +5,7 @@
 <section class="cms-box"><h2>Publish to a Section</h2><label>Section<select id="postCategory"><option>Announcement</option><option>School Publication</option></select></label><label>Title<input id="postTitle"></label><label>Content<textarea id="postBody" rows="7"></textarea></label><label>Upload Picture, Video, PDF or File
 <input id="mediaFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt">
 </label>
-<label>Or Media / YouTube URL (optional)<input id="mediaUrl" placeholder="https://..."></label>
+<label>Or Media / YouTube URL (optional)<input id="mediaUrl" placeholder="https://..."></label><label>Facebook Post URL (optional)<input id="facebookUrl" type="url" placeholder="https://www.facebook.com/launionNHS/posts/..."></label>
 <label>Thumbnail Picture (optional)<input id="thumbFile" type="file" accept="image/*"></label>
 <div id="uploadProgress"></div>
 <label><input type="checkbox" id="published" checked> Publish now</label><button class="primary" id="publishPost">Publish</button><p id="postMsg"></p></section></div>
@@ -41,11 +41,11 @@ $("publishPost").onclick=async()=>{
    const thumbnail=await uploadFile(thumb,"thumb");
    const finalUrl=uploaded||url||null;
    const kind=mediaKind(file,url);
-   const payload={type:c==="Event"?"Event":"Announcement",category:c,title:$("postTitle").value,body:$("postBody").value,media_url:finalUrl,thumbnail_url:thumbnail,media_type:kind,published:$("published").checked,author_id:me.id};
+   const payload={type:c==="Event"?"Event":"Announcement",category:c,title:$("postTitle").value,body:$("postBody").value,media_url:finalUrl,thumbnail_url:thumbnail,media_type:kind,facebook_url:$("facebookUrl").value.trim()||null,published:$("published").checked,author_id:me.id};
    const {error}=await sb.from("posts").insert(payload);
    if(error)throw error;
    $("postMsg").textContent="Published successfully.";
-   $("postTitle").value="";$("postBody").value="";$("mediaUrl").value="";$("mediaFile").value="";$("thumbFile").value="";
+   $("postTitle").value="";$("postBody").value="";$("mediaUrl").value="";$("mediaFile").value="";$("thumbFile").value="";$("facebookUrl").value="";
    loadPosts();
  }catch(e){$("postMsg").textContent=e.message||"Upload failed."}
 };

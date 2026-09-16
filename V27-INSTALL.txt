@@ -1,0 +1,21 @@
+LUNHS PORTAL v27 — FUNCTIONAL SCHOOL MEDIA HUB
+
+NEW:
+- media.html School Media Hub
+- Automatically reads published media from Supabase posts
+- Photo gallery with full-screen viewer
+- Play uploaded videos
+- YouTube support
+- Download/open publication files
+- Search
+- All / Photos / Videos / Files filters
+- Links to original Facebook post when supplied
+- Responsive mobile layout
+- Media Hub added to public navigation
+
+HOW TO ADD MEDIA:
+Use Admin -> Manage Website and publish an Announcement or School Publication
+with an image, video, YouTube URL, or file. Once published, it automatically
+appears in School Media Hub.
+
+No new SQL is required beyond the v26 facebook_url SQL if already installed.

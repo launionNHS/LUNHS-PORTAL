@@ -1,0 +1,15 @@
+LUNHS v26 POST DISPLAY
+
+Announcement and Publication now show full post cards with:
+- school logo/name, date, title and text
+- pictures displayed in the page
+- uploaded videos playable in the page
+- attached files/media button
+- View original post on Facebook button
+
+Admin publishing now includes Facebook Post URL.
+
+INSTALL:
+1. Upload/replace all files in this ZIP to LUNHS-PORTAL.
+2. Run V26-FACEBOOK-SQL.sql ONCE in Supabase SQL Editor.
+3. Admin -> Manage Website -> create Announcement or School Publication.

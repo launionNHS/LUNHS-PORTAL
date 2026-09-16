@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>School Media Hub | La Union National High School</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header class="reference-header">
+ <div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
+ <nav>
+  <a href="index.html">Home</a><a href="about.html">About</a><a href="announcements.html">Announcement</a>
+  <a href="publications.html">Publication</a><a href="media.html" class="active">Media Hub</a>
+  <a href="contact.html">Contact</a>
+  <a class="resources-btn" href="https://lrmds.deped.gov.ph/search?query=modules" target="_blank" rel="noopener">Resources</a>
+  <a class="portal-login-btn" href="portal.html">Portal Login</a>
+ </nav>
+</header>
+<main class="media-page">
+ <section class="media-hero">
+  <div><span class="eyebrow">LUNHS SCHOOL MEDIA</span><h1>School Media Hub</h1>
+  <p>Photos, videos, publications, announcements and downloadable school resources in one place.</p></div>
+ </section>
+ <section class="media-tools">
+   <input id="mediaSearch" type="search" placeholder="Search media, title or description…">
+   <div class="media-filters">
+    <button class="filter active" data-filter="all">All</button><button class="filter" data-filter="image">Photos</button>
+    <button class="filter" data-filter="video">Videos</button><button class="filter" data-filter="file">Files</button>
+   </div>
+ </section>
+ <section><div id="mediaStatus" class="media-status">Loading school media…</div><div id="mediaGrid" class="media-grid"></div></section>
+</main>
+<div id="viewer" class="media-viewer" hidden><button id="closeViewer" aria-label="Close">×</button><div id="viewerBody"></div></div>
+<script>
+window.LUNHS_CONFIG={url:"https://ppwrdnygptfloqjnsfir.supabase.co",key:"sb_publishable_D1neO_P9eiXL4lk-qJxmcA_ovjM4HCD"};
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key);
+let items=[], filter="all";
+const esc=s=>String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function youtubeId(u){try{let x=new URL(u);return x.hostname.includes("youtu.be")?x.pathname.slice(1):x.searchParams.get("v")||x.pathname.split("/embed/")[1]||""}catch{return""}}
+function kind(p){if(p.media_type)return p.media_type;if(/\.(jpg|jpeg|png|gif|webp)$/i.test(p.media_url||""))return"image";if(/\.(mp4|webm|mov)$/i.test(p.media_url||""))return"video";return"file"}
+function render(){
+ const q=document.querySelector("#mediaSearch").value.toLowerCase().trim();
+ const rows=items.filter(p=>(filter==="all"||kind(p)===filter||(filter==="video"&&kind(p)==="youtube"))&&(!q||`${p.title||""} ${p.body||""} ${p.category||""}`.toLowerCase().includes(q)));
+ mediaStatus.textContent=rows.length?`${rows.length} media item${rows.length===1?"":"s"}`:"No matching media found.";
+ mediaGrid.innerHTML=rows.map(p=>{
+   const k=kind(p), title=esc(p.title||"School Media"), date=new Date(p.created_at).toLocaleDateString();
+   let preview="";
+   if(k==="image") preview=`<button class="preview" onclick="openItem(${p.id})"><img loading="lazy" src="${p.media_url}" alt="${title}"></button>`;
+   else if(k==="video") preview=`<button class="preview video-thumb" onclick="openItem(${p.id})">${p.thumbnail_url?`<img loading="lazy" src="${p.thumbnail_url}" alt="">`:"<span>▶</span>"}</button>`;
+   else if(k==="youtube"){let y=youtubeId(p.media_url);preview=`<button class="preview video-thumb" onclick="openItem(${p.id})"><img loading="lazy" src="https://i.ytimg.com/vi/${y}/hqdefault.jpg" alt=""><span class="play">▶</span></button>`}
+   else preview=`<a class="preview file-preview" href="${p.media_url}" target="_blank" rel="noopener"><span>📄</span><b>Open File</b></a>`;
+   return `<article class="media-card">${preview}<div class="media-info"><span class="media-kind">${esc(k)}</span><h2>${title}</h2><small>${date} • ${esc(p.category||p.type||"LUNHS")}</small><p>${esc(p.body||"")}</p><div class="media-actions">${p.media_url?`<a href="${p.media_url}" target="_blank" rel="noopener">Open media</a>`:""}${p.facebook_url?`<a href="${p.facebook_url}" target="_blank" rel="noopener">Facebook post</a>`:""}</div></div></article>`
+ }).join("");
+}
+window.openItem=id=>{
+ const p=items.find(x=>x.id===id); if(!p)return; const k=kind(p); let m="";
+ if(k==="image")m=`<img src="${p.media_url}" alt="">`;
+ else if(k==="video")m=`<video src="${p.media_url}" controls autoplay></video>`;
+ else if(k==="youtube"){let y=youtubeId(p.media_url);m=`<iframe src="https://www.youtube.com/embed/${y}?autoplay=1" allow="autoplay; fullscreen" allowfullscreen></iframe>`}
+ else return window.open(p.media_url,"_blank");
+ viewerBody.innerHTML=m+`<h2>${esc(p.title)}</h2><p>${esc(p.body)}</p>`;viewer.hidden=false;document.body.classList.add("viewer-open");
+};
+closeViewer.onclick=()=>{viewer.hidden=true;viewerBody.innerHTML="";document.body.classList.remove("viewer-open")};
+viewer.onclick=e=>{if(e.target===viewer)closeViewer.click()};
+document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.filter;render()});
+mediaSearch.oninput=render;
+(async()=>{const {data,error}=await sb.from("posts").select("*").eq("published",true).not("media_url","is",null).order("created_at",{ascending:false});if(error){mediaStatus.textContent="Unable to load media.";console.error(error);return}items=data||[];render()})();
+</script>
+</body></html>
