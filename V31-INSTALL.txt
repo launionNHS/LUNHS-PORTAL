@@ -1,0 +1,6 @@
+LUNHS Portal v31
+
+Functional School Publication homepage showcase.
+Admin-published School Publication posts automatically appear here using their uploaded image/thumbnail. Previous/Next controls work. Clicking a cover opens its media/file. Responsive on desktop and cellphone.
+
+Upload/replace all files in LUNHS-PORTAL. No new SQL is required if your existing publication/media setup is already installed.

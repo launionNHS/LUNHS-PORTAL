@@ -3,49 +3,7 @@
 <body><header class="reference-header"><div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div><nav><a class="active" href="index.html">Home</a><a href="about.html">About</a><a href="announcements.html">Announcements</a><a href="publications.html">Publications</a><a href="media.html">Media Hub</a><a href="contact.html">Contact</a><a id="cmsNav" href="admin-cms.html" hidden>Manage Website</a><a class="resources-btn" href="https://lrmds.deped.gov.ph/search?query=modules" target="_blank" rel="noopener">📚 Resources</a><a class="portal-login-btn" href="portal.html">👤 Portal Login</a><button data-view="dashboard" id="dashNav" hidden>Dashboard</button><button id="logout" hidden>Logout</button></nav></header>
 <main>
 
-<section id="home" class="home-page">
-  <div class="hero hero-modern">
-    <a class="hero-hotspot updates-hotspot" href="announcements.html" aria-label="Explore School Updates"></a>
-    <a class="hero-hotspot publication-hotspot" href="publications.html" aria-label="School Publication"></a>
-    <a class="hero-hotspot announcement-hotspot" href="announcements.html" aria-label="Announcements"></a>
-    
-    <div class="hero-copy reveal">
-      <span class="eyebrow">LA UNION NATIONAL HIGH SCHOOL</span>
-      <h1>Learning today.<br><span>Leading tomorrow.</span></h1>
-      <p>Welcome to the official school portal of La Union National High School — a digital space for school updates, activities, achievements, publications, and our growing learning community.</p>
-      <div class="hero-actions">
-        <a class="btn primary" href="#schoolUpdates">Explore School Updates</a>
-        <a class="btn ghost" href="#publication">School Publication</a>
-      </div>
-      <div class="hero-stats">
-        <div><strong>Learn</strong><small>Quality Education</small></div>
-        <div><strong>Connect</strong><small>School Community</small></div>
-        <div><strong>Grow</strong><small>Skills & Character</small></div>
-      </div>
-    </div>
-    <div class="hero-visual reveal">
-      <div class="orb orb-a"></div><div class="orb orb-b"></div>
-      <div class="school-mark">
-        <img src="lunhs-logo.png" alt="LUNHS Logo">
-        <span>Official School Portal</span>
-      </div>
-      <div class="float-card fc-one">📢 Announcements</div>
-      <div class="float-card fc-two">🏆 Achievements</div>
-      <div class="float-card fc-three">📚 Learning</div>
-    </div>
-  </div>
-
-  <section id="welcomeSection" class="home-section reveal">
-    <div class="section-heading">
-      <div><span class="eyebrow">AT A GLANCE</span><h2>Welcome to LUNHS</h2></div>
-      <p>A school community where learners are encouraged to discover, participate, create, and succeed.</p>
-    </div>
-    <div class="info-grid">
-      <article class="info-card"><span class="info-icon">🎓</span><h3>Student-Centered Learning</h3><p>Supporting meaningful learning experiences, responsible citizenship, and lifelong skills.</p></article>
-      <article class="info-card"><span class="info-icon">💻</span><h3>Technology & Innovation</h3><p>Using digital resources and school facilities to strengthen teaching and learning.</p></article>
-      <article class="info-card"><span class="info-icon">🤝</span><h3>Community Partnership</h3><p>Building stronger connections among learners, families, teachers, and community partners.</p></article>
-    </div>
-  </section>
+<section id="school-publication" class="pub31"><div class="pub31-copy"><b class="pub31-kicker">SCHOOL PUBLICATION</b><h2>School Publication</h2><p>A dedicated space for campus journalism — featuring student stories, school news, editorials, feature articles, photographs, literary works, and future digital issues.</p><div class="pub31-features"><span>▣ Student Stories</span><span>✎ Creative Works</span><span>▣ Campus News</span></div><div class="pub31-actions"><a href="publications.html">Read Latest Issue</a><a href="publications.html">View All Issues</a></div><i>“Student voices. A brighter tomorrow.”</i></div><div class="pub31-stage"><button id="pubPrev">‹</button><div id="pub31Slider">Loading publications…</div><button id="pubNext">›</button><div id="pub31Dots"></div></div></section>
 
   <section id="schoolUpdates" class="home-section updates-wrap reveal">
     <div class="section-heading">
@@ -150,4 +108,6 @@
 <section id="announcements" class="view"><h1>Announcements & Events</h1><div id="publicPosts"></div></section>
 <section id="login" class="view"><div class="panel narrow"><h1>Portal Login</h1><form id="loginForm"><label>Email or School ID / LRN<input id="schoolLogin" type="text" autocomplete="username" placeholder="Admin email or School ID / LRN" required></label><label>Password<input id="password" type="password" required></label><button class="primary">Sign In</button></form><p><a href="#" id="adminForgot">Administrator forgot password?</a></p><p id="loginMsg"></p></div></section>
 <section id="dashboard" class="view"><div class="dashhead"><div><h1 id="welcome">Dashboard</h1><p id="identity"></p></div></div><div id="dashboardBody"></div></section>
-</main><footer>La Union National High School • Cabadbaran City</footer><script src="config.js"></script><script src="app.js"></script><script>(async()=>{try{const s=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),u=(await s.auth.getUser()).data.user;if(u){const{data:p}=await s.from("profiles").select("role").eq("id",u.id).single();if(p?.role==="admin")document.getElementById("cmsNav").hidden=false}}catch(e){}})();</script></body></html>
+</main><footer>La Union National High School • Cabadbaran City</footer><script src="config.js"></script><script src="app.js"></script><script>(async()=>{try{const s=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),u=(await s.auth.getUser()).data.user;if(u){const{data:p}=await s.from("profiles").select("role").eq("id",u.id).single();if(p?.role==="admin")document.getElementById("cmsNav").hidden=false}}catch(e){}})();</script><script>
+(async()=>{const sb=supabase.createClient("https://ppwrdnygptfloqjnsfir.supabase.co","sb_publishable_D1neO_P9eiXL4lk-qJxmcA_ovjM4HCD");let a=[],n=0,box=document.getElementById("pub31Slider"),dots=document.getElementById("pub31Dots");const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function draw(){if(!a.length){box.innerHTML="<p>No publication issues published yet.</p>";return}box.innerHTML=a.map((p,i)=>{let u=p.thumbnail_url||p.media_url;return `<article class="${i===n?"on":""}"><a href="${esc(p.media_url||p.facebook_url||"publications.html")}" ${p.media_url||p.facebook_url?'target="_blank" rel="noopener"':''}>${u?`<img src="${esc(u)}" alt="${esc(p.title)}">`:`<div class="pub31-placeholder"><img src="lunhs-logo.png"><b>LUNHS</b><strong>School<br>Publication</strong></div>`}<h3>${esc(p.title)}</h3><small>${new Date(p.created_at).toLocaleDateString()}</small></a></article>`}).join("");dots.innerHTML=a.map((_,i)=>`<span class="${i===n?"on":""}"></span>`).join("")}let r=await sb.from("posts").select("*").eq("published",true).eq("category","School Publication").order("created_at",{ascending:false});a=r.data||[];draw();document.getElementById("pubNext").onclick=()=>{if(a.length){n=(n+1)%a.length;draw()}};document.getElementById("pubPrev").onclick=()=>{if(a.length){n=(n-1+a.length)%a.length;draw()}}})();
+</script></body></html>
