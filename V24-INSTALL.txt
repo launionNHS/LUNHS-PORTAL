@@ -1,0 +1,22 @@
+LUNHS PORTAL v24 — PICTURE, VIDEO & FILE UPLOADS
+
+Admin publishing now accepts:
+- Pictures/images
+- Video files
+- PDF
+- Word files
+- Excel files
+- PowerPoint files
+- ZIP/TXT and other common files
+- YouTube/media URLs
+- Optional thumbnail image
+
+Works for School Publication and all other post categories.
+
+INSTALL:
+1. Upload/replace ALL files from this ZIP to LUNHS-PORTAL.
+2. Run V24-MEDIA-UPLOAD-SQL.sql ONCE in Supabase SQL Editor.
+3. Sign in as Admin -> Manage Website.
+4. Choose a section, attach a picture/video/file, and Publish.
+
+Files are stored in the existing public Supabase Storage bucket: school-media.

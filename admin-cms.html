@@ -2,7 +2,13 @@
 <header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><div><b>La Union National High School</b><small>ADMIN CONTENT MANAGER</small></div></div><nav><a href="index.html">Website</a><button id="logout">Logout</button></nav></header>
 <main class="standalone-page"><section class="page-hero"><span>ADMINISTRATION</span><h1>Website Content Manager</h1><p>Edit page content and publish posts to every website section.</p></section><section class="page-content"><p id="status">Checking access…</p><div id="cms" hidden><div class="cms-grid">
 <section class="cms-box"><h2>Edit Page Content</h2><label>Page<select id="sectionKey"><option value="home_welcome">Home</option><option value="about_main">About</option><option value="academics_main">Academics</option><option value="downloads_main">Downloads</option><option value="contact_main">Contact</option></select></label><label>Heading<input id="sectionTitle"></label><label>Content<textarea id="sectionBody" rows="8"></textarea></label><button class="primary" id="saveSection">Save Changes</button><p id="sectionMsg"></p></section>
-<section class="cms-box"><h2>Publish to a Section</h2><label>Section<select id="postCategory"><option>Announcement</option><option>Event</option><option>Students Update</option><option>School Publication</option><option>Gallery</option><option>Achievement</option><option>Academics</option><option>Downloads</option><option>About</option><option>Contact</option></select></label><label>Title<input id="postTitle"></label><label>Content<textarea id="postBody" rows="7"></textarea></label><label>Media URL (optional)<input id="mediaUrl"></label><label><input type="checkbox" id="published" checked> Publish now</label><button class="primary" id="publishPost">Publish</button><p id="postMsg"></p></section></div>
+<section class="cms-box"><h2>Publish to a Section</h2><label>Section<select id="postCategory"><option>Announcement</option><option>Event</option><option>Students Update</option><option>School Publication</option><option>Gallery</option><option>Achievement</option><option>Academics</option><option>Downloads</option><option>About</option><option>Contact</option></select></label><label>Title<input id="postTitle"></label><label>Content<textarea id="postBody" rows="7"></textarea></label><label>Upload Picture, Video, PDF or File
+<input id="mediaFile" type="file" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.txt">
+</label>
+<label>Or Media / YouTube URL (optional)<input id="mediaUrl" placeholder="https://..."></label>
+<label>Thumbnail Picture (optional)<input id="thumbFile" type="file" accept="image/*"></label>
+<div id="uploadProgress"></div>
+<label><input type="checkbox" id="published" checked> Publish now</label><button class="primary" id="publishPost">Publish</button><p id="postMsg"></p></section></div>
 <section class="cms-box"><h2>Manage Posts</h2><div id="adminPosts"></div></section></div></section></main><footer>La Union National High School • Administrator</footer>
 <script src="config.js"></script><script>
 const sb=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),$=x=>document.getElementById(x);let me;
@@ -10,7 +16,39 @@ async function init(){const{data:{user}}=await sb.auth.getUser();if(!user){locat
 async function loadSection(){const{data}=await sb.from("site_sections").select("*").eq("section_key",$("sectionKey").value).maybeSingle();$("sectionTitle").value=data?.title||"";$("sectionBody").value=data?.body||""}
 $("sectionKey").onchange=loadSection;
 $("saveSection").onclick=async()=>{const{error}=await sb.from("site_sections").upsert({section_key:$("sectionKey").value,page_name:$("sectionKey").selectedOptions[0].text,title:$("sectionTitle").value,body:$("sectionBody").value,updated_by:me.id,updated_at:new Date().toISOString()},{onConflict:"section_key"});$("sectionMsg").textContent=error?error.message:"Saved successfully."};
-$("publishPost").onclick=async()=>{let c=$("postCategory").value;const{error}=await sb.from("posts").insert({type:c==="Event"?"Event":"Announcement",category:c,title:$("postTitle").value,body:$("postBody").value,media_url:$("mediaUrl").value||null,published:$("published").checked,author_id:me.id});$("postMsg").textContent=error?error.message:"Published successfully.";if(!error){$("postTitle").value="";$("postBody").value="";loadPosts()}};
+function safeName(n){return n.toLowerCase().replace(/[^a-z0-9._-]/g,"-")}
+function mediaKind(file,url){
+ if(file){
+   if(file.type.startsWith("image/")) return "image";
+   if(file.type.startsWith("video/")) return "video";
+   return "file";
+ }
+ if(url && (url.includes("youtube.com")||url.includes("youtu.be"))) return "youtube";
+ return url ? "file" : null;
+}
+async function uploadFile(file,prefix){
+ if(!file)return null;
+ const path="posts/"+Date.now()+"-"+crypto.randomUUID()+"-"+prefix+"-"+safeName(file.name);
+ const {error}=await sb.storage.from("school-media").upload(path,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+ if(error)throw error;
+ return sb.storage.from("school-media").getPublicUrl(path).data.publicUrl;
+}
+$("publishPost").onclick=async()=>{
+ const c=$("postCategory").value,file=$("mediaFile").files[0],thumb=$("thumbFile").files[0],url=$("mediaUrl").value.trim();
+ $("postMsg").textContent="Uploading and publishing…";
+ try{
+   const uploaded=await uploadFile(file,"media");
+   const thumbnail=await uploadFile(thumb,"thumb");
+   const finalUrl=uploaded||url||null;
+   const kind=mediaKind(file,url);
+   const payload={type:c==="Event"?"Event":"Announcement",category:c,title:$("postTitle").value,body:$("postBody").value,media_url:finalUrl,thumbnail_url:thumbnail,media_type:kind,published:$("published").checked,author_id:me.id};
+   const {error}=await sb.from("posts").insert(payload);
+   if(error)throw error;
+   $("postMsg").textContent="Published successfully.";
+   $("postTitle").value="";$("postBody").value="";$("mediaUrl").value="";$("mediaFile").value="";$("thumbFile").value="";
+   loadPosts();
+ }catch(e){$("postMsg").textContent=e.message||"Upload failed."}
+};
 async function loadPosts(){const{data}=await sb.from("posts").select("*").order("created_at",{ascending:false}).limit(50);$("adminPosts").innerHTML=(data||[]).map(p=>'<article class="admin-row"><div><b>'+p.title+'</b><small>'+(p.category||p.type)+' • '+(p.published?"Published":"Draft")+'</small></div><div><button onclick="togglePost('+p.id+','+(!p.published)+')">'+(p.published?"Unpublish":"Publish")+'</button><button onclick="deletePost('+p.id+')">Delete</button></div></article>').join("")||"<p>No posts yet.</p>"}
 window.togglePost=async(i,v)=>{await sb.from("posts").update({published:v}).eq("id",i);loadPosts()};window.deletePost=async i=>{if(confirm("Delete this content?")){await sb.from("posts").delete().eq("id",i);loadPosts()}};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.href="portal.html"};init();
