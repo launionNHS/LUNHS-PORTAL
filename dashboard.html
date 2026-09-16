@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LUNHS Portal Dashboard</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<body>
+<header class="reference-header">
+ <div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
+ <nav><a href="index.html">Home</a><span id="roleBadge"></span><button id="logout">Logout</button></nav>
+</header>
+<main class="standalone-page">
+<section class="page-hero"><span>SCHOOL PORTAL</span><h1 id="welcome">Dashboard</h1><p id="identity">Loading account…</p></section>
+<section class="page-content">
+ <p id="status"></p>
+
+ <section id="studentPanel" hidden>
+  <div class="portal-title-row"><div><h2>My Grades</h2><p>View your recorded quarterly grades.</p></div>
+  <label>School Year <select id="studentSY"><option>2026-2027</option></select></label></div>
+  <div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Final</th></tr></thead><tbody id="studentGrades"></tbody></table></div>
+ </section>
+
+ <section id="teacherPanel" hidden>
+  <div class="portal-title-row"><div><h2>Teacher Gradebook</h2><p>Select your assigned class, encode Q1–Q4 grades, then save.</p></div></div>
+  <div class="grade-controls">
+   <label>Assigned Class<select id="assignment"></select></label>
+   <label>School Year<input id="teacherSY" value="2026-2027"></label>
+   <button class="primary" id="loadClass">Load Students</button>
+  </div>
+  <div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>School ID / LRN</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead><tbody id="classRows"></tbody></table></div>
+  <button class="primary save-grades" id="saveGrades" hidden>Save Grades</button><p id="gradeMsg"></p>
+ </section>
+
+ <section id="adminPanel" hidden>
+  <h2>Administrator Dashboard</h2><div class="admin-actions">
+   <a class="dashboard-card" href="admin-cms.html"><b>Manage Website</b><span>Edit pages and publish announcements/publications.</span></a>
+   <a class="dashboard-card" href="admin-users.html"><b>Manage Accounts</b><span>Create Student and Teacher accounts and manage assignments.</span></a>
+   <a class="dashboard-card" href="admin-reset-password.html"><b>Password Management</b><span>Reset Student or Teacher passwords.</span></a>
+  </div>
+ </section>
+</section></main>
+<footer>La Union National High School • School Portal</footer>
+<script src="config.js"></script>
+<script>
+const sb=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),$=x=>document.getElementById(x);
+let user,profile,assignments=[],currentStudents=[];
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+async function init(){
+ const u=(await sb.auth.getUser()).data.user;if(!u){location.href="portal.html";return} user=u;
+ const r=await sb.from("profiles").select("*").eq("id",u.id).single(); profile=r.data;
+ if(!profile){$("status").textContent="Profile not found. Contact the administrator.";return}
+ $("welcome").textContent="Welcome, "+profile.display_name;
+ $("identity").textContent=(profile.school_id||"")+(profile.grade_level?" • Grade "+profile.grade_level:"")+(profile.section?" • "+profile.section:"");
+ $("roleBadge").textContent=profile.role.toUpperCase();
+ if(profile.role==="student"){ $("studentPanel").hidden=false; loadStudentGrades() }
+ else if(profile.role==="teacher"){ $("teacherPanel").hidden=false; loadAssignments() }
+ else if(profile.role==="admin"){ $("adminPanel").hidden=false }
+}
+async function loadStudentGrades(){
+ const sy=$("studentSY").value;
+ const {data,error}=await sb.from("grades").select("q1,q2,q3,q4,school_year,subjects(name)").eq("student_id",user.id).eq("school_year",sy);
+ if(error){$("status").textContent=error.message;return}
+ $("studentGrades").innerHTML=(data||[]).map(g=>{
+  let vals=[g.q1,g.q2,g.q3,g.q4].filter(v=>v!==null),fin=vals.length===4?(vals.reduce((a,b)=>a+Number(b),0)/4).toFixed(2):"—";
+  return `<tr><td>${esc(g.subjects?.name||"Subject")}</td><td>${g.q1??"—"}</td><td>${g.q2??"—"}</td><td>${g.q3??"—"}</td><td>${g.q4??"—"}</td><td><b>${fin}</b></td></tr>`
+ }).join("")||'<tr><td colspan="6">No grades have been posted yet.</td></tr>'
+}
+$("studentSY").onchange=loadStudentGrades;
+async function loadAssignments(){
+ const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,subjects(name,grade_level)").eq("teacher_id",user.id);
+ if(error){$("gradeMsg").textContent=error.message;return}
+ assignments=data||[];
+ $("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — ${esc(a.section)}</option>`).join("")||'<option>No assignment</option>';
+}
+$("loadClass").onclick=async()=>{
+ const a=assignments[+$("assignment").value]; if(!a)return;
+ const sy=$("teacherSY").value.trim()||"2026-2027";
+ const {data:students,error}=await sb.from("profiles").select("id,display_name,school_id,section").eq("role","student").eq("section",a.section).order("display_name");
+ if(error){$("gradeMsg").textContent=error.message;return}
+ const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);
+ const gm=new Map((grades||[]).map(g=>[g.student_id,g])); currentStudents=students||[];
+ $("classRows").innerHTML=currentStudents.map(s=>{let g=gm.get(s.id)||{};return `<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["q1","q2","q3","q4"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`}).join("")||'<tr><td colspan="6">No students found in this section.</td></tr>';
+ $("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";
+}
+$("saveGrades").onclick=async()=>{
+ const a=assignments[+$("assignment").value];if(!a)return; const sy=$("teacherSY").value.trim()||"2026-2027";
+ const rows=[...document.querySelectorAll("#classRows tr[data-id]")]; let payload=[];
+ for(const tr of rows){let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};for(const inp of tr.querySelectorAll("input")){if(inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[inp.dataset.q]=v}else obj[inp.dataset.q]=null}payload.push(obj)}
+ $("gradeMsg").textContent="Saving…";const {error}=await sb.from("grades").upsert(payload,{onConflict:"student_id,subject_id,school_year"});
+ $("gradeMsg").textContent=error?error.message:"Grades saved successfully.";
+}
+$("logout").onclick=async()=>{await sb.auth.signOut();location.href="portal.html"};init();
+</script></body></html>

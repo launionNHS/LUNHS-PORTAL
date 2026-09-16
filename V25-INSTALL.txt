@@ -1,0 +1,30 @@
+LUNHS PORTAL v25 — STUDENT, TEACHER & ADMIN DASHBOARDS
+
+Portal Login now redirects to dashboard.html and automatically detects the account role.
+
+STUDENT
+- Login using School ID/LRN + password
+- View own Q1, Q2, Q3, Q4 grades
+- View computed final average when all four quarters are available
+
+TEACHER
+- Login using Employee/School ID + password
+- See assigned subject/section
+- Load students in assigned section
+- Encode Q1-Q4 grades (60-100)
+- Save/update grades
+
+ADMIN
+- Website Content Manager
+- Student/Teacher Account Manager
+- Assign teacher to subject + section
+- Password Management
+
+INSTALL:
+Upload/replace ALL files in this ZIP into LUNHS-PORTAL.
+No new SQL is required if your previous profiles, subjects, teacher_assignments,
+grades, RLS policies, and create-school-user Edge Function are already installed.
+
+IMPORTANT:
+Teacher grade entry depends on teacher_assignments. Admin must assign the teacher
+to the correct Subject and Section before that teacher can encode grades.
