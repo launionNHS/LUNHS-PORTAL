@@ -1,0 +1,16 @@
+LUNHS Portal v31.1
+
+IMPORTANT:
+This version starts from the older v30.1 homepage.
+ONLY the School Publication section was changed.
+The rest of the homepage remains as it was.
+
+School Publication:
+- Uploaded publication pictures/covers display in the section.
+- Reads published School Publication posts from Supabase.
+- Previous/Next carousel.
+- Clickable publication cover.
+- Responsive portrait/landscape.
+
+Upload/replace all files in LUNHS-PORTAL.
+No new SQL is required.

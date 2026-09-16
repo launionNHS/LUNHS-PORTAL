@@ -3,7 +3,18 @@
 <body><header class="reference-header"><div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div><nav><a class="active" href="index.html">Home</a><a href="about.html">About</a><a href="announcements.html">Announcements</a><a href="publications.html">Publications</a><a href="media.html">Media Hub</a><a href="contact.html">Contact</a><a id="cmsNav" href="admin-cms.html" hidden>Manage Website</a><a class="resources-btn" href="https://lrmds.deped.gov.ph/search?query=modules" target="_blank" rel="noopener">📚 Resources</a><a class="portal-login-btn" href="portal.html">👤 Portal Login</a><button data-view="dashboard" id="dashNav" hidden>Dashboard</button><button id="logout" hidden>Logout</button></nav></header>
 <main>
 
-<section id="school-publication" class="pub31"><div class="pub31-copy"><b class="pub31-kicker">SCHOOL PUBLICATION</b><h2>School Publication</h2><p>A dedicated space for campus journalism — featuring student stories, school news, editorials, feature articles, photographs, literary works, and future digital issues.</p><div class="pub31-features"><span>▣ Student Stories</span><span>✎ Creative Works</span><span>▣ Campus News</span></div><div class="pub31-actions"><a href="publications.html">Read Latest Issue</a><a href="publications.html">View All Issues</a></div><i>“Student voices. A brighter tomorrow.”</i></div><div class="pub31-stage"><button id="pubPrev">‹</button><div id="pub31Slider">Loading publications…</div><button id="pubNext">›</button><div id="pub31Dots"></div></div></section>
+<section class="school-publication-showcase" id="school-publication">
+<div class="sp-text">
+<h2>School Publication</h2>
+<p>A dedicated space for campus journalism — featuring student stories, school news, editorials, feature articles, photographs, literary works, and future digital issues.</p>
+</div>
+<div class="sp-carousel">
+<button id="spPrev" class="sp-arrow sp-left" aria-label="Previous">‹</button>
+<div id="spIssues" class="sp-issues"><p>Loading publications…</p></div>
+<button id="spNext" class="sp-arrow sp-right" aria-label="Next">›</button>
+<div id="spDots" class="sp-dots"></div>
+</div>
+</section>
 
   <section id="schoolUpdates" class="home-section updates-wrap reveal">
     <div class="section-heading">
@@ -109,5 +120,28 @@
 <section id="login" class="view"><div class="panel narrow"><h1>Portal Login</h1><form id="loginForm"><label>Email or School ID / LRN<input id="schoolLogin" type="text" autocomplete="username" placeholder="Admin email or School ID / LRN" required></label><label>Password<input id="password" type="password" required></label><button class="primary">Sign In</button></form><p><a href="#" id="adminForgot">Administrator forgot password?</a></p><p id="loginMsg"></p></div></section>
 <section id="dashboard" class="view"><div class="dashhead"><div><h1 id="welcome">Dashboard</h1><p id="identity"></p></div></div><div id="dashboardBody"></div></section>
 </main><footer>La Union National High School • Cabadbaran City</footer><script src="config.js"></script><script src="app.js"></script><script>(async()=>{try{const s=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),u=(await s.auth.getUser()).data.user;if(u){const{data:p}=await s.from("profiles").select("role").eq("id",u.id).single();if(p?.role==="admin")document.getElementById("cmsNav").hidden=false}}catch(e){}})();</script><script>
-(async()=>{const sb=supabase.createClient("https://ppwrdnygptfloqjnsfir.supabase.co","sb_publishable_D1neO_P9eiXL4lk-qJxmcA_ovjM4HCD");let a=[],n=0,box=document.getElementById("pub31Slider"),dots=document.getElementById("pub31Dots");const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));function draw(){if(!a.length){box.innerHTML="<p>No publication issues published yet.</p>";return}box.innerHTML=a.map((p,i)=>{let u=p.thumbnail_url||p.media_url;return `<article class="${i===n?"on":""}"><a href="${esc(p.media_url||p.facebook_url||"publications.html")}" ${p.media_url||p.facebook_url?'target="_blank" rel="noopener"':''}>${u?`<img src="${esc(u)}" alt="${esc(p.title)}">`:`<div class="pub31-placeholder"><img src="lunhs-logo.png"><b>LUNHS</b><strong>School<br>Publication</strong></div>`}<h3>${esc(p.title)}</h3><small>${new Date(p.created_at).toLocaleDateString()}</small></a></article>`}).join("");dots.innerHTML=a.map((_,i)=>`<span class="${i===n?"on":""}"></span>`).join("")}let r=await sb.from("posts").select("*").eq("published",true).eq("category","School Publication").order("created_at",{ascending:false});a=r.data||[];draw();document.getElementById("pubNext").onclick=()=>{if(a.length){n=(n+1)%a.length;draw()}};document.getElementById("pubPrev").onclick=()=>{if(a.length){n=(n-1+a.length)%a.length;draw()}}})();
+(async function(){
+ const sbp=supabase.createClient("https://ppwrdnygptfloqjnsfir.supabase.co","sb_publishable_D1neO_P9eiXL4lk-qJxmcA_ovjM4HCD");
+ let issues=[],current=0;
+ const box=document.getElementById("spIssues"),dots=document.getElementById("spDots");
+ const esc=s=>String(s||"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ function render(){
+  if(!issues.length){box.innerHTML="<p>No school publication uploaded yet.</p>";dots.innerHTML="";return}
+  const ordered=issues.map((_,d)=>issues[(current+d)%issues.length]).slice(0,Math.min(3,issues.length));
+  box.innerHTML=ordered.map((p,d)=>{
+    const cover=p.thumbnail_url||p.media_url;
+    const url=p.media_url||p.facebook_url||"publications.html";
+    return `<article class="sp-issue ${d===0?"side":d===1?"active":"side"}">
+      <a href="${esc(url)}" ${url!=="publications.html"?'target="_blank" rel="noopener"':''}>
+      ${cover?`<img src="${esc(cover)}" alt="${esc(p.title)}">`:`<div class="sp-cover-placeholder"><img src="lunhs-logo.png"><b>LUNHS</b><strong>School<br>Publication</strong></div>`}
+      <h3>${esc(p.title)}</h3><small>${new Date(p.created_at).toLocaleDateString()}</small></a></article>`
+  }).join("");
+  dots.innerHTML=issues.map((_,i)=>`<span class="${i===current?"active":""}"></span>`).join("");
+ }
+ const {data,error}=await sbp.from("posts").select("*").eq("published",true).eq("category","School Publication").order("created_at",{ascending:false});
+ if(error){box.innerHTML="<p>Unable to load publications.</p>";return}
+ issues=data||[];render();
+ document.getElementById("spNext").onclick=()=>{if(issues.length){current=(current+1)%issues.length;render()}};
+ document.getElementById("spPrev").onclick=()=>{if(issues.length){current=(current-1+issues.length)%issues.length;render()}};
+})();
 </script></body></html>
