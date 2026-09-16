@@ -2366,3 +2366,21 @@ input::placeholder,textarea::placeholder{
 .media-info{padding:18px}.media-kind{text-transform:uppercase;font-size:10px;letter-spacing:1.4px;font-weight:800;color:#146B3A}.media-info h2{font-size:19px;margin:7px 0}.media-info small{color:#6e776f}.media-info p{line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.media-actions{display:flex;gap:12px;flex-wrap:wrap}.media-actions a{color:#146B3A;font-weight:700;text-decoration:none}
 .media-viewer{position:fixed;z-index:9999;inset:0;background:rgba(0,0,0,.88);padding:50px 20px;overflow:auto}.media-viewer #closeViewer{position:fixed;right:24px;top:15px;background:none;border:0;color:#fff;font-size:45px;cursor:pointer}.media-viewer #viewerBody{max-width:1000px;margin:auto;color:#fff}.media-viewer img,.media-viewer video,.media-viewer iframe{display:block;width:100%;max-height:75vh;object-fit:contain;background:#000;border:0}.media-viewer iframe{height:65vh}.viewer-open{overflow:hidden}
 @media(max-width:900px){.media-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.media-grid{grid-template-columns:1fr}.preview{height:250px}}
+
+/* v27.1 LIS student-account helper */
+.lis-helper{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:0 0 22px;padding:22px 24px;border:1px solid #cfe0d4;background:#f4faf6;border-radius:10px}
+.lis-helper h2{margin:4px 0 7px;color:#146B3A}.lis-helper p{margin:0;max-width:720px;line-height:1.55}
+.lis-label{font-size:10px;letter-spacing:1.5px;font-weight:800;color:#4d755b}
+.lis-open-btn{flex:0 0 auto;padding:12px 17px;background:#146B3A;color:#fff!important;text-decoration:none;border-radius:8px;font-weight:800}
+.lis-inline{font-size:12px;margin-top:6px}.lis-inline a{color:#146B3A;font-weight:700}
+.lis-privacy-note{margin:-10px 0 24px;padding:12px 15px;border-left:4px solid #146B3A;background:#fff;color:#4a514c;font-size:13px;line-height:1.5}
+@media(max-width:700px){.lis-helper{display:block}.lis-open-btn{display:inline-block;margin-top:16px}}
+
+/* v28 Excel bulk account import */
+.bulk-account-panel{margin:0 0 28px;padding:24px;border:1px solid #cfe0d4;background:#fff;border-radius:10px}
+.bulk-head{display:flex;justify-content:space-between;gap:20px;align-items:center}.bulk-head h2{margin:4px 0 6px;color:#146B3A}.bulk-head p{margin:0}
+.excel-pick,#bulkCreateBtn{display:inline-block;padding:12px 17px;border:0;border-radius:8px;background:#146B3A;color:#fff;font-weight:800;cursor:pointer}
+#bulkCreateBtn:disabled{opacity:.45;cursor:not-allowed}.excel-help{margin:18px 0 10px;padding:12px;background:#f4faf6;border-left:4px solid #146B3A}
+.excel-summary{margin:10px 0;font-weight:700}.excel-table{font-size:13px}.row-error{background:#fff4f2}.row-valid{background:#f5fbf6}
+.bulk-actions{margin-top:15px}.bulk-result{margin-top:18px}.bulk-ok{color:#146B3A;font-weight:800}.bulk-fail{color:#a4261d;font-weight:700}
+@media(max-width:700px){.bulk-head{display:block}.excel-pick{margin-top:15px}}

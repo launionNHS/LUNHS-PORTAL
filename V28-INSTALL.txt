@@ -1,0 +1,28 @@
+LUNHS PORTAL v28 — EXCEL BULK ACCOUNT CREATION
+
+Built for the uploaded Sample.xlsx format.
+
+EXPECTED COLUMNS:
+Role
+Full Name
+School ID/ LRN/ Employee ID
+Grade Level
+Section
+Temporary Password
+
+FEATURES:
+- Upload .xlsx/.xls from Admin > Manage Accounts
+- Preview before account creation
+- Validates role, name, ID, grade/section and minimum 8-character password
+- Detects duplicate IDs inside the uploaded sheet
+- Creates valid accounts through the existing secure create-school-user Edge Function
+- Shows per-account success/failure results
+- Existing manual account creation remains available
+- Existing LIS shortcut remains available
+
+INSTALL:
+Upload/replace all files from this ZIP to the LUNHS-PORTAL GitHub repository.
+No new Supabase SQL is required.
+
+NOTE:
+Keep the exact header names used in Sample.xlsx.

@@ -1,0 +1,16 @@
+LUNHS PORTAL v27.1 — LIS STUDENT ACCOUNT HELPER
+
+Added to Admin > Manage Accounts:
+- Open LIS Masterlist button
+- Links directly to:
+  https://lis.deped.gov.ph/enrolment/masterlist/12272665?sy=2026
+- Opens in a separate tab so Admin can view LIS while creating a student account.
+- Privacy notice explains that LIS remains separate and learner data is not automatically copied.
+
+IMPORTANT:
+The LUNHS portal does not request, store, or expose the Admin's LIS login credentials.
+Automatic importing from the protected DepEd LIS is not implemented.
+
+INSTALL:
+Upload/replace all files from this ZIP in the LUNHS-PORTAL GitHub repository.
+No new Supabase SQL is required.

@@ -1,5 +1,22 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage Accounts | LUNHS</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage Accounts | LUNHS</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script></head><body>
 <header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><div><b>La Union National High School</b><small>ACCOUNT MANAGEMENT</small></div></div><nav><a href="dashboard.html">Dashboard</a><a href="admin-cms.html">Website Manager</a></nav></header>
+<section class="bulk-account-panel">
+ <div class="bulk-head">
+  <div><span class="lis-label">BULK ACCOUNT CREATION</span><h2>Create accounts from Excel</h2>
+  <p>Upload the LUNHS Excel template. Review the records first, then create all valid accounts.</p></div>
+  <label class="excel-pick">Choose Excel<input id="excelAccountsFile" type="file" accept=".xlsx,.xls" hidden></label>
+ </div>
+ <div class="excel-help">Expected columns: <b>Role</b>, <b>Full Name</b>, <b>School ID/ LRN/ Employee ID</b>, <b>Grade Level</b>, <b>Section</b>, <b>Temporary Password</b>.</div>
+ <div id="excelSummary" class="excel-summary">No Excel file selected.</div>
+ <div id="excelPreview" class="table-wrap"></div>
+ <div class="bulk-actions"><button id="bulkCreateBtn" type="button" disabled>Create Valid Accounts</button></div>
+ <div id="bulkResult" class="bulk-result"></div>
+</section>
+
+
+
+
+
 <main class="standalone-page"><section class="page-hero"><span>ADMINISTRATION</span><h1>Student & Teacher Accounts</h1><p>Create portal accounts and assign teachers to subjects and sections.</p></section><section class="page-content"><p id="status">Checking access…</p><div id="body" hidden>
 <div class="cms-grid"><section class="cms-box"><h2>Create Account</h2>
 <label>Role<select id="role"><option value="student">Student</option><option value="teacher">Teacher</option></select></label>
@@ -15,4 +32,68 @@ $("role").onchange=()=>{let s=$("role").value==="student";$("gradeLabel").style.
 $("create").onclick=async()=>{let role=$("role").value; $("createMsg").textContent="Creating…";const {data:{session}}=await sb.auth.getSession();const res=await fetch(window.LUNHS_CONFIG.url+"/functions/v1/create-school-user",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},body:JSON.stringify({role,password:$("pass").value,display_name:$("name").value,school_id:$("schoolId").value,grade_level:role==="student"?$("grade").value:null,section:role==="student"?$("section").value:null})});let d={};try{d=await res.json()}catch(e){};$("createMsg").textContent=res.ok?"Account created successfully.":(d.error||d.message||"Unable to create account.");if(res.ok)loadAll()};
 async function loadAll(){const {data}=await sb.from("profiles").select("*").in("role",["student","teacher"]).order("display_name");$("accounts").innerHTML=(data||[]).map(p=>`<tr><td>${p.display_name}</td><td>${p.role}</td><td>${p.school_id||""}</td><td>${p.grade_level||""}</td><td>${p.section||""}</td></tr>`).join("");$("teacher").innerHTML=(data||[]).filter(p=>p.role==="teacher").map(p=>`<option value="${p.id}">${p.display_name}</option>`).join("");const {data:s}=await sb.from("subjects").select("*").order("name");$("subject").innerHTML=(s||[]).map(x=>`<option value="${x.id}">${x.name}${x.grade_level?" — Grade "+x.grade_level:""}</option>`).join("")}
 $("assign").onclick=async()=>{const {error}=await sb.from("teacher_assignments").upsert({teacher_id:$("teacher").value,subject_id:Number($("subject").value),section:$("assignSection").value.trim()},{onConflict:"teacher_id,subject_id,section"});$("assignMsg").textContent=error?error.message:"Teacher assigned successfully."};init();
-</script></body></html>
+</script>
+<script>
+(()=>{
+ let excelRows=[];
+ const file=document.getElementById("excelAccountsFile"), preview=document.getElementById("excelPreview"),
+ summary=document.getElementById("excelSummary"), btn=document.getElementById("bulkCreateBtn"), result=document.getElementById("bulkResult");
+ const norm=s=>String(s??"").trim();
+ const roleNorm=s=>norm(s).toLowerCase()==="teacher"?"teacher":norm(s).toLowerCase()==="student"?"student":"";
+ function rowFrom(o){
+  const role=roleNorm(o["Role"]), name=norm(o["Full Name"]), sid=norm(o["School ID/ LRN/ Employee ID"]),
+  grade=norm(o["Grade Level"]), section=norm(o["Section"]), password=norm(o["Temporary Password"]);
+  let errors=[];
+  if(!role)errors.push("Role must be Student or Teacher");
+  if(!name)errors.push("Full Name is required");
+  if(!sid)errors.push("School ID/LRN/Employee ID is required");
+  if(password.length<8)errors.push("Password must be at least 8 characters");
+  if(role==="student"&&!grade)errors.push("Grade Level is required");
+  if(role==="student"&&!section)errors.push("Section is required");
+  return {role,name,sid,grade,section,password,errors};
+ }
+ function show(){
+  const valid=excelRows.filter(x=>!x.errors.length).length;
+  summary.innerHTML=`<b>${excelRows.length}</b> record(s) found • <b>${valid}</b> valid • <b>${excelRows.length-valid}</b> need correction`;
+  preview.innerHTML=`<table class="grade-table excel-table"><thead><tr><th>#</th><th>Role</th><th>Full Name</th><th>School ID/LRN</th><th>Grade</th><th>Section</th><th>Status</th></tr></thead><tbody>`+
+   excelRows.map((r,i)=>`<tr class="${r.errors.length?"row-error":"row-valid"}"><td>${i+1}</td><td>${r.role||"—"}</td><td>${r.name||"—"}</td><td>${r.sid||"—"}</td><td>${r.grade||"—"}</td><td>${r.section||"—"}</td><td>${r.errors.length?`⚠ ${r.errors.join("; ")}`:"✓ Ready"}</td></tr>`).join("")+"</tbody></table>";
+  btn.disabled=!valid;
+ }
+ file?.addEventListener("change",async()=>{
+  result.innerHTML="";excelRows=[];btn.disabled=true;
+  const f=file.files?.[0];if(!f)return;
+  try{
+   const wb=XLSX.read(await f.arrayBuffer(),{type:"array"}), ws=wb.Sheets[wb.SheetNames[0]];
+   const raw=XLSX.utils.sheet_to_json(ws,{defval:"",raw:false});
+   excelRows=raw.map(rowFrom);
+   const seen=new Set();
+   excelRows.forEach(r=>{const k=r.sid.toLowerCase();if(k&&seen.has(k))r.errors.push("Duplicate ID in Excel");seen.add(k)});
+   show();
+  }catch(e){summary.textContent="Could not read this Excel file.";console.error(e)}
+ });
+ btn?.addEventListener("click",async()=>{
+  const valid=excelRows.filter(x=>!x.errors.length); if(!valid.length)return;
+  if(!confirm(`Create ${valid.length} valid account(s)?`))return;
+  btn.disabled=true; result.innerHTML='<p>Creating accounts…</p>';
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session){result.innerHTML='<p class="bulk-fail">Admin session expired. Please sign in again.</p>';return}
+  let ok=0,fail=0, lines=[];
+  for(const r of valid){
+   try{
+    const res=await fetch(window.LUNHS_CONFIG.url+"/functions/v1/create-school-user",{
+     method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+session.access_token},
+     body:JSON.stringify({role:r.role,password:r.password,display_name:r.name,school_id:r.sid,
+       grade_level:r.role==="student"?r.grade:null,section:r.role==="student"?r.section:null})
+    });
+    let data={};try{data=await res.json()}catch{}
+    if(!res.ok)throw new Error(data.error||data.message||"Account creation failed");
+    ok++;lines.push(`<tr><td>${r.name}</td><td>${r.sid}</td><td class="bulk-ok">Created</td></tr>`);
+   }catch(e){fail++;lines.push(`<tr><td>${r.name}</td><td>${r.sid}</td><td class="bulk-fail">${String(e.message||e)}</td></tr>`)}
+  }
+  result.innerHTML=`<h3>Import complete: ${ok} created, ${fail} failed</h3><div class="table-wrap"><table class="grade-table"><thead><tr><th>Name</th><th>ID</th><th>Result</th></tr></thead><tbody>${lines.join("")}</tbody></table></div>`;
+  btn.disabled=false;
+  if(typeof loadProfiles==="function")loadProfiles();
+ });
+})();
+</script>
+</body></html>

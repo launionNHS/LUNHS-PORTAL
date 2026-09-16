@@ -1,0 +1,12 @@
+LUNHS PORTAL v28.1
+
+CHANGE:
+- Removed the DepEd LIS Masterlist shortcut from Admin > Manage Accounts.
+- Removed the LIS privacy/helper panels.
+- Excel Bulk Account Creation remains available.
+- Manual Student/Teacher account creation remains available.
+- Student, Teacher, Admin dashboards and School Media Hub remain unchanged.
+
+INSTALL:
+Upload/replace all files from this ZIP in the LUNHS-PORTAL GitHub repository.
+No Supabase SQL changes are required.
