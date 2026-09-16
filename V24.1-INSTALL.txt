@@ -1,0 +1,14 @@
+LUNHS PORTAL v24.1 — FIVE MAIN SECTIONS
+
+Main navigation:
+Home | About | Announcement | Publication | Contact | Portal Login
+
+Admin can edit Home, About and Contact, and publish Announcement and School Publication posts.
+Announcement and Publication posts still support pictures, videos, PDFs, Office files,
+other common files, media URLs, and thumbnails.
+
+Gallery, Academics and Downloads are removed from the main website.
+
+INSTALL:
+Upload/replace ALL files from this ZIP into the root of LUNHS-PORTAL.
+If V23-CMS-SQL.sql and V24-MEDIA-UPLOAD-SQL.sql were already run, no SQL rerun is needed.

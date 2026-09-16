@@ -2315,3 +2315,16 @@ input::placeholder,textarea::placeholder{
 .post-media{display:block;width:100%;max-height:560px;object-fit:contain;margin:18px 0;border:1px solid #d5e4da;background:#fff}
 .file-link{display:inline-block;margin-top:15px;padding:11px 16px;border:1px solid #146B3A;color:#146B3A!important;text-decoration:none;font-weight:700}
 #uploadProgress{font-size:13px;color:#146B3A;margin:8px 0}
+
+/* v24.2 RESOURCES BUTTON */
+.reference-header nav .resources-btn{
+  flex:0 0 auto !important;
+  color:#fff !important;
+  border:1px solid rgba(255,255,255,.45) !important;
+  border-radius:8px !important;
+  padding:0 13px !important;
+}
+.reference-header nav .resources-btn:hover{
+  background:rgba(255,255,255,.12) !important;
+  border-bottom:1px solid rgba(255,255,255,.45) !important;
+}

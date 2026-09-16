@@ -1,0 +1,14 @@
+LUNHS PORTAL v24.2 — RESOURCES BUTTON
+
+Main navigation:
+Home | About | Announcement | Publication | Contact | Resources | Portal Login
+
+Resources opens the official DepEd Learning Resource Portal module search in a new tab:
+https://lrmds.deped.gov.ph/search?query=modules
+
+The DepEd portal contains Self Learning Modules, Modules, Learning Materials,
+Teacher Resources, lesson materials, and other K to 12 resources.
+
+INSTALL:
+Upload/replace ALL files from this ZIP in the root of LUNHS-PORTAL.
+No Supabase or SQL changes are required.
