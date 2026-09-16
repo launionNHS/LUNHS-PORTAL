@@ -2591,3 +2591,7 @@ img,video,iframe,canvas,svg{max-width:100%;height:auto}
  .mobile-bottom-nav a span{font-size:20px;line-height:1}.mobile-bottom-nav a:active{background:#edf7f1}
  body{padding-bottom:74px!important}.lunhs-install-app{bottom:70px!important}
 }
+
+/* v32 Management + Analytics */
+.v32-stat{font-size:30px;font-weight:900;color:#125a39}.v32-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:15px 0}.v32-table{width:100%;border-collapse:collapse}.v32-table th,.v32-table td{padding:10px;border-bottom:1px solid #e5e7eb;text-align:left}.v32-badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#edf7f1;color:#125a39;font-size:12px;font-weight:800}.v32-alert{background:#fff7ed;border-left:4px solid #ea580c;padding:10px;border-radius:8px;margin:7px 0}.v32-chart{display:flex;align-items:end;gap:8px;height:180px;padding-top:15px}.v32-chart span{flex:1;background:#19734b;min-height:2px;border-radius:7px 7px 0 0;position:relative}.v32-chart span i{position:absolute;bottom:-25px;left:50%;transform:translateX(-50%);font-style:normal;font-size:11px;white-space:nowrap}
+@media(max-width:600px){.v32-toolbar{flex-direction:column}.v32-toolbar>*{width:100%!important}.v32-table{min-width:720px}}
