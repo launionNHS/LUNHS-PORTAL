@@ -1,0 +1,16 @@
+LUNHS PORTAL v29 — 3 TERM GRADING
+
+Student Dashboard:
+Term 1 | Term 2 | Term 3 | Final Average
+
+Teacher Gradebook:
+Term 1 | Term 2 | Term 3
+
+Final Average = (Term 1 + Term 2 + Term 3) / 3 when all three terms are present.
+
+INSTALL:
+1. Upload/replace all files in this ZIP to LUNHS-PORTAL.
+2. In Supabase SQL Editor, run V29-THREE-TERM-GRADING.sql once.
+3. Refresh the site with Ctrl+F5.
+
+The migration keeps the old q1-q4 columns for safety and copies existing Q1-Q3 values to the new Term 1-Term 3 columns.
