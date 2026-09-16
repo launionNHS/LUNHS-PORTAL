@@ -1,0 +1,18 @@
+LUNHS v30.2
+Base: user's v30.1 + Install App.
+
+FIXED:
+- True phone portrait layout (<=600px)
+- Header fits phone width
+- Navigation becomes 2 columns; 1 column on very narrow phones
+- Content/cards/forms become single column
+- Inputs use mobile-friendly sizing
+- Grade and MPS tables swipe horizontally
+- Images/video never overflow screen
+- Installed PWA uses the same portrait-responsive interface
+- Service worker cache version updated so new CSS replaces old cached CSS
+
+After uploading to GitHub:
+1. Wait for GitHub Pages deployment.
+2. On an already-installed LUNHS app, close and reopen it.
+3. If old styling remains, refresh the website once in Chrome/Safari.
