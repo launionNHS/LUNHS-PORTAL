@@ -1,4 +1,9 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LUNHS Content Manager</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LUNHS Content Manager</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5d35">
+<link rel="apple-touch-icon" href="lunhs-logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LUNHS Portal">
+</head><body>
 <header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><div><b>La Union National High School</b><small>ADMIN CONTENT MANAGER</small></div></div><nav><a href="index.html">Website</a><button id="logout">Logout</button></nav></header>
 <main class="standalone-page"><section class="page-hero"><span>ADMINISTRATION</span><h1>Website Content Manager</h1><p>Manage the five main website sections: Home, About, Announcement, Publication, and Contact.</p></section><section class="page-content"><p id="status">Checking access…</p><div id="cms" hidden><div class="cms-grid">
 <section class="cms-box"><h2>Edit Page Content</h2><label>Page<select id="sectionKey"><option value="home_welcome">Home</option><option value="about_main">About</option><option value="contact_main">Contact</option></select></label><label>Heading<input id="sectionTitle"></label><label>Content<textarea id="sectionBody" rows="8"></textarea></label><button class="primary" id="saveSection">Save Changes</button><p id="sectionMsg"></p></section>
@@ -52,4 +57,11 @@ $("publishPost").onclick=async()=>{
 async function loadPosts(){const{data}=await sb.from("posts").select("*").order("created_at",{ascending:false}).limit(50);$("adminPosts").innerHTML=(data||[]).map(p=>'<article class="admin-row"><div><b>'+p.title+'</b><small>'+(p.category||p.type)+' • '+(p.published?"Published":"Draft")+'</small></div><div><button onclick="togglePost('+p.id+','+(!p.published)+')">'+(p.published?"Unpublish":"Publish")+'</button><button onclick="deletePost('+p.id+')">Delete</button></div></article>').join("")||"<p>No posts yet.</p>"}
 window.togglePost=async(i,v)=>{await sb.from("posts").update({published:v}).eq("id",i);loadPosts()};window.deletePost=async i=>{if(confirm("Delete this content?")){await sb.from("posts").delete().eq("id",i);loadPosts()}};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.href="portal.html"};init();
+</script><button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
+let lunhsInstallPrompt=null,ib=document.getElementById("lunhsInstallApp");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsInstallPrompt=e;ib.hidden=false});
+ib?.addEventListener("click",async()=>{if(!lunhsInstallPrompt)return;lunhsInstallPrompt.prompt();await lunhsInstallPrompt.userChoice;lunhsInstallPrompt=null;ib.hidden=true});
+window.addEventListener("appinstalled",()=>{if(ib)ib.hidden=true});
 </script></body></html>

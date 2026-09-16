@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LUNHS Portal Dashboard</title><link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5d35">
+<link rel="apple-touch-icon" href="lunhs-logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LUNHS Portal">
+</head>
 <body>
 <header class="reference-header">
  <div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
@@ -88,4 +93,11 @@ $("saveGrades").onclick=async()=>{
  $("gradeMsg").textContent=error?error.message:"Grades saved successfully.";
 }
 $("logout").onclick=async()=>{await sb.auth.signOut();location.href="portal.html"};init();
+</script><button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
+let lunhsInstallPrompt=null,ib=document.getElementById("lunhsInstallApp");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsInstallPrompt=e;ib.hidden=false});
+ib?.addEventListener("click",async()=>{if(!lunhsInstallPrompt)return;lunhsInstallPrompt.prompt();await lunhsInstallPrompt.userChoice;lunhsInstallPrompt=null;ib.hidden=true});
+window.addEventListener("appinstalled",()=>{if(ib)ib.hidden=true});
 </script></body></html>

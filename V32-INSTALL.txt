@@ -1,0 +1,29 @@
+LUNHS PORTAL v32 — INSTALLABLE ONLINE APP (PWA)
+
+This version remains an ONLINE website using GitHub Pages + Supabase, but can also be installed on supported phones/computers like an app.
+
+ADDED:
+- Web App Manifest
+- Service Worker
+- Install LUNHS App button when the browser supports installation
+- Standalone app window after installation
+- LUNHS logo as app icon
+- Basic offline shell for core static pages
+- Supabase grades, accounts, publications and other database information remain online/fresh
+
+PUBLISH:
+1. Upload/replace ALL files in this ZIP to the LUNHS-PORTAL GitHub repository.
+2. Make sure GitHub Pages is using HTTPS.
+3. Refresh the website.
+
+ANDROID / CHROME:
+Open the site. When eligible, tap “Install LUNHS App”, or Chrome menu -> Add to Home screen / Install app.
+
+IPHONE / IPAD:
+Open the site in Safari -> Share -> Add to Home Screen.
+
+DESKTOP CHROME/EDGE:
+Open the site and use the browser's Install app option when available.
+
+IMPORTANT:
+The app is still connected to the online Supabase database. Internet is required for login, live grades, account management, publishing and fresh school content.

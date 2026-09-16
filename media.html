@@ -5,6 +5,11 @@
 <title>School Media Hub | La Union National High School</title>
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5d35">
+<link rel="apple-touch-icon" href="lunhs-logo.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LUNHS Portal">
 </head>
 <body>
 <header class="reference-header">
@@ -67,4 +72,11 @@ document.querySelectorAll(".filter").forEach(b=>b.onclick=()=>{document.querySel
 mediaSearch.oninput=render;
 (async()=>{const {data,error}=await sb.from("posts").select("*").eq("published",true).not("media_url","is",null).order("created_at",{ascending:false});if(error){mediaStatus.textContent="Unable to load media.";console.error(error);return}items=data||[];render()})();
 </script>
-</body></html>
+<button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
+let lunhsInstallPrompt=null,ib=document.getElementById("lunhsInstallApp");
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsInstallPrompt=e;ib.hidden=false});
+ib?.addEventListener("click",async()=>{if(!lunhsInstallPrompt)return;lunhsInstallPrompt.prompt();await lunhsInstallPrompt.userChoice;lunhsInstallPrompt=null;ib.hidden=true});
+window.addEventListener("appinstalled",()=>{if(ib)ib.hidden=true});
+</script></body></html>
