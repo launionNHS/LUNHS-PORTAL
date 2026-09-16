@@ -1,4 +1,4 @@
-const CACHE="lunhs-v32-management-analytics";
+const CACHE="lunhs-v32-1-eclass-import";
 const SHELL=["./","./index.html","./styles.css","./lunhs-logo.png","./portal.html","./calendar.html","./resources.html","./search.html"];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));

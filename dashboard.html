@@ -1,121 +1,106 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<title>LUNHS Portal Dashboard</title><link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-function enhanceStudent(){
- if(profile?.role!=="student")return;
- let c=document.getElementById("studentProfileCard");if(c)c.innerHTML=`<b>${esc(profile.display_name)}</b><div>${esc(profile.school_id||"")}</div><div>Grade ${esc(profile.grade_level||"")} • ${esc(profile.section||"")}</div>`;
- let n=document.getElementById("studentNotifications");if(n)n.innerHTML='<div class="notification-item">New announcements and newly posted grades appear in your portal.</div>';
-}
-document.addEventListener("input",e=>{if(e.target.id==="studentSearch"){let q=e.target.value.toLowerCase();document.querySelectorAll("#classRows tr").forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}});
-document.getElementById("printGrades")?.addEventListener("click",()=>print());
-document.getElementById("exportGrades")?.addEventListener("click",()=>{let rows=[["Student","School ID/LRN","Term 1","Term 2","Term 3"]];document.querySelectorAll("#classRows tr").forEach(tr=>{if(tr.dataset.id){let td=tr.querySelectorAll("td"),v=[...tr.querySelectorAll("input")].map(x=>x.value);rows.push([td[0].innerText,td[1].innerText,...v])}});let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="LUNHS-gradebook.csv";a.click()});
-setTimeout(enhanceStudent,800);
-</script><link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b5d35">
-<link rel="apple-touch-icon" href="lunhs-logo.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="LUNHS Portal">
-</head>
-<body>
-<header class="reference-header">
- <div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
- <nav><a href="index.html">Home</a><span id="roleBadge"></span><button id="logout">Logout</button></nav>
-</header>
-<main class="standalone-page">
-<section class="page-hero"><span>SCHOOL PORTAL</span><h1 id="welcome">Dashboard</h1><p id="identity">Loading account…</p></section>
-<section class="page-content">
- <p id="status"></p>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>LUNHS Portal Dashboard</title><link rel="stylesheet" href="styles.css"><link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b5d35"><link rel="apple-touch-icon" href="lunhs-logo.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.ecr-box{margin:14px 0;border:2px dashed #9bbdac}.ecr-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.ecr-status-ok{font-weight:800;color:#12633e}.ecr-status-warn{font-weight:800;color:#9a6700}.ecr-status-bad{font-weight:800;color:#a11}
+.ecr-preview input{width:78px}.ecr-summary{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.ecr-summary span{padding:6px 9px;border-radius:999px;background:#edf7f1}
+@media(max-width:600px){.ecr-actions{flex-direction:column}.ecr-actions button,.ecr-actions label{width:100%}}
+</style></head><body>
+<header class="reference-header"><div class="brand"><img src="lunhs-logo.png" alt="LUNHS Logo"><div><b>La Union National High School</b><small>DISCIPLINE • EXCELLENCE • SERVICE</small></div></div>
+<nav><a href="index.html">Home</a><span id="roleBadge"></span><button id="logout">Logout</button></nav></header>
+<main class="standalone-page"><section class="page-hero"><span>SCHOOL PORTAL</span><h1 id="welcome">Dashboard</h1><p id="identity">Loading account…</p></section>
+<section class="page-content"><p id="status"></p>
 
- <section id="studentPanel" hidden>
-  <div class="portal-title-row"><div><h2>My Grades</h2><p>View Term 1–Term 3 grades and your final averages.</p></div>
-  <label>School Year <select id="studentSY"><option>2026-2027</option></select></label></div>
-  <div class="app-grid" style="margin:14px 0"><div class="app-card"><h3>Student Profile</h3><div id="studentProfileCard"></div><p><a class="app-btn secondary" href="report-card.html">Digital Report Card</a></p></div><div class="app-card"><h3>Grade Summary</h3><div id="gradeSummary">Your averages will appear after grades load.</div></div><div class="app-card"><h3>Notifications</h3><div id="studentNotifications">Checking updates…</div></div></div><div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Term 1</th><th>Term 2</th><th>Term 3</th><th>Final Average</th></tr></thead><tbody id="studentGrades"></tbody></table></div>
- </section>
+<section id="studentPanel" hidden>
+<div class="portal-title-row"><div><h2>My Grades</h2><p>View Term 1–Term 3 grades and final averages.</p></div><label>School Year <select id="studentSY"><option>2026-2027</option></select></label></div>
+<div class="app-grid" style="margin:14px 0"><div class="app-card"><h3>Student Profile</h3><div id="studentProfileCard"></div><p><a class="app-btn secondary" href="report-card.html">Digital Report Card</a></p></div><div class="app-card"><h3>Grade Summary</h3><div id="gradeSummary">Grades will appear after loading.</div></div><div class="app-card"><h3>Notifications</h3><div class="notification-item">New announcements and posted grades appear in your portal.</div></div></div>
+<div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Term 1</th><th>Term 2</th><th>Term 3</th><th>Final Average</th></tr></thead><tbody id="studentGrades"></tbody></table></div>
+</section>
 
- <section id="teacherPanel" hidden>
-  <div class="portal-title-row"><div><h2>Teacher Gradebook</h2><p>Select your assigned class, encode Term 1–Term 3 grades, then save.</p></div></div>
-  <div class="grade-controls">
-   <label>Assigned Class<select id="assignment"></select></label>
-   <label>School Year<input id="teacherSY" value="2026-2027"></label>
-   <button class="primary" id="loadClass">Load Students</button>
-  </div>
-  <div class="app-card" style="margin:14px 0"><h3>Gradebook Tools</h3><input id="studentSearch" class="app-input" placeholder="Search student name or LRN"><div class="actions" style="margin-top:10px"><button type="button" id="exportGrades">Export CSV</button><button type="button" id="printGrades">Print Gradebook</button></div></div><div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>School ID / LRN</th><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr></thead><tbody id="classRows"></tbody></table></div>
-  <button class="primary save-grades" id="saveGrades" hidden>Save Grades</button><p id="gradeMsg"></p>
- </section>
+<section id="teacherPanel" hidden>
+<div class="portal-title-row"><div><h2>Teacher Gradebook</h2><p>Enter grades manually or import the prescribed Three-Term DepEd E-Class Record.</p></div></div>
+<div class="grade-controls"><label>Assigned Class<select id="assignment"></select></label><label>School Year<input id="teacherSY" value="2026-2027"></label><button class="primary" id="loadClass">Load Students</button></div>
 
- <section id="adminPanel" hidden>
-  <h2>Administrator Dashboard</h2><div class="admin-actions"><a class="dashboard-card" href="admin.html"><b>School Management Center</b><span>Calendar, resources, achievements, facilities and emergency banner.</span></a><a class="dashboard-card" href="admin-mps.html"><b>MPS Grade Analytics</b><span>View MPS per subject, per grade level, and overall per subject.</span></a>
-   <a class="dashboard-card" href="admin-cms.html"><b>Manage Website</b><span>Edit pages and publish announcements/publications.</span></a>
-   <a class="dashboard-card" href="admin-users.html"><b>Manage Accounts</b><span>Create Student and Teacher accounts and manage assignments.</span></a>
-   <a class="dashboard-card" href="admin-reset-password.html"><b>Password Management</b><span>Reset Student or Teacher passwords.</span></a>
-  </div>
- </section>
-</section></main>
-<footer>La Union National High School • School Portal</footer>
+<div class="app-card ecr-box">
+<h3>Import DepEd E-Class Record</h3>
+<p>Supports the Three-Term E-Class Record format with <b>INPUT, TERM1, TERM2, TERM3, and SUMMARY OF GRADES</b> sheets. The file is previewed first; nothing is saved until you confirm.</p>
+<div class="ecr-actions"><label class="app-btn secondary" style="cursor:pointer">Choose Excel File<input id="ecrFile" type="file" accept=".xlsx,.xls" hidden></label><button id="clearImport" type="button" hidden>Clear Preview</button></div>
+<p id="ecrMsg"></p><div id="ecrMeta"></div><div id="ecrPreview" class="table-wrap ecr-preview"></div>
+<button id="confirmImport" class="primary" type="button" hidden>Confirm Import to Gradebook</button>
+</div>
+
+<div class="app-card" style="margin:14px 0"><h3>Manual Grade Entry & Gradebook Tools</h3><p>You can still type or correct individual grades manually.</p><input id="studentSearch" class="app-input" placeholder="Search student name or LRN"><div class="actions" style="margin-top:10px"><button type="button" id="exportGrades">Export CSV</button><button type="button" id="printGrades">Print Gradebook</button></div></div>
+<div class="table-wrap"><table class="grade-table"><thead><tr><th>Student</th><th>School ID / LRN</th><th>Term 1</th><th>Term 2</th><th>Term 3</th></tr></thead><tbody id="classRows"></tbody></table></div>
+<button class="primary save-grades" id="saveGrades" hidden>Save Grades</button><p id="gradeMsg"></p>
+</section>
+
+<section id="adminPanel" hidden><h2>Administrator Dashboard</h2><div class="admin-actions">
+<a class="dashboard-card" href="admin.html"><b>School Management Center</b><span>School Head dashboard, academic setup and administration.</span></a>
+<a class="dashboard-card" href="admin-mps.html"><b>MPS Grade Analytics</b><span>View MPS per subject and grade level.</span></a>
+<a class="dashboard-card" href="admin-cms.html"><b>Manage Website</b><span>Edit pages and publish content.</span></a>
+<a class="dashboard-card" href="admin-users.html"><b>Manage Accounts</b><span>Create accounts and manage assignments.</span></a>
+<a class="dashboard-card" href="admin-reset-password.html"><b>Password Management</b><span>Reset Student or Teacher passwords.</span></a></div></section>
+</section></main><footer>La Union National High School • School Portal</footer>
 <script src="config.js"></script>
 <script>
 const sb=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),$=x=>document.getElementById(x);
-let user,profile,assignments=[],currentStudents=[];
+let user,profile,assignments=[],currentStudents=[],ecrRows=[];
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function normName(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\b(jr|sr|ii|iii|iv)\b\.?/g,"").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean).sort().join(" ")}
+function numGrade(v){if(v===null||v===undefined||v==="")return null;let n=Number(v);return Number.isFinite(n)&&n>=60&&n<=100?n:null}
 async function init(){
- const u=(await sb.auth.getUser()).data.user;if(!u){location.href="portal.html";return} user=u;
- const r=await sb.from("profiles").select("*").eq("id",u.id).single(); profile=r.data;
- if(!profile){$("status").textContent="Profile not found. Contact the administrator.";return}
- $("welcome").textContent="Welcome, "+profile.display_name;
- $("identity").textContent=(profile.school_id||"")+(profile.grade_level?" • Grade "+profile.grade_level:"")+(profile.section?" • "+profile.section:"");
- $("roleBadge").textContent=profile.role.toUpperCase();
- if(profile.role==="student"){ $("studentPanel").hidden=false; loadStudentGrades() }
- else if(profile.role==="teacher"){ $("teacherPanel").hidden=false; loadAssignments() }
- else if(profile.role==="admin"){ $("adminPanel").hidden=false }
+ const u=(await sb.auth.getUser()).data.user;if(!u){location.href="portal.html";return}user=u;
+ const r=await sb.from("profiles").select("*").eq("id",u.id).single();profile=r.data;if(!profile){$("status").textContent="Profile not found.";return}
+ $("welcome").textContent="Welcome, "+profile.display_name;$("identity").textContent=(profile.school_id||"")+(profile.grade_level?" • Grade "+profile.grade_level:"")+(profile.section?" • "+profile.section:"");$("roleBadge").textContent=profile.role.toUpperCase();
+ if(profile.role==="student"){$("studentPanel").hidden=false;$("studentProfileCard").innerHTML=`<b>${esc(profile.display_name)}</b><div>${esc(profile.school_id||"")}</div><div>Grade ${esc(profile.grade_level||"")} • ${esc(profile.section||"")}</div>`;loadStudentGrades()}
+ else if(profile.role==="teacher"){$("teacherPanel").hidden=false;loadAssignments()}
+ else if(profile.role==="admin")$("adminPanel").hidden=false
 }
-async function loadStudentGrades(){
- const sy=$("studentSY").value;
- const {data,error}=await sb.from("grades").select("term1,term2,term3,school_year,subjects(name)").eq("student_id",user.id).eq("school_year",sy);
- if(error){$("status").textContent=error.message;return}
- $("studentGrades").innerHTML=(data||[]).map(g=>{
-  let vals=[g.term1,g.term2,g.term3].filter(v=>v!==null),fin=vals.length===3?(vals.reduce((a,b)=>a+Number(b),0)/3).toFixed(2):"—";
-  return `<tr><td>${esc(g.subjects?.name||"Subject")}</td><td>${g.term1??"—"}</td><td>${g.term2??"—"}</td><td>${g.term3??"—"}</td><td><b>${fin}</b></td></tr>`
- }).join("")||'<tr><td colspan="6">No grades have been posted yet.</td></tr>'
-}
+async function loadStudentGrades(){const sy=$("studentSY").value,{data,error}=await sb.from("grades").select("term1,term2,term3,school_year,subjects(name)").eq("student_id",user.id).eq("school_year",sy);if(error){$("status").textContent=error.message;return}
+let finals=[];$("studentGrades").innerHTML=(data||[]).map(g=>{let vals=[g.term1,g.term2,g.term3].filter(v=>v!==null),fin=vals.length===3?vals.reduce((a,b)=>a+Number(b),0)/3:null;if(fin!==null)finals.push(fin);return `<tr><td>${esc(g.subjects?.name||"Subject")}</td><td>${g.term1??"—"}</td><td>${g.term2??"—"}</td><td>${g.term3??"—"}</td><td><b>${fin===null?"—":fin.toFixed(2)}</b></td></tr>`}).join("")||'<tr><td colspan="5">No grades posted yet.</td></tr>';$("gradeSummary").textContent=finals.length?"Overall Average: "+(finals.reduce((a,b)=>a+b,0)/finals.length).toFixed(2):"No complete three-term grades yet."}
 $("studentSY").onchange=loadStudentGrades;
-async function loadAssignments(){
- const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,subjects(name,grade_level)").eq("teacher_id",user.id);
- if(error){$("gradeMsg").textContent=error.message;return}
- assignments=data||[];
- $("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — ${esc(a.section)}</option>`).join("")||'<option>No assignment</option>';
-}
-$("loadClass").onclick=async()=>{
- const a=assignments[+$("assignment").value]; if(!a)return;
- const sy=$("teacherSY").value.trim()||"2026-2027";
- const {data:students,error}=await sb.from("profiles").select("id,display_name,school_id,section").eq("role","student").eq("section",a.section).order("display_name");
- if(error){$("gradeMsg").textContent=error.message;return}
- const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);
- const gm=new Map((grades||[]).map(g=>[g.student_id,g])); currentStudents=students||[];
- $("classRows").innerHTML=currentStudents.map(s=>{let g=gm.get(s.id)||{};return `<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`}).join("")||'<tr><td colspan="5">No students found in this section.</td></tr>';
- $("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";
-}
-$("saveGrades").onclick=async()=>{
- const a=assignments[+$("assignment").value];if(!a)return; const sy=$("teacherSY").value.trim()||"2026-2027";
- const rows=[...document.querySelectorAll("#classRows tr[data-id]")]; let payload=[];
- for(const tr of rows){let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};for(const inp of tr.querySelectorAll("input")){if(inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[inp.dataset.q]=v}else obj[inp.dataset.q]=null}payload.push(obj)}
- $("gradeMsg").textContent="Saving…";const {error}=await sb.from("grades").upsert(payload,{onConflict:"student_id,subject_id,school_year"});
- $("gradeMsg").textContent=error?error.message:"Grades saved successfully.";
-}
+async function loadAssignments(){const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,subjects(name,grade_level)").eq("teacher_id",user.id);if(error){$("gradeMsg").textContent=error.message;return}assignments=data||[];$("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — Grade ${esc(a.subjects?.grade_level||"")} ${esc(a.section)}</option>`).join("")||'<option>No assignment</option>'}
+async function loadClass(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027";
+let q=sb.from("profiles").select("id,display_name,school_id,section,grade_level").eq("role","student").eq("section",a.section);if(a.subjects?.grade_level)q=q.eq("grade_level",String(a.subjects.grade_level));const {data:students,error}=await q.order("display_name");if(error){$("gradeMsg").textContent=error.message;return}
+const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);const gm=new Map((grades||[]).map(g=>[g.student_id,g]));currentStudents=students||[];
+$("classRows").innerHTML=currentStudents.map(s=>{let g=gm.get(s.id)||{};return `<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`}).join("")||'<tr><td colspan="5">No students found in this class.</td></tr>';$("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";clearEcr()}
+$("loadClass").onclick=loadClass;
+async function saveVisibleGrades(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027",rows=[...document.querySelectorAll("#classRows tr[data-id]")],payload=[];
+for(const tr of rows){let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};for(const inp of tr.querySelectorAll(".grade-input")){if(inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[inp.dataset.q]=v}else obj[inp.dataset.q]=null}payload.push(obj)}
+$("gradeMsg").textContent="Saving…";const {error}=await sb.from("grades").upsert(payload,{onConflict:"student_id,subject_id,school_year"});$("gradeMsg").textContent=error?error.message:"Grades saved successfully."}
+$("saveGrades").onclick=saveVisibleGrades;
+
+function clearEcr(){$("ecrFile").value="";ecrRows=[];$("ecrPreview").innerHTML="";$("ecrMeta").innerHTML="";$("ecrMsg").textContent="";$("confirmImport").hidden=true;$("clearImport").hidden=true}
+$("clearImport").onclick=clearEcr;
+$("ecrFile").onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;if(!currentStudents.length){$("ecrMsg").innerHTML='<span class="ecr-status-bad">Load the assigned class first.</span>';e.target.value="";return}
+ try{
+  const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellFormula:true});const required=["INPUT","TERM1","TERM2","TERM3","SUMMARY OF GRADES"],missing=required.filter(x=>!wb.SheetNames.includes(x));if(missing.length)throw new Error("This does not match the prescribed Three-Term E-Class Record. Missing sheet(s): "+missing.join(", "));
+  const sh=wb.Sheets["SUMMARY OF GRADES"],grid=XLSX.utils.sheet_to_json(sh,{header:1,defval:null,raw:true});let header=grid.findIndex(r=>String(r?.[1]||"").toUpperCase().includes("LEARNERS"));if(header<0)throw new Error("Learners table was not found in SUMMARY OF GRADES.");
+  const meta={gradeSection:grid?.[7]?.[10]||"",teacher:grid?.[8]?.[10]||"",subject:grid?.[8]?.[22]||"",schoolYear:grid?.[7]?.[22]||""};
+  const studentMap=new Map();for(const s of currentStudents){let k=normName(s.display_name);if(!studentMap.has(k))studentMap.set(k,[]);studentMap.get(k).push(s)}
+  ecrRows=[];for(let i=header+1;i<grid.length;i++){let r=grid[i]||[],name=String(r[1]||"").trim();if(!name||/^(male|female)\s*$/i.test(name))continue;let t1=numGrade(r[5]),t2=numGrade(r[9]),t3=numGrade(r[13]);if(t1===null&&t2===null&&t3===null)continue;let matches=studentMap.get(normName(name))||[];ecrRows.push({excelName:name,t1,t2,t3,student:matches.length===1?matches[0]:null,status:matches.length===1?"Matched":matches.length>1?"Ambiguous":"Not found"})}
+  let matched=ecrRows.filter(x=>x.student).length,unmatched=ecrRows.length-matched;
+  $("ecrMeta").innerHTML=`<div class="ecr-summary"><span>Subject: <b>${esc(meta.subject||"Not detected")}</b></span><span>Class: <b>${esc(meta.gradeSection||"Not detected")}</b></span><span>School Year: <b>${esc(meta.schoolYear||"Not detected")}</b></span><span>Matched: <b>${matched}</b></span><span>Needs review: <b>${unmatched}</b></span></div>`;
+  $("ecrPreview").innerHTML=`<table class="grade-table"><thead><tr><th>E-Class Record Learner</th><th>Portal Match</th><th>T1</th><th>T2</th><th>T3</th><th>Status</th></tr></thead><tbody>${ecrRows.map((x,i)=>`<tr><td>${esc(x.excelName)}</td><td>${x.student?esc(x.student.display_name):"—"}</td><td>${x.t1??"—"}</td><td>${x.t2??"—"}</td><td>${x.t3??"—"}</td><td class="${x.student?"ecr-status-ok":"ecr-status-warn"}">${x.status}</td></tr>`).join("")}</tbody></table>`;
+  $("ecrMsg").innerHTML=matched?`<span class="ecr-status-ok">Preview ready.</span> Only matched learners will be imported. Review before confirming.`:'<span class="ecr-status-bad">No learners matched the loaded portal class. Nothing can be imported.</span>';$("confirmImport").hidden=!matched;$("clearImport").hidden=false;
+ }catch(err){$("ecrMsg").innerHTML=`<span class="ecr-status-bad">${esc(err.message)}</span>`;$("confirmImport").hidden=true}
+};
+$("confirmImport").onclick=()=>{
+ let applied=0;for(const x of ecrRows.filter(x=>x.student)){let tr=document.querySelector(`#classRows tr[data-id="${x.student.id}"]`);if(!tr)continue;for(const [q,v] of [["term1",x.t1],["term2",x.t2],["term3",x.t3]]){if(v!==null){let inp=tr.querySelector(`input[data-q="${q}"]`);if(inp)inp.value=v}}applied++}
+ $("ecrMsg").innerHTML=`<span class="ecr-status-ok">${applied} matched learner(s) copied to the gradebook.</span> Review the values, then click <b>Save Grades</b> to write them to the portal.`;$("confirmImport").hidden=true;window.scrollTo({top:$("classRows").getBoundingClientRect().top+scrollY-100,behavior:"smooth"})
+};
+document.addEventListener("input",e=>{if(e.target.id==="studentSearch"){let q=e.target.value.toLowerCase();document.querySelectorAll("#classRows tr").forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}});
+$("printGrades").onclick=()=>print();$("exportGrades").onclick=()=>{let rows=[["Student","School ID/LRN","Term 1","Term 2","Term 3"]];document.querySelectorAll("#classRows tr[data-id]").forEach(tr=>{let td=tr.querySelectorAll("td"),v=[...tr.querySelectorAll("input")].map(x=>x.value);rows.push([td[0].innerText,td[1].innerText,...v])});let csv=rows.map(r=>r.map(x=>`"${String(x).replaceAll('"','""')}"`).join(",")).join("\n"),a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="LUNHS-gradebook.csv";a.click()};
 $("logout").onclick=async()=>{await sb.auth.signOut();location.href="portal.html"};init();
-</script><button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button>
-<script>
-if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"))}
-let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});
-installBtn?.addEventListener("click",async()=>{if(!lunhsPrompt)return;lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true});
-window.addEventListener("appinstalled",()=>{if(installBtn)installBtn.hidden=true});
 </script>
-<script>
-window.addEventListener("load",()=>{setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450)});
+<button id="lunhsInstallApp" class="lunhs-install-app" hidden>Install LUNHS App</button><script>
+if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));let lunhsPrompt=null,installBtn=document.getElementById("lunhsInstallApp");addEventListener("beforeinstallprompt",e=>{e.preventDefault();lunhsPrompt=e;installBtn.hidden=false});installBtn.onclick=async()=>{if(lunhsPrompt){lunhsPrompt.prompt();await lunhsPrompt.userChoice;lunhsPrompt=null;installBtn.hidden=true}}
 </script>
-<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div>
-<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
-<a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a>
-<a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a>
-</nav></body></html>
+<div id="lunhsSplash" class="splash-screen"><img src="lunhs-logo.png" alt="LUNHS"><b>La Union National High School</b><small>School Information Portal</small></div><script>addEventListener("load",()=>setTimeout(()=>document.getElementById("lunhsSplash")?.classList.add("hide"),450))</script>
+<nav class="mobile-bottom-nav"><a href="index.html"><span>⌂</span>Home</a><a href="announcements.html"><span>▤</span>News</a><a href="dashboard.html"><span>▦</span>Grades</a><a href="media.html"><span>▶</span>Media</a><a href="dashboard.html"><span>●</span>Account</a></nav>
+</body></html>
