@@ -1,0 +1,32 @@
+LUNHS PORTAL v30 — MPS GRADE ANALYTICS
+
+ADMIN DASHBOARD now includes MPS Grade Analytics.
+
+REPORTS:
+1. MPS per Subject and Grade Level
+   - Subject
+   - Grade Level
+   - Number of students
+   - Term 1 MPS
+   - Term 2 MPS
+   - Term 3 MPS
+   - Overall MPS
+
+2. Overall MPS per Subject
+   - Combines all grade levels for each subject
+   - Term 1, Term 2, Term 3 and Overall MPS
+
+3. Overall School MPS summary.
+
+FORMULA USED:
+Term MPS = arithmetic mean of all encoded student grades for that group.
+Overall MPS = mean of the available Term 1, Term 2 and Term 3 MPS values.
+
+Also includes School Year filter and Print button.
+
+INSTALL:
+Upload/replace all files from this ZIP in LUNHS-PORTAL.
+No new SQL is required if v29 Three-Term Grading SQL was already run.
+
+NOTE:
+This report treats the encoded percentage grades as the percentage scores used for MPS.

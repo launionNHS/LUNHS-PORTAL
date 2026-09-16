@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MPS Grade Analytics | LUNHS</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body>
+<header class="reference-header"><div class="brand"><img src="lunhs-logo.png"><div><b>La Union National High School</b><small>MPS GRADE ANALYTICS</small></div></div>
+<nav><a href="dashboard.html">Dashboard</a><a href="admin-users.html">Accounts</a><a href="admin-cms.html">Website</a></nav></header>
+<main class="analytics-page">
+<section class="analytics-title"><div><span>ADMIN REPORT</span><h1>MPS Grade Analytics</h1><p>Mean Percentage Score based on encoded Term 1, Term 2 and Term 3 grades.</p></div>
+<div class="analytics-controls"><label>School Year<input id="sy" value="2026-2027"></label><button id="refresh">Generate Report</button><button onclick="window.print()">Print</button></div></section>
+<div id="status" class="media-status">Loading…</div>
+<section class="mps-cards"><article><small>Overall School MPS</small><strong id="schoolMps">—</strong></article><article><small>Students with grades</small><strong id="studentCount">—</strong></article><article><small>Subjects</small><strong id="subjectCount">—</strong></article></section>
+<section class="report-box"><h2>MPS per Subject and Grade Level</h2><div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Grade Level</th><th>Students</th><th>Term 1 MPS</th><th>Term 2 MPS</th><th>Term 3 MPS</th><th>Overall MPS</th></tr></thead><tbody id="byGrade"></tbody></table></div></section>
+<section class="report-box"><h2>Overall MPS per Subject</h2><div class="table-wrap"><table class="grade-table"><thead><tr><th>Subject</th><th>Students</th><th>Term 1 MPS</th><th>Term 2 MPS</th><th>Term 3 MPS</th><th>Overall MPS</th></tr></thead><tbody id="bySubject"></tbody></table></div></section>
+</main>
+<script>
+window.LUNHS_CONFIG={url:"https://ppwrdnygptfloqjnsfir.supabase.co",key:"sb_publishable_D1neO_P9eiXL4lk-qJxmcA_ovjM4HCD"};
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key), avg=a=>{a=a.filter(v=>v!==null&&v!==undefined&&v!=="").map(Number);return a.length?a.reduce((x,y)=>x+y,0)/a.length:null}, fmt=v=>v===null?"—":v.toFixed(2)+"%";
+async function run(){
+ status.textContent="Generating MPS report…";
+ const {data:{user}}=await sb.auth.getUser();if(!user){location.href="portal.html";return}
+ const {data:me}=await sb.from("profiles").select("role").eq("id",user.id).single();if(me?.role!=="admin"){location.href="dashboard.html";return}
+ const year=sy.value.trim();
+ const {data:g,error}=await sb.from("grades").select("student_id,subject_id,term1,term2,term3,school_year,subjects(name,grade_level),profiles!grades_student_id_fkey(grade_level)").eq("school_year",year);
+ if(error){status.textContent="Could not load grade data: "+error.message;return}
+ const rows=g||[], group=(keyfn)=>{
+  const m=new Map();rows.forEach(r=>{let k=keyfn(r),x=m.get(k)||[];x.push(r);m.set(k,x)});return m
+ };
+ const calc=a=>{let t1=avg(a.map(x=>x.term1)),t2=avg(a.map(x=>x.term2)),t3=avg(a.map(x=>x.term3));return {t1,t2,t3,all:avg([t1,t2,t3]),students:new Set(a.map(x=>x.student_id)).size}};
+ let gg=group(r=>(r.subjects?.name||"Unknown")+"|||"+(r.profiles?.grade_level||r.subjects?.grade_level||"Unspecified"));
+ byGrade.innerHTML=[...gg].sort().map(([k,a])=>{let [s,gl]=k.split("|||"),c=calc(a);return `<tr><td>${s}</td><td>${gl}</td><td>${c.students}</td><td>${fmt(c.t1)}</td><td>${fmt(c.t2)}</td><td>${fmt(c.t3)}</td><td><b>${fmt(c.all)}</b></td></tr>`}).join("")||'<tr><td colspan="7">No grades found.</td></tr>';
+ let gs=group(r=>r.subjects?.name||"Unknown");
+ bySubject.innerHTML=[...gs].sort().map(([s,a])=>{let c=calc(a);return `<tr><td>${s}</td><td>${c.students}</td><td>${fmt(c.t1)}</td><td>${fmt(c.t2)}</td><td>${fmt(c.t3)}</td><td><b>${fmt(c.all)}</b></td></tr>`}).join("")||'<tr><td colspan="6">No grades found.</td></tr>';
+ let all=calc(rows);schoolMps.textContent=fmt(all.all);studentCount.textContent=new Set(rows.map(r=>r.student_id)).size;subjectCount.textContent=gs.size;status.textContent=`Report for School Year ${year} • ${rows.length} grade record(s)`;
+}
+refresh.onclick=run;run();
+</script></body></html>
