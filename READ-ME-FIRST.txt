@@ -1,30 +1,20 @@
-LUNHS v32.1 — DEPED E-CLASS RECORD IMPORT
+LUNHS v32.3 — FIRST NAME + SURNAME MATCHING
 
-ONLY 2 WEBSITE FILES NEED TO BE UPLOADED/REPLACED IN GITHUB:
-1. dashboard.html
-2. service-worker.js
+The E-Class Record importer now matches learners primarily by:
+1. FIRST NAME
+2. SURNAME
 
-No new SQL is required.
+Middle names and middle initials are ignored.
+Common suffixes and punctuation are ignored.
+DepEd format "SURNAME, FIRST NAME MIDDLE NAME" is supported.
+Portal format "FIRST NAME MIDDLE NAME SURNAME" is supported.
 
-TEACHER WORKFLOW:
-1. Login as Teacher.
-2. Select Assigned Class and School Year.
-3. Click Load Students.
-4. Under Import DepEd E-Class Record, choose the completed Excel file.
-5. The portal reads SUMMARY OF GRADES from the prescribed Three-Term template.
-6. Review Matched / Not found learners and detected Term 1–3 grades.
-7. Click Confirm Import to Gradebook.
-8. Review the gradebook.
-9. Click Save Grades.
+If more than one portal learner has the same first name and surname, the importer marks
+the record AMBIGUOUS instead of guessing.
 
-Manual Term 1–3 entry remains available.
+UPDATE ONLY:
+Replace in GitHub:
+- dashboard.html
+- service-worker.js
 
-SAFETY:
-- Uploading a file does not immediately save grades.
-- Only uniquely matched learners are copied.
-- Unmatched/ambiguous names are skipped.
-- The teacher must confirm and then click Save Grades.
-- Existing grades are only changed when Save Grades is clicked.
-
-The importer recognizes the workbook structure from the supplied DepEd-style file:
-INPUT, TERM1, TERM2, TERM3, SUMMARY OF GRADES.
+No Supabase SQL is required.

@@ -50,7 +50,41 @@
 const sb=supabase.createClient(window.LUNHS_CONFIG.url,window.LUNHS_CONFIG.key),$=x=>document.getElementById(x);
 let user,profile,assignments=[],currentStudents=[],ecrRows=[];
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function normName(s){return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/\b(jr|sr|ii|iii|iv)\b\.?/g,"").replace(/[^a-z0-9 ]/g," ").split(/\s+/).filter(Boolean).sort().join(" ")}
+function cleanName(s){
+ return String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+ .replace(/\b(jr|sr|ii|iii|iv)\b\.?/g," ").replace(/[^a-z0-9, ]/g," ")
+ .replace(/\s+/g," ").trim();
+}
+function parseName(s, excel=false){
+ let raw=cleanName(s), surname="", first="";
+ if(raw.includes(",")){
+   let parts=raw.split(","), left=parts[0].trim(), right=parts.slice(1).join(" ").trim();
+   surname=left.split(" ").filter(Boolean).join(" ");
+   first=(right.split(" ").filter(x=>x.length>1)[0]||"");
+ }else{
+   let p=raw.split(" ").filter(Boolean);
+   if(excel){ surname=p[0]||""; first=p[1]||""; }
+   else { first=p[0]||""; surname=p[p.length-1]||""; }
+ }
+ return {first,surname};
+}
+function bestStudentMatch(excelName,students){
+ const ex=parseName(excelName,true);
+ if(!ex.first||!ex.surname)return {student:null,status:"Name incomplete"};
+ const exact=students.filter(s=>{
+   const p=parseName(s.display_name,false);
+   return p.first===ex.first && p.surname===ex.surname;
+ });
+ if(exact.length===1)return {student:exact[0],status:"Matched by first name + surname"};
+ if(exact.length>1)return {student:null,status:"Ambiguous first name + surname"};
+ // Fallback for portal names also stored as SURNAME, FIRST NAME.
+ const alternate=students.filter(s=>{
+   const p=parseName(s.display_name,true);
+   return p.first===ex.first && p.surname===ex.surname;
+ });
+ if(alternate.length===1)return {student:alternate[0],status:"Matched by first name + surname"};
+ return {student:null,status:"First name + surname not found"};
+}
 function numGrade(v){if(v===null||v===undefined||v==="")return null;let n=Number(v);return Number.isFinite(n)&&n>=60&&n<=100?n:null}
 async function init(){
  const u=(await sb.auth.getUser()).data.user;if(!u){location.href="portal.html";return}user=u;
@@ -82,12 +116,18 @@ $("ecrFile").onchange=async e=>{
   const wb=XLSX.read(await file.arrayBuffer(),{type:"array",cellFormula:true});const required=["INPUT","TERM1","TERM2","TERM3","SUMMARY OF GRADES"],missing=required.filter(x=>!wb.SheetNames.includes(x));if(missing.length)throw new Error("This does not match the prescribed Three-Term E-Class Record. Missing sheet(s): "+missing.join(", "));
   const sh=wb.Sheets["SUMMARY OF GRADES"],grid=XLSX.utils.sheet_to_json(sh,{header:1,defval:null,raw:true});let header=grid.findIndex(r=>String(r?.[1]||"").toUpperCase().includes("LEARNERS"));if(header<0)throw new Error("Learners table was not found in SUMMARY OF GRADES.");
   const meta={gradeSection:grid?.[7]?.[10]||"",teacher:grid?.[8]?.[10]||"",subject:grid?.[8]?.[22]||"",schoolYear:grid?.[7]?.[22]||""};
-  const studentMap=new Map();for(const s of currentStudents){let k=normName(s.display_name);if(!studentMap.has(k))studentMap.set(k,[]);studentMap.get(k).push(s)}
-  ecrRows=[];for(let i=header+1;i<grid.length;i++){let r=grid[i]||[],name=String(r[1]||"").trim();if(!name||/^(male|female)\s*$/i.test(name))continue;let t1=numGrade(r[5]),t2=numGrade(r[9]),t3=numGrade(r[13]);if(t1===null&&t2===null&&t3===null)continue;let matches=studentMap.get(normName(name))||[];ecrRows.push({excelName:name,t1,t2,t3,student:matches.length===1?matches[0]:null,status:matches.length===1?"Matched":matches.length>1?"Ambiguous":"Not found"})}
+  ecrRows=[];for(let i=header+1;i<grid.length;i++){
+   let r=grid[i]||[],name=String(r[1]||"").trim();
+   if(!name||/^(male|female)\s*$/i.test(name))continue;
+   let t1=numGrade(r[5]),t2=numGrade(r[9]),t3=numGrade(r[13]);
+   if(t1===null&&t2===null&&t3===null)continue;
+   let m=bestStudentMatch(name,currentStudents);
+   ecrRows.push({excelName:name,t1,t2,t3,student:m.student,status:m.status})
+  }
   let matched=ecrRows.filter(x=>x.student).length,unmatched=ecrRows.length-matched;
   $("ecrMeta").innerHTML=`<div class="ecr-summary"><span>Subject: <b>${esc(meta.subject||"Not detected")}</b></span><span>Class: <b>${esc(meta.gradeSection||"Not detected")}</b></span><span>School Year: <b>${esc(meta.schoolYear||"Not detected")}</b></span><span>Matched: <b>${matched}</b></span><span>Needs review: <b>${unmatched}</b></span></div>`;
   $("ecrPreview").innerHTML=`<table class="grade-table"><thead><tr><th>E-Class Record Learner</th><th>Portal Match</th><th>T1</th><th>T2</th><th>T3</th><th>Status</th></tr></thead><tbody>${ecrRows.map((x,i)=>`<tr><td>${esc(x.excelName)}</td><td>${x.student?esc(x.student.display_name):"—"}</td><td>${x.t1??"—"}</td><td>${x.t2??"—"}</td><td>${x.t3??"—"}</td><td class="${x.student?"ecr-status-ok":"ecr-status-warn"}">${x.status}</td></tr>`).join("")}</tbody></table>`;
-  $("ecrMsg").innerHTML=matched?`<span class="ecr-status-ok">Preview ready.</span> Only matched learners will be imported. Review before confirming.`:'<span class="ecr-status-bad">No learners matched the loaded portal class. Nothing can be imported.</span>';$("confirmImport").hidden=!matched;$("clearImport").hidden=false;
+  $("ecrMsg").innerHTML=matched?`<span class="ecr-status-ok">Preview ready.</span> Only matched learners will be imported. Review before confirming.`:'<span class="ecr-status-bad">No learners matched automatically. Check that the correct Grade/Section was loaded. Matching now uses the learner’s first name and surname. Middle names and middle initials are ignored.</span>';$("confirmImport").hidden=!matched;$("clearImport").hidden=false;
  }catch(err){$("ecrMsg").innerHTML=`<span class="ecr-status-bad">${esc(err.message)}</span>`;$("confirmImport").hidden=true}
 };
 $("confirmImport").onclick=()=>{
