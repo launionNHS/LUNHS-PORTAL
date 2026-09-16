@@ -2392,3 +2392,41 @@ input::placeholder,textarea::placeholder{
 .report-box{background:#fff;border:1px solid #d8e4db;padding:22px;margin-top:22px}.report-box h2{color:#146B3A;margin-top:0}
 @media(max-width:750px){.analytics-title{display:block}.analytics-controls{margin-top:18px}.mps-cards{grid-template-columns:1fr}}
 @media print{.reference-header,.analytics-controls{display:none!important}.analytics-page{max-width:none;padding:0}.report-box{break-inside:avoid}}
+
+/* v30.1 — cellphone portrait + landscape responsive improvements */
+html{max-width:100%;overflow-x:hidden}
+body{max-width:100%;overflow-x:hidden}
+img,video,iframe{max-width:100%;height:auto}
+.table-wrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.grade-table{min-width:720px}
+input,select,textarea,button{max-width:100%;box-sizing:border-box}
+@media(max-width:767px){
+ .reference-header{grid-template-columns:1fr!important;padding:10px 12px!important;row-gap:9px!important}
+ .reference-header .brand{justify-self:center!important;min-width:0!important;width:100%;justify-content:center!important}
+ .reference-header .brand img{width:48px!important;height:48px!important;flex:0 0 auto}
+ .reference-header .brand div{min-width:0}
+ .reference-header .brand b{font-size:14px!important;white-space:normal!important;line-height:1.15;text-align:left}
+ .reference-header .brand small{font-size:9px!important}
+ .reference-header nav{width:100%!important;justify-content:center!important;flex-wrap:wrap!important;gap:5px!important}
+ .reference-header nav a,.reference-header nav button{font-size:11px!important;min-height:36px!important;padding:0 8px!important}
+ .reference-header nav .portal-login-btn{margin-left:0!important;min-width:auto!important}
+ main,.analytics-page{width:100%;box-sizing:border-box;padding-left:14px!important;padding-right:14px!important}
+ .analytics-title h1{font-size:28px}
+ .analytics-controls{display:grid!important;grid-template-columns:1fr 1fr;width:100%}
+ .analytics-controls label{grid-column:1/-1}
+ .analytics-controls input{width:100%}
+ .mps-cards{grid-template-columns:1fr!important}
+ .report-box{padding:14px}
+ .dashboard-grid,.cards-grid,.media-grid{grid-template-columns:1fr!important}
+ .hero,.hero-content{min-height:auto!important}
+}
+@media(min-width:568px) and (max-width:932px) and (orientation:landscape){
+ .reference-header{grid-template-columns:auto 1fr!important;padding:7px 12px!important;column-gap:12px!important}
+ .reference-header .brand{justify-self:start!important;width:auto}
+ .reference-header .brand img{width:42px!important;height:42px!important}
+ .reference-header .brand b{font-size:12px!important;white-space:nowrap!important}
+ .reference-header nav{justify-content:flex-end!important;flex-wrap:wrap!important}
+ .reference-header nav a,.reference-header nav button{font-size:10px!important;min-height:32px!important;padding:0 6px!important}
+ .mps-cards{grid-template-columns:repeat(3,1fr)!important}
+ .analytics-title{align-items:center}
+}

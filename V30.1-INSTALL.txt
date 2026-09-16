@@ -1,0 +1,20 @@
+LUNHS PORTAL v30.1 — MOBILE RESPONSIVE
+
+Optimized for:
+- Cellphone portrait
+- Cellphone landscape
+- Tablet
+- Desktop
+
+Improvements:
+- Responsive header/navigation
+- Mobile-friendly dashboards and cards
+- MPS analytics adapts to phone screens
+- Grade/MPS tables can be swiped horizontally on narrow screens
+- Images/videos/iframes fit the screen
+- Forms and controls stay within screen width
+
+INSTALL:
+Upload/replace all files in this ZIP to the LUNHS-PORTAL GitHub repository.
+No Supabase SQL changes are required.
+Then refresh the website. On mobile, reopen or refresh the page.
