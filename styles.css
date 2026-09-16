@@ -2307,3 +2307,6 @@ input::placeholder,textarea::placeholder{
     padding:0 12px !important;
   }
 }
+
+/* v23 ADMIN CMS */
+.cms-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:30px}.cms-box{border:1px solid #d5e4da;padding:28px;background:#fff}.cms-box h2{color:#146B3A!important}.cms-box label{display:block;margin:15px 0;font-weight:700}.cms-box input:not([type=checkbox]),.cms-box textarea,.cms-box select{display:block;width:100%;margin-top:7px;padding:12px;border:1px solid #146B3A}.admin-row{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:14px 0;border-bottom:1px solid #ddd}.admin-row small{display:block;color:#666!important}#cmsNav[hidden]{display:none!important}@media(max-width:800px){.cms-grid{grid-template-columns:1fr}}

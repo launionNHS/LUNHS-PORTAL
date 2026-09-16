@@ -1,0 +1,18 @@
+LUNHS PORTAL v22.1 — HEADER FIX
+
+Fixed:
+- Portal Login no longer overlaps other navigation buttons.
+- Navigation buttons automatically fit available header width.
+- On smaller screens the menu wraps cleanly instead of overlapping.
+- La Union National High School stays on ONE line.
+- School logo saved as transparent PNG.
+- Logo background is transparent.
+- Existing separate pages remain unchanged.
+
+INSTALL:
+Upload/replace:
+1. styles.css
+2. lunhs-logo.png
+
+For the safest installation you can upload all files from this ZIP.
+No Supabase or SQL changes.

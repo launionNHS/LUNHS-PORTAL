@@ -1,0 +1,15 @@
+LUNHS v23 — Admin Edit/Publish All Sections
+
+Admin can:
+- Edit Home, About, Academics, Downloads, Contact main content.
+- Publish to Announcement, Event, Students Update, School Publication, Gallery, Achievement, Academics, Downloads, About, Contact.
+- Publish/unpublish/delete posts.
+- Open admin-cms.html as the Website Content Manager.
+- Uses your newly supplied LUNHS logo.
+
+INSTALL:
+1. Upload/replace ALL files in this ZIP to LUNHS-PORTAL.
+2. Run V23-CMS-SQL.sql ONCE in Supabase SQL Editor.
+3. Sign in as Admin and open admin-cms.html / Manage Website.
+
+No Edge Function changes.
