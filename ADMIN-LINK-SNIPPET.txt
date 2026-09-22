@@ -1,0 +1,6 @@
+Add this card inside the app-grid of admin.html:
+
+<a class="app-card" href="admin-archive.html">
+  <h3>Archive & Backup</h3>
+  <p>Export and archive completed school years.</p>
+</a>

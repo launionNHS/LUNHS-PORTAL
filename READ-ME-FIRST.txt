@@ -1,25 +1,19 @@
-LUNHS v32.5 — STUDENT MALE/FEMALE ARRANGEMENT
+LUNHS v34 — ARCHIVE & BACKUP
 
-PURPOSE
-Existing students can be classified as Male or Female BEFORE teachers encode grades manually.
+This update adds:
+- CSV/Excel-compatible export of student enrollment
+- grade backup
+- teacher-load backup
+- section/adviser backup
+- school-year archive status
+- protection against archiving the currently ACTIVE school year
+- no passwords/authentication secrets in exports
 
-INSTALL
-1. Run V32.5-STUDENT-SEX-GROUPING.sql once in Supabase SQL Editor.
-2. Upload/replace these website files in GitHub:
-   - dashboard.html
-   - admin.html
-   - admin-student-sex.html
-   - service-worker.js
+INSTALL:
+1. Run V34-ARCHIVE-BACKUP.sql ONCE in Supabase SQL Editor.
+2. Upload admin-archive.html to the root of LUNHS-PORTAL.
+3. Add the card in ADMIN-LINK-SNIPPET.txt to admin.html.
+4. Refresh/reopen the portal.
 
-ADMIN WORKFLOW
-Admin > Student Male/Female Arrangement
-Choose Grade/Section > Load Students > set each learner to Male/Female > Save.
-
-TEACHER MANUAL GRADEBOOK
-When a teacher loads a class, students automatically appear:
-MALE — alphabetical by surname, then first name
-FEMALE — alphabetical by surname, then first name
-SEX NOT SET — students the admin has not classified yet
-
-The official DepEd E-Class Record is NOT changed.
-E-Class Record matching remains based on FIRST NAME + SURNAME.
+IMPORTANT:
+Archiving does NOT delete records. Before archiving, export the records and keep copies in a secure school-controlled location.

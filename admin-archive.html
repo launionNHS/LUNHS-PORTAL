@@ -1,0 +1,37 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Archive & Backup | LUNHS</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.note{padding:12px;background:#f3f8f5;border-left:4px solid #176b45}.danger{border-left:4px solid #9b2c2c;padding:12px;background:#fff7f7}.actions{display:flex;gap:8px;flex-wrap:wrap}.bar{padding:10px;border-bottom:1px solid #ddd}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style>
+</head><body><main class="standalone-page"><a href="admin.html">← Admin</a>
+<h1>School Year Archive & Backup</h1>
+<p>Export important records before closing a school year, then archive the year to protect historical data.</p>
+<div class="app-card"><label>School Year <select id="sy"></select></label><p id="msg"></p></div>
+<div class="grid">
+<section class="app-card"><h3>1. Backup / Export</h3><div class="note">Exports CSV files that can be opened in Excel. No student passwords or authentication secrets are included.</div>
+<div class="actions"><button id="students">Student Enrollment</button><button id="grades">Grades</button><button id="loads">Teacher Loads</button><button id="sections">Sections</button><button id="all" class="primary">Export All</button></div></section>
+<section class="app-card"><h3>2. Close & Archive</h3><div class="danger"><b>Archive only after reviewing and exporting records.</b><p>Archived years remain in the database for historical reports. They are not deleted.</p></div>
+<button id="archive">Archive Selected School Year</button></section>
+</div>
+<section class="app-card"><h3>School Years</h3><div id="years"></div></section>
+</main><script src="config.js"></script><script>
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key),$=x=>document.getElementById(x);let years=[];
+const E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+function csv(v){let s=String(v??"");return '"'+s.replaceAll('"','""')+'"'}
+function download(name,rows){
+ if(!rows.length){$("msg").textContent="No records found for this export.";return}
+ let keys=[...new Set(rows.flatMap(x=>Object.keys(x)))];
+ let text=keys.map(csv).join(",")+"\n"+rows.map(r=>keys.map(k=>csv(r[k])).join(",")).join("\n");
+ let blob=new Blob(["\ufeff"+text],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=name;a.click();URL.revokeObjectURL(a.href)
+}
+async function guard(){let u=(await sb.auth.getUser()).data.user;if(!u)return location.href="portal.html";let p=(await sb.from("profiles").select("role").eq("id",u.id).single()).data;if(p?.role!=="admin")return location.href="dashboard.html";load()}
+async function load(){let r=await sb.from("school_years").select("*").order("label",{ascending:false});if(r.error)return $("msg").textContent=r.error.message;years=r.data||[];$("sy").innerHTML=years.map(x=>`<option value="${E(x.label)}">${E(x.label)}${x.is_active?" — ACTIVE":""}${x.is_archived?" — ARCHIVED":""}</option>`).join("");$("years").innerHTML=years.map(x=>`<div class="bar"><b>${E(x.label)}</b> ${x.is_active?"• ACTIVE":""} ${x.is_archived?"• ARCHIVED":""}</div>`).join("")}
+async function exportStudents(){let sy=$("sy").value,r=await sb.from("student_enrollments").select("student_id,school_year,grade_level,section,status,profiles!student_enrollments_student_id_fkey(display_name,school_id,sex)").eq("school_year",sy);if(r.error)return $("msg").textContent=r.error.message;let rows=(r.data||[]).map(x=>({school_year:x.school_year,student_name:x.profiles?.display_name,school_id_lrn:x.profiles?.school_id,sex:x.profiles?.sex,grade_level:x.grade_level,section:x.section,status:x.status}));download(`LUNHS-${sy}-student-enrollment.csv`,rows);return rows}
+async function exportGrades(){let sy=$("sy").value,r=await sb.from("grades").select("student_id,section,term1,term2,term3,school_year,profiles!grades_student_id_fkey(display_name,school_id),subjects(name)").eq("school_year",sy);if(r.error)return $("msg").textContent=r.error.message;let rows=(r.data||[]).map(x=>({school_year:x.school_year,student_name:x.profiles?.display_name,school_id_lrn:x.profiles?.school_id,section:x.section,subject:x.subjects?.name,term1:x.term1,term2:x.term2,term3:x.term3}));download(`LUNHS-${sy}-grades.csv`,rows);return rows}
+async function exportLoads(){let sy=$("sy").value,r=await sb.from("teacher_assignments").select("section,school_year,profiles!teacher_assignments_teacher_id_fkey(display_name,school_id),subjects(name,grade_level)").eq("school_year",sy);if(r.error)return $("msg").textContent=r.error.message;let rows=(r.data||[]).map(x=>({school_year:x.school_year,teacher:x.profiles?.display_name,employee_id:x.profiles?.school_id,subject:x.subjects?.name,grade_level:x.subjects?.grade_level,section:x.section}));download(`LUNHS-${sy}-teacher-loads.csv`,rows);return rows}
+async function exportSections(){let sy=$("sy").value,r=await sb.from("school_sections").select("school_year,grade_level,section_name,active,profiles!school_sections_adviser_id_fkey(display_name)").eq("school_year",sy);if(r.error)return $("msg").textContent=r.error.message;let rows=(r.data||[]).map(x=>({school_year:x.school_year,grade_level:x.grade_level,section:x.section_name,adviser:x.profiles?.display_name,active:x.active}));download(`LUNHS-${sy}-sections.csv`,rows);return rows}
+$("students").onclick=exportStudents;$("grades").onclick=exportGrades;$("loads").onclick=exportLoads;$("sections").onclick=exportSections;
+$("all").onclick=async()=>{await exportStudents();await exportGrades();await exportLoads();await exportSections();$("msg").textContent="Backup exports prepared for "+$("sy").value+"."};
+$("archive").onclick=async()=>{let sy=$("sy").value,y=years.find(x=>x.label===sy);if(y?.is_active)return $("msg").textContent="You cannot archive the ACTIVE school year. Activate the next school year first.";if(!confirm("Archive "+sy+"? Historical records will remain stored."))return;let r=await sb.from("school_years").update({is_archived:true,archived_at:new Date().toISOString(),closed_at:new Date().toISOString()}).eq("label",sy);$("msg").textContent=r.error?r.error.message:sy+" archived successfully.";if(!r.error)load()};
+guard();
+</script></body></html>
