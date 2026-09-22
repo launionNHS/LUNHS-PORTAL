@@ -1,0 +1,2 @@
+Add this link/card to the TEACHER area of dashboard.html:
+<a href="teacher-competencies.html">Least Learned Competencies / Item Analysis</a>

@@ -1,0 +1,44 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Least Learned Competencies | LUNHS</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+.filters,.entry{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.wide{grid-column:1/-1}.tbl{overflow:auto}.tbl table{width:100%;border-collapse:collapse}.tbl th,.tbl td{padding:8px;border-bottom:1px solid #ddd;text-align:left}.low{font-weight:800}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.summary div{padding:12px;border:1px solid #ddd;border-radius:10px}.note{padding:10px;background:#f3f8f5;border-left:4px solid #176b45}@media(max-width:700px){.filters,.entry,.summary{grid-template-columns:1fr}}
+</style></head><body>
+<main class="standalone-page"><a href="dashboard.html">← Teacher Dashboard</a>
+<h1>Least Learned Competencies / Item Analysis</h1>
+<p>Identify competencies or exam topics that need reteaching and record the intervention provided.</p>
+<div class="app-card filters">
+<label>School Year<select id="sy"></select></label>
+<label>Subject / Section<select id="assignment"></select></label>
+<label>Term<select id="term"><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></label>
+<label class="wide">Assessment / Exam Title<input id="title" class="app-input" placeholder="Example: First Periodical Examination"></label>
+<button id="load">Load Analysis</button><p id="msg" class="wide"></p>
+</div>
+<div class="app-card"><h3>Add Competency / Topic</h3><div class="entry">
+<input id="code" class="app-input" placeholder="Competency code (optional)">
+<input id="competency" class="app-input" placeholder="Competency / topic">
+<input id="correct" class="app-input" type="number" min="0" placeholder="Learners correct">
+<input id="total" class="app-input" type="number" min="1" placeholder="Total learners">
+<input id="intervention" class="app-input" placeholder="Intervention / remediation">
+<select id="status"><option>Not Started</option><option>Ongoing</option><option>Completed</option></select>
+<button id="save" class="primary">Save Competency</button>
+</div></div>
+<div class="app-card"><h3>Excel Import</h3><div class="note">Excel columns: Competency Code, Competency, Correct, Total Learners, Intervention. Import first, review the preview, then confirm.</div>
+<input id="file" type="file" accept=".xlsx,.xls"><button id="preview">Preview Excel</button><button id="confirm" hidden>Confirm Import</button><div id="importPreview" class="tbl"></div></div>
+<div class="app-card"><div class="summary"><div><b id="count">0</b><br>Total Competencies</div><div><b id="least">0</b><br>Least Learned</div><div><b id="threshold">60%</b><br>Least-Learned Threshold</div></div></div>
+<div class="app-card"><h3>Competency Analysis</h3><div class="tbl"><table><thead><tr><th>Code</th><th>Competency / Topic</th><th>Correct / Total</th><th>Mastery</th><th>Result</th><th>Intervention</th><th>Status</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></div>
+</main><script src="config.js"></script><script>
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key),$=x=>document.getElementById(x);let user,assignments=[],threshold=60,previewRows=[];
+const E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+async function init(){user=(await sb.auth.getUser()).data.user;if(!user)return location.href="portal.html";let p=(await sb.from("profiles").select("role").eq("id",user.id).single()).data;if(!["teacher","admin"].includes(p?.role))return location.href="dashboard.html";let yr=await sb.from("school_years").select("*").order("label",{ascending:false});$("sy").innerHTML=(yr.data||[]).map(x=>`<option ${x.is_active?"selected":""}>${E(x.label)}</option>`).join("");let set=await sb.from("competency_settings").select("numeric_value").eq("setting_key","least_learned_threshold").maybeSingle();threshold=Number(set.data?.numeric_value??60);$("threshold").textContent=threshold+"%";await loadAssignments()}
+async function loadAssignments(){let sy=$("sy").value,r=await sb.from("teacher_assignments").select("subject_id,section,school_year,subjects(name,grade_level)").eq("teacher_id",user.id).eq("school_year",sy);assignments=r.data||[];$("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${E(a.subjects?.name)} — Grade ${E(a.subjects?.grade_level||"")} ${E(a.section)}</option>`).join("")||"<option>No assignment</option>"}
+function ctx(){let a=assignments[+$("assignment").value];return a?{subject_id:a.subject_id,section:a.section,school_year:$("sy").value,term:$("term").value,assessment_title:$("title").value.trim()}:null}
+async function loadRows(){let c=ctx();if(!c||!c.assessment_title)return $("msg").textContent="Select a class and enter the assessment/exam title.";let r=await sb.from("competency_assessments").select("*").eq("teacher_id",user.id).eq("subject_id",c.subject_id).eq("section",c.section).eq("school_year",c.school_year).eq("term",c.term).eq("assessment_title",c.assessment_title).order("mastery_percent");if(r.error)return $("msg").textContent=r.error.message;let rows=r.data||[];$("count").textContent=rows.length;$("least").textContent=rows.filter(x=>Number(x.mastery_percent)<threshold).length;$("rows").innerHTML=rows.map(x=>{let low=Number(x.mastery_percent)<threshold;return `<tr class="${low?"low":""}"><td>${E(x.competency_code||"")}</td><td>${E(x.competency)}</td><td>${x.correct_count} / ${x.total_learners}</td><td>${Number(x.mastery_percent).toFixed(2)}%</td><td>${low?"Least Learned":"At/Above Threshold"}</td><td>${E(x.intervention||"")}</td><td>${E(x.intervention_status)}</td><td><button onclick="del(${x.id})">Delete</button></td></tr>`}).join("")||'<tr><td colspan="8">No competency analysis yet.</td></tr>'}
+$("save").onclick=async()=>{let c=ctx(),comp=$("competency").value.trim(),correct=+$("correct").value,total=+$("total").value;if(!c||!c.assessment_title||!comp||!total||correct<0||correct>total)return $("msg").textContent="Complete the class, exam title, competency, Correct and Total fields. Correct cannot exceed Total.";let r=await sb.from("competency_assessments").insert({...c,teacher_id:user.id,competency_code:$("code").value.trim()||null,competency:comp,correct_count:correct,total_learners:total,intervention:$("intervention").value.trim()||null,intervention_status:$("status").value});$("msg").textContent=r.error?r.error.message:"Competency saved.";if(!r.error){$("competency").value="";$("code").value="";$("correct").value="";$("intervention").value="";loadRows()}}
+window.del=async id=>{if(!confirm("Delete this competency analysis row?"))return;let r=await sb.from("competency_assessments").delete().eq("id",id);$("msg").textContent=r.error?r.error.message:"Deleted.";if(!r.error)loadRows()}
+$("load").onclick=loadRows;$("sy").onchange=loadAssignments;
+$("preview").onclick=()=>{let f=$("file").files[0];if(!f)return $("msg").textContent="Choose an Excel file.";let rd=new FileReader();rd.onload=e=>{let wb=XLSX.read(e.target.result,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{defval:""});previewRows=data.map(r=>({code:r["Competency Code"]||r["Code"]||"",competency:r["Competency"]||r["Topic"]||"",correct:Number(r["Correct"]||0),total:Number(r["Total Learners"]||r["Total"]||0),intervention:r["Intervention"]||""})).filter(r=>r.competency&&r.total>0&&r.correct>=0&&r.correct<=r.total);$("importPreview").innerHTML='<table><tr><th>Code</th><th>Competency</th><th>Correct</th><th>Total</th><th>Mastery</th></tr>'+previewRows.map(r=>`<tr><td>${E(r.code)}</td><td>${E(r.competency)}</td><td>${r.correct}</td><td>${r.total}</td><td>${(r.correct/r.total*100).toFixed(2)}%</td></tr>`).join("")+"</table>";$("confirm").hidden=!previewRows.length};rd.readAsArrayBuffer(f)}
+$("confirm").onclick=async()=>{let c=ctx();if(!c||!c.assessment_title)return $("msg").textContent="Enter the assessment/exam title before importing.";let payload=previewRows.map(r=>({...c,teacher_id:user.id,competency_code:r.code||null,competency:r.competency,correct_count:r.correct,total_learners:r.total,intervention:r.intervention||null,intervention_status:"Not Started"}));let r=await sb.from("competency_assessments").insert(payload);$("msg").textContent=r.error?r.error.message:`Imported ${payload.length} competencies.`;if(!r.error){previewRows=[];$("confirm").hidden=true;$("importPreview").innerHTML="";loadRows()}}
+init();
+</script></body></html>

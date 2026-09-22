@@ -1,6 +1,5 @@
-Add this card inside the app-grid of admin.html:
-
-<a class="app-card" href="admin-archive.html">
-  <h3>Archive & Backup</h3>
-  <p>Export and archive completed school years.</p>
+Add this card inside the Admin app-grid:
+<a class="app-card" href="admin-competencies.html">
+  <h3>Least Learned Competency Monitoring</h3>
+  <p>Monitor competency mastery and teacher interventions.</p>
 </a>

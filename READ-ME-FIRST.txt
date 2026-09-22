@@ -1,19 +1,28 @@
-LUNHS v34 — ARCHIVE & BACKUP
+LUNHS v35 — LEAST LEARNED COMPETENCIES / ITEM ANALYSIS
 
-This update adds:
-- CSV/Excel-compatible export of student enrollment
-- grade backup
-- teacher-load backup
-- section/adviser backup
-- school-year archive status
-- protection against archiving the currently ACTIVE school year
-- no passwords/authentication secrets in exports
+FEATURES
+- Teacher selects School Year, Subject/Section, Term, and Exam title
+- Manual competency/topic encoding
+- Correct count / total learners
+- Automatic mastery percentage
+- Automatic identification of Least Learned competencies
+- Admin-configurable least-learned threshold (default 60%)
+- Intervention/remediation and status
+- Excel import with preview
+- Admin consolidated monitoring by school year
+- Teacher can only encode for their assigned subject/section/year
+- Existing grades remain separate and unchanged
 
-INSTALL:
-1. Run V34-ARCHIVE-BACKUP.sql ONCE in Supabase SQL Editor.
-2. Upload admin-archive.html to the root of LUNHS-PORTAL.
-3. Add the card in ADMIN-LINK-SNIPPET.txt to admin.html.
-4. Refresh/reopen the portal.
+INSTALL
+1. Run V35-LEAST-LEARNED-COMPETENCIES.sql ONCE in Supabase SQL Editor.
+2. Upload teacher-competencies.html and admin-competencies.html to the ROOT of LUNHS-PORTAL.
+3. Add the teacher link shown in DASHBOARD-LINK-SNIPPET.txt to dashboard.html.
+4. Add the admin card shown in ADMIN-LINK-SNIPPET.txt to admin.html.
+5. Refresh/reopen the portal.
 
-IMPORTANT:
-Archiving does NOT delete records. Before archiving, export the records and keep copies in a secure school-controlled location.
+EXCEL IMPORT
+Use the headers in EXCEL-TEMPLATE.csv:
+Competency Code | Competency | Correct | Total Learners | Intervention
+
+NOTE
+The default threshold is 60%. Admin can change it in the competency monitoring page.
