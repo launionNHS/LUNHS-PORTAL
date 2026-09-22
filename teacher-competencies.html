@@ -25,7 +25,9 @@
 <button id="save" class="primary">Save Competency</button>
 </div></div>
 <div class="app-card"><h3>Excel Import</h3><div class="note">Excel columns: Competency Code, Competency, Correct, Total Learners, Intervention. Import first, review the preview, then confirm.</div>
-<input id="file" type="file" accept=".xlsx,.xls"><button id="preview">Preview Excel</button><button id="confirm" hidden>Confirm Import</button><div id="importPreview" class="tbl"></div></div>
+<div class="actions"><button id="downloadTemplate" type="button">Download Excel Template</button></div>
+<p><small>Download the template, encode the competency results in Excel, save the file, then upload the completed file below.</small></p>
+<input id="file" type="file" accept=".xlsx,.xls"><button id="preview">Preview Completed Template</button><button id="confirm" hidden>Confirm Import</button><div id="importPreview" class="tbl"></div></div>
 <div class="app-card"><div class="summary"><div><b id="count">0</b><br>Total Competencies</div><div><b id="least">0</b><br>Least Learned</div><div><b id="threshold">60%</b><br>Least-Learned Threshold</div></div></div>
 <div class="app-card"><h3>Competency Analysis</h3><div class="tbl"><table><thead><tr><th>Code</th><th>Competency / Topic</th><th>Correct / Total</th><th>Mastery</th><th>Result</th><th>Intervention</th><th>Status</th><th></th></tr></thead><tbody id="rows"></tbody></table></div></div>
 </main><script src="config.js"></script><script>
@@ -38,6 +40,16 @@ async function loadRows(){let c=ctx();if(!c||!c.assessment_title)return $("msg")
 $("save").onclick=async()=>{let c=ctx(),comp=$("competency").value.trim(),correct=+$("correct").value,total=+$("total").value;if(!c||!c.assessment_title||!comp||!total||correct<0||correct>total)return $("msg").textContent="Complete the class, exam title, competency, Correct and Total fields. Correct cannot exceed Total.";let r=await sb.from("competency_assessments").insert({...c,teacher_id:user.id,competency_code:$("code").value.trim()||null,competency:comp,correct_count:correct,total_learners:total,intervention:$("intervention").value.trim()||null,intervention_status:$("status").value});$("msg").textContent=r.error?r.error.message:"Competency saved.";if(!r.error){$("competency").value="";$("code").value="";$("correct").value="";$("intervention").value="";loadRows()}}
 window.del=async id=>{if(!confirm("Delete this competency analysis row?"))return;let r=await sb.from("competency_assessments").delete().eq("id",id);$("msg").textContent=r.error?r.error.message:"Deleted.";if(!r.error)loadRows()}
 $("load").onclick=loadRows;$("sy").onchange=loadAssignments;
+$("downloadTemplate").onclick=()=>{
+ let ws=XLSX.utils.aoa_to_sheet([
+  ["Competency Code","Competency","Correct","Total Learners","Intervention"],
+  ["F8PB-Ia-c-22","Example competency or topic","","",""]
+ ]);
+ ws["!cols"]=[{wch:22},{wch:55},{wch:14},{wch:18},{wch:45}];
+ let wb=XLSX.utils.book_new();
+ XLSX.utils.book_append_sheet(wb,ws,"Competency Analysis");
+ XLSX.writeFile(wb,"LUNHS-Least-Learned-Competency-Template.xlsx");
+};
 $("preview").onclick=()=>{let f=$("file").files[0];if(!f)return $("msg").textContent="Choose an Excel file.";let rd=new FileReader();rd.onload=e=>{let wb=XLSX.read(e.target.result,{type:"array"}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{defval:""});previewRows=data.map(r=>({code:r["Competency Code"]||r["Code"]||"",competency:r["Competency"]||r["Topic"]||"",correct:Number(r["Correct"]||0),total:Number(r["Total Learners"]||r["Total"]||0),intervention:r["Intervention"]||""})).filter(r=>r.competency&&r.total>0&&r.correct>=0&&r.correct<=r.total);$("importPreview").innerHTML='<table><tr><th>Code</th><th>Competency</th><th>Correct</th><th>Total</th><th>Mastery</th></tr>'+previewRows.map(r=>`<tr><td>${E(r.code)}</td><td>${E(r.competency)}</td><td>${r.correct}</td><td>${r.total}</td><td>${(r.correct/r.total*100).toFixed(2)}%</td></tr>`).join("")+"</table>";$("confirm").hidden=!previewRows.length};rd.readAsArrayBuffer(f)}
 $("confirm").onclick=async()=>{let c=ctx();if(!c||!c.assessment_title)return $("msg").textContent="Enter the assessment/exam title before importing.";let payload=previewRows.map(r=>({...c,teacher_id:user.id,competency_code:r.code||null,competency:r.competency,correct_count:r.correct,total_learners:r.total,intervention:r.intervention||null,intervention_status:"Not Started"}));let r=await sb.from("competency_assessments").insert(payload);$("msg").textContent=r.error?r.error.message:`Imported ${payload.length} competencies.`;if(!r.error){previewRows=[];$("confirm").hidden=true;$("importPreview").innerHTML="";loadRows()}}
 init();
