@@ -14,7 +14,7 @@
 <label>Teacher<select id="teacher"></select></label>
 <label>Grade Level<select id="loadgrade"></select></label>
 <label>Subject<select id="subjectsel"></select></label>
-<label>Section<select id="sectionsel"></select></label>
+<label>Section<select id="sectionsel"></select></label><label>Term<select id="loadterm"><option>All Terms</option><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></label>
 </div>
 <div class="load-actions"><button id="addload" class="primary">+ Assign Teacher</button></div>
 <div id="loadmsg"></div><div id="teacherSummary"></div><div id="loads" class="load-list"></div>
@@ -43,7 +43,7 @@ function filterLoadChoices(){
 async function render(){
  $("sections").innerHTML=C.filter(x=>x.school_year===sy()).map(x=>`<p>G${e(x.grade_level)} — <b>${e(x.section_name)}</b></p>`).join("");
  $("subjects").innerHTML=U.map(x=>`<p>G${e(x.grade_level||"")} — <b>${e(x.name)}</b></p>`).join("");
- let r=await sb.from("teacher_assignments").select("id,teacher_id,subject_id,section,school_year,profiles!teacher_assignments_teacher_id_fkey(display_name),subjects(name,grade_level)").eq("school_year",sy()).order("section");
+ let r=await sb.from("teacher_assignments").select("id,teacher_id,subject_id,section,school_year,term,profiles!teacher_assignments_teacher_id_fkey(display_name),subjects(name,grade_level)").eq("school_year",sy()).order("section");
  if(r.error){$("loadmsg").textContent=r.error.message;return}
  LOADS=r.data||[];renderLoads()
 }
@@ -51,7 +51,7 @@ function renderLoads(){
  let tid=$("teacher").value,list=tid?LOADS.filter(x=>x.teacher_id===tid):LOADS;
  let tn=T.find(x=>x.id===tid)?.display_name;
  $("teacherSummary").innerHTML=tid?`<div class="teacher-summary"><b>${e(tn)}</b> has ${list.length} load${list.length===1?"":"s"} for ${e(sy())}.</div>`:`<div class="teacher-summary">Showing all ${LOADS.length} teacher load${LOADS.length===1?"":"s"} for ${e(sy())}. Select a teacher to focus the list.</div>`;
- $("loads").innerHTML=list.sort((a,b)=>String(a.subjects?.grade_level||"").localeCompare(String(b.subjects?.grade_level||""))||String(a.subjects?.name||"").localeCompare(String(b.subjects?.name||""))||String(a.section).localeCompare(String(b.section))).map(x=>`<div class="load-item"><div><b>${e(x.profiles?.display_name||"Teacher")}</b><small>Grade ${e(x.subjects?.grade_level||"")} • ${e(x.subjects?.name||"Subject")}</small></div><div>${e(x.section)}</div><button class="danger" type="button" onclick="removeLoad(${x.id})">Remove</button></div>`).join("")||"<p>No teacher loads found.</p>"
+ $("loads").innerHTML=list.sort((a,b)=>String(a.subjects?.grade_level||"").localeCompare(String(b.subjects?.grade_level||""))||String(a.subjects?.name||"").localeCompare(String(b.subjects?.name||""))||String(a.section).localeCompare(String(b.section))).map(x=>`<div class="load-item"><div><b>${e(x.profiles?.display_name||"Teacher")}</b><small>Grade ${e(x.subjects?.grade_level||"")} • ${e(x.subjects?.name||"Subject")}</small></div><div>${e(x.section)}<small><b>${e(x.term||"All Terms")}</b></small></div><button class="danger" type="button" onclick="removeLoad(${x.id})">Remove</button></div>`).join("")||"<p>No teacher loads found.</p>"
 }
 async function removeLoad(id){
  let x=LOADS.find(a=>a.id===id);if(!x)return;
@@ -65,15 +65,16 @@ $("addsub").onclick=async()=>{let r=await sb.from("subjects").insert({name:$("su
 $("loadgrade").onchange=filterLoadChoices;
 $("teacher").onchange=renderLoads;
 $("addload").onclick=async()=>{
- let teacher_id=$("teacher").value,subject_id=+$("subjectsel").value,section=$("sectionsel").value;
+ let teacher_id=$("teacher").value,subject_id=+$("subjectsel").value,section=$("sectionsel").value,term=$("loadterm").value;
  if(!teacher_id)return $("loadmsg").textContent="Please choose a teacher.";
  if(!$("loadgrade").value)return $("loadmsg").textContent="Please choose a grade level.";
  if(!subject_id)return $("loadmsg").textContent="Please choose a subject.";
  if(!section)return $("loadmsg").textContent="Please choose a section.";
- let duplicate=LOADS.find(x=>x.teacher_id===teacher_id&&x.subject_id===subject_id&&x.section===section&&x.school_year===sy());
- if(duplicate)return $("loadmsg").textContent="This exact teacher load is already assigned.";
- let r=await sb.from("teacher_assignments").insert({teacher_id,subject_id,section,school_year:sy()});
- $("loadmsg").textContent=r.error?r.error.message:"Teacher assigned successfully.";
+ let conflict=LOADS.find(x=>x.subject_id===subject_id&&x.section===section&&x.school_year===sy()&&
+   (term==="All Terms"||x.term==="All Terms"||x.term===term));
+ if(conflict)return $("loadmsg").textContent=`This class already has ${conflict.profiles?.display_name||"a teacher"} assigned for ${conflict.term||"All Terms"}. Remove that load first if you want to change the teacher.`;
+ let r=await sb.from("teacher_assignments").insert({teacher_id,subject_id,section,school_year:sy(),term});
+ $("loadmsg").textContent=r.error?r.error.message:`Teacher assigned successfully for ${term}.`;
  if(!r.error)await render()
 };
 

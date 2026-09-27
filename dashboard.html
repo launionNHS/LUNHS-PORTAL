@@ -24,7 +24,6 @@
 
 <section id="teacherPanel" hidden>
 <div class="portal-title-row"><div><h2>Teacher Gradebook</h2><p>Enter grades manually or import the prescribed Three-Term DepEd E-Class Record.</p></div></div>
-<div class="app-card" style="margin:14px 0"><h3>BOW-Based Least Learned Competencies</h3><p>Analyze examination results using the official Three-Term Budget of Work competencies.</p><a class="app-btn primary" href="teacher-competencies.html">Open Competency Analysis</a></div>
 <div class="grade-controls"><label>Assigned Class<select id="assignment"></select></label><label>School Year<input id="teacherSY" value="2026-2027"></label><button class="primary" id="loadClass">Load Students</button></div>
 
 <div class="app-card ecr-box">
@@ -118,7 +117,12 @@ async function init(){
 async function loadStudentGrades(){const sy=$("studentSY").value,{data,error}=await sb.from("grades").select("term1,term2,term3,school_year,subjects(name)").eq("student_id",user.id).eq("school_year",sy);if(error){$("status").textContent=error.message;return}
 let finals=[];$("studentGrades").innerHTML=(data||[]).map(g=>{let vals=[g.term1,g.term2,g.term3].filter(v=>v!==null),fin=vals.length===3?vals.reduce((a,b)=>a+Number(b),0)/3:null;if(fin!==null)finals.push(fin);return `<tr><td>${esc(g.subjects?.name||"Subject")}</td><td>${g.term1??"—"}</td><td>${g.term2??"—"}</td><td>${g.term3??"—"}</td><td><b>${fin===null?"—":fin.toFixed(2)}</b></td></tr>`}).join("")||'<tr><td colspan="5">No grades posted yet.</td></tr>';$("gradeSummary").textContent=finals.length?"Overall Average: "+(finals.reduce((a,b)=>a+b,0)/finals.length).toFixed(2):"No complete three-term grades yet."}
 $("studentSY").onchange=loadStudentGrades;
-async function loadAssignments(){let sy=$("teacherSY")?.value?.trim()||"2026-2027";const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,school_year,subjects(name,grade_level)").eq("teacher_id",user.id).eq("school_year",sy);if(error){$("gradeMsg").textContent=error.message;return}assignments=data||[];$("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — Grade ${esc(a.subjects?.grade_level||"")} ${esc(a.section)}</option>`).join("")||'<option>No assignment</option>'}
+async function loadAssignments(){let sy=$("teacherSY")?.value?.trim()||"2026-2027";const {data,error}=await sb.from("teacher_assignments").select("id,subject_id,section,school_year,term,subjects(name,grade_level)").eq("teacher_id",user.id).eq("school_year",sy);if(error){$("gradeMsg").textContent=error.message;return}assignments=data||[];$("assignment").innerHTML=assignments.map((a,i)=>`<option value="${i}">${esc(a.subjects?.name||"Subject")} — Grade ${esc(a.subjects?.grade_level||"")} ${esc(a.section)} — ${esc(a.term||"All Terms")}</option>`).join("")||'<option>No assignment</option>'}
+function allowedTerms(a){
+ const t=a?.term||"All Terms";
+ return t==="All Terms"?["term1","term2","term3"]:[{"Term 1":"term1","Term 2":"term2","Term 3":"term3"}[t]].filter(Boolean)
+}
+function termLabel(q){return {"term1":"Term 1","term2":"Term 2","term3":"Term 3"}[q]||q}
 async function loadClass(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027";
 let q=sb.from("profiles").select("id,display_name,school_id,section,grade_level,sex").eq("role","student").eq("section",a.section);if(a.subjects?.grade_level)q=q.eq("grade_level",String(a.subjects.grade_level));const {data:students,error}=await q.order("display_name");if(error){$("gradeMsg").textContent=error.message;return}
 const {data:grades}=await sb.from("grades").select("*").eq("subject_id",a.subject_id).eq("school_year",sy);const gm=new Map((grades||[]).map(g=>[g.student_id,g]));currentStudents=(students||[]).sort((a,b)=>sexOrder(a.sex)-sexOrder(b.sex)||alphaBySurname(a,b));
@@ -127,14 +131,27 @@ for(const s of currentStudents){
  let group=sexText(s.sex);
  if(group!==lastGroup){rosterHtml+=`<tr class="sex-divider"><td colspan="5"><b>${group}</b></td></tr>`;lastGroup=group}
  let g=gm.get(s.id)||{};
- rosterHtml+=`<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}"></td>`).join("")}</tr>`;
+ let allowed=allowedTerms(a);
+ rosterHtml+=`<tr data-id="${s.id}"><td>${esc(s.display_name)}</td><td>${esc(s.school_id||"")}</td>${["term1","term2","term3"].map(q=>`<td><input class="grade-input" data-q="${q}" type="number" min="60" max="100" step="0.01" value="${g[q]??""}" ${allowed.includes(q)?"":'disabled title="This term is assigned to another teacher."'}></td>`).join("")}</tr>`;
 }
-$("classRows").innerHTML=rosterHtml||'<tr><td colspan="5">No students found in this class.</td></tr>';$("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded.":"";clearEcr()}
+$("classRows").innerHTML=rosterHtml||'<tr><td colspan="5">No students found in this class.</td></tr>';$("saveGrades").hidden=!currentStudents.length;$("gradeMsg").textContent=currentStudents.length?currentStudents.length+" student(s) loaded. You can edit: "+(a.term||"All Terms")+".":"";clearEcr()}
 $("loadClass").onclick=loadClass;$("teacherSY").addEventListener("change",loadAssignments);
-async function saveVisibleGrades(){const a=assignments[+$("assignment").value];if(!a)return;const sy=$("teacherSY").value.trim()||"2026-2027",rows=[...document.querySelectorAll("#classRows tr[data-id]")],payload=[];
-for(const tr of rows){let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};for(const inp of tr.querySelectorAll(".grade-input")){if(inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[inp.dataset.q]=v}else obj[inp.dataset.q]=null}payload.push(obj)}
-$("gradeMsg").textContent="Saving…";const {error}=await sb.from("grades").upsert(payload,{onConflict:"student_id,subject_id,school_year"});$("gradeMsg").textContent=error?error.message:"Grades saved successfully."}
-$("saveGrades").onclick=saveVisibleGrades;
+async function saveVisibleGrades(){
+ const a=assignments[+$("assignment").value];if(!a)return;
+ const sy=$("teacherSY").value.trim()||"2026-2027",rows=[...document.querySelectorAll("#classRows tr[data-id]")],payload=[],allowed=allowedTerms(a);
+ for(const tr of rows){
+  let obj={student_id:tr.dataset.id,subject_id:a.subject_id,teacher_id:user.id,section:a.section,school_year:sy};
+  for(const q of allowed){
+   let inp=tr.querySelector(`.grade-input[data-q="${q}"]`);
+   if(inp&&inp.value!==""){let v=Number(inp.value);if(v<60||v>100){$("gradeMsg").textContent="Grades must be from 60 to 100.";return}obj[q]=v}
+   else obj[q]=null;
+  }
+  payload.push(obj)
+ }
+ $("gradeMsg").textContent="Saving "+(a.term||"assigned term")+"…";
+ const {error}=await sb.from("grades").upsert(payload,{onConflict:"student_id,subject_id,school_year"});
+ $("gradeMsg").textContent=error?error.message:"Grades saved successfully for "+(a.term||"All Terms")+".";
+}$("saveGrades").onclick=saveVisibleGrades;
 
 function clearEcr(){$("ecrFile").value="";ecrRows=[];$("ecrPreview").innerHTML="";$("ecrMeta").innerHTML="";$("ecrMsg").textContent="";$("confirmImport").hidden=true;$("clearImport").hidden=true}
 $("clearImport").onclick=clearEcr;
@@ -176,7 +193,7 @@ $("confirmImport").onclick=()=>{
  let applied=0,tbody=$("classRows"),ordered=[],seen=new Set(),lastSex="",rowMap=new Map([...tbody.querySelectorAll("tr[data-id]")].map(tr=>[tr.dataset.id,tr]));
  for(const x of ecrRows.filter(x=>x.student)){
   let tr=rowMap.get(x.student.id);if(!tr)continue;
-  for(const [q,v] of [["term1",x.t1],["term2",x.t2],["term3",x.t3]]){if(v!==null){let inp=tr.querySelector(`input[data-q="${q}"]`);if(inp)inp.value=v}}
+  for(const [q,v] of [["term1",x.t1],["term2",x.t2],["term3",x.t3]]){if(v!==null){let inp=tr.querySelector(`input[data-q="${q}"]`);if(inp&&!inp.disabled)inp.value=v}}
   ordered.push({tr,sex:x.sex,name:x.student.display_name});seen.add(x.student.id);applied++;
  }
  ordered.sort((a,b)=>({Male:0,Female:1,Unspecified:2}[a.sex]-({Male:0,Female:1,Unspecified:2}[b.sex]))||surnameKey(a.name).localeCompare(surnameKey(b.name))||firstKey(a.name).localeCompare(firstKey(b.name)));
@@ -187,7 +204,7 @@ $("confirmImport").onclick=()=>{
  }
  let remaining=currentStudents.filter(s=>!seen.has(s.id)).sort((a,b)=>alphaBySurname(a,b));
  if(remaining.length){let d=document.createElement("tr");d.className="sex-divider";d.innerHTML='<td colspan="5"><b>NOT MATCHED / NOT IN E-CLASS RECORD</b></td>';tbody.appendChild(d);for(const s of remaining){let tr=rowMap.get(s.id);if(tr)tbody.appendChild(tr)}}
- $("ecrMsg").innerHTML=`<span class="ecr-status-ok">${applied} matched learner(s) copied to the gradebook.</span> The gradebook is now grouped by the existing MALE/FEMALE sections in the E-Class Record and arranged alphabetically by surname. Review, then click <b>Save Grades</b>.`;
+ $("ecrMsg").innerHTML=`<span class="ecr-status-ok">${applied} matched learner(s) copied to the gradebook.</span> The gradebook is now grouped by the existing MALE/FEMALE sections in the E-Class Record and arranged alphabetically by surname. Only the term(s) assigned to you were copied. Locked terms were not changed. Review, then click <b>Save Grades</b>.`;
  $("confirmImport").hidden=true;window.scrollTo({top:$("classRows").getBoundingClientRect().top+scrollY-100,behavior:"smooth"})
 };
 document.addEventListener("input",e=>{if(e.target.id==="studentSearch"){let q=e.target.value.toLowerCase();document.querySelectorAll("#classRows tr").forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}});
