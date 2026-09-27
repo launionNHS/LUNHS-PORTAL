@@ -1,7 +1,123 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BOW Management | LUNHS</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tbl{overflow:auto;max-height:60vh}.tbl table{width:100%;border-collapse:collapse}.tbl th,.tbl td{padding:7px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}.small{font-size:.88rem}.ok{padding:10px;background:#f3f8f5;border-left:4px solid #176b45}@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}}</style></head><body><main class="standalone-page"><a href="admin.html">← Admin</a><h1>Three-Term BOW Management</h1><p>This library is based on the uploaded Revised K to 10 Three-Term BOW files. Admin may review, activate/deactivate, or add future BOW revisions.</p><div class="app-card"><h3>Initial BOW Data Import</h3><div class="ok">After running the v35.2 SQL, choose <b>bow-seed-data.json</b> from this update package and import it once. Duplicate rows are ignored.</div><input id="seed" type="file" accept=".json"><button id="import">Import BOW Data</button><p id="msg"></p></div><div class="app-card grid"><label>School Year<input id="sy" value="2026-2027"></label><label>Grade<select id="grade"><option value="">All</option><option>7</option><option>8</option><option>9</option><option>10</option><option value="9-10">9-10 TLE</option></select></label><label>Learning Area<select id="area"><option value="">All</option><option>English</option><option>Filipino</option><option>Mathematics</option><option>Science</option><option>MAPEH</option><option>Araling Panlipunan</option><option>Values Education</option><option>TLE</option></select></label><label>Term<select id="term"><option value="">All</option><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></label><button id="load">Load BOW</button></div><div class="app-card tbl"><table><thead><tr><th>Grade</th><th>Area</th><th>Component/Sector</th><th>Term/Week</th><th>Subdomain</th><th>Learning Competency</th><th>Source</th></tr></thead><tbody id="rows"></tbody></table></div></main><script src="config.js"></script><script>
-const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key),$=x=>document.getElementById(x),E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
-async function guard(){let u=(await sb.auth.getUser()).data.user;if(!u)return location.href="portal.html";let p=(await sb.from("profiles").select("role").eq("id",u.id).single()).data;if(p?.role!=="admin")return location.href="dashboard.html";load()}
-$("import").onclick=()=>{let f=$("seed").files[0];if(!f)return $("msg").textContent="Choose bow-seed-data.json.";let r=new FileReader();r.onload=async e=>{try{let rows=JSON.parse(e.target.result),sy=$("sy").value.trim()||"2026-2027";rows=rows.map(x=>({...x,school_year:sy}));let done=0;for(let i=0;i<rows.length;i+=250){let q=await sb.from("bow_competencies").upsert(rows.slice(i,i+250),{onConflict:"school_year,grade_level,learning_area,tle_component,sector,term,week_range,learning_competency",ignoreDuplicates:true});if(q.error){$("msg").textContent=q.error.message;return}done+=Math.min(250,rows.length-i);$("msg").textContent=`Imported ${done} / ${rows.length}…`} $("msg").textContent=`BOW import complete: ${rows.length} source-derived rows processed.`;load()}catch(err){$("msg").textContent=err.message}};r.readAsText(f)}
-async function load(){let q=sb.from("bow_competencies").select("*").eq("school_year",$("sy").value.trim()||"2026-2027").order("grade_level").order("learning_area").order("term").order("week_range");if($("grade").value)q=q.eq("grade_level",$("grade").value);if($("area").value)q=q.eq("learning_area",$("area").value);if($("term").value)q=q.eq("term",$("term").value);let r=await q.limit(3000);if(r.error)return $("msg").textContent=r.error.message;$("rows").innerHTML=(r.data||[]).map(x=>`<tr><td>${E(x.grade_level)}</td><td>${E(x.learning_area)}</td><td>${E([x.tle_component,x.sector].filter(Boolean).join(" — "))}</td><td>${E(x.term)}${x.week_range?" / "+E(x.week_range):""}</td><td>${E(x.subdomain||"")}</td><td>${E(x.learning_competency)}</td><td class="small">${E(x.source_file||"")}</td></tr>`).join("")||'<tr><td colspan="7">No BOW records found.</td></tr>'}
-$("load").onclick=load;guard();
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BOW Management | LUNHS</title><link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.tbl{overflow:auto;max-height:60vh}
+.tbl table{width:100%;border-collapse:collapse}.tbl th,.tbl td{padding:7px;border-bottom:1px solid #ddd;text-align:left;vertical-align:top}
+.small{font-size:.88rem}.ok{padding:10px;background:#f3f8f5;border-left:4px solid #176b45}
+.err{padding:10px;background:#fff1f1;border-left:4px solid #a11}.progress{margin-top:10px}
+progress{width:100%;height:20px}@media(max-width:800px){.grid{grid-template-columns:1fr 1fr}}
+</style></head><body><main class="standalone-page">
+<a href="admin.html">← Admin</a><h1>Three-Term BOW Management</h1>
+<p>Import and review the Revised K to 10 Three-Term BOW competency library.</p>
+
+<div class="app-card">
+<h3>Initial BOW Data Import</h3>
+<div class="ok">First run <b>V35.2.2-BOW-IMPORT-FIX.sql</b> in Supabase. Then choose the <b>bow-seed-data.json</b> included in this package.</div>
+<p><input id="seed" type="file" accept=".json,application/json"></p>
+<p id="selected">No JSON file selected.</p>
+<button id="import" type="button">Import BOW Data</button>
+<div class="progress" id="progressBox" hidden><progress id="progress" value="0" max="100"></progress><div id="progressText"></div></div>
+<p id="msg"></p>
+</div>
+
+<div class="app-card grid">
+<label>School Year<input id="sy" value="2026-2027"></label>
+<label>Grade<select id="grade"><option value="">All</option><option>7</option><option>8</option><option>9</option><option>10</option><option value="9-10">9-10 TLE</option></select></label>
+<label>Learning Area<select id="area"><option value="">All</option><option>English</option><option>Filipino</option><option>Mathematics</option><option>Science</option><option>MAPEH</option><option>Araling Panlipunan</option><option>Values Education</option><option>TLE</option></select></label>
+<label>Term<select id="term"><option value="">All</option><option>Term 1</option><option>Term 2</option><option>Term 3</option></select></label>
+<button id="load" type="button">Load BOW</button>
+</div>
+
+<div class="app-card tbl"><table><thead><tr><th>Grade</th><th>Area</th><th>Component/Sector</th><th>Term/Week</th><th>Subdomain</th><th>Learning Competency</th><th>Source</th></tr></thead><tbody id="rows"></tbody></table></div>
+</main><script src="config.js"></script><script>
+const sb=supabase.createClient(LUNHS_CONFIG.url,LUNHS_CONFIG.key);
+const $=x=>document.getElementById(x);
+const E=s=>String(s??"").replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+function showError(message){
+  $("msg").className="err";
+  $("msg").textContent="Import error: "+message;
+}
+function showOk(message){
+  $("msg").className="ok";
+  $("msg").textContent=message;
+}
+async function guard(){
+  const auth=await sb.auth.getUser();
+  const u=auth.data.user;
+  if(!u){location.href="portal.html";return}
+  const pr=await sb.from("profiles").select("role").eq("id",u.id).single();
+  if(pr.error){showError(pr.error.message);return}
+  if(pr.data?.role!=="admin"){location.href="dashboard.html";return}
+  await load();
+}
+$("seed").addEventListener("change",()=>{
+  const f=$("seed").files[0];
+  $("selected").textContent=f ? `Selected: ${f.name} (${Math.round(f.size/1024)} KB)` : "No JSON file selected.";
+  $("msg").textContent=""; $("msg").className="";
+});
+
+$("import").addEventListener("click",async()=>{
+  const btn=$("import"), f=$("seed").files[0];
+  if(!f){showError("Choose bow-seed-data.json first.");return}
+  btn.disabled=true;
+  $("progressBox").hidden=false;
+  $("progress").value=0;
+  $("progressText").textContent="Reading JSON file…";
+  $("msg").textContent=""; $("msg").className="";
+  try{
+    const text=await f.text();
+    let data=JSON.parse(text);
+    if(!Array.isArray(data) || !data.length) throw new Error("The selected JSON file contains no BOW rows.");
+    const required=["grade_level","learning_area","term","learning_competency"];
+    const bad=data.findIndex(x=>required.some(k=>!String(x?.[k]??"").trim()));
+    if(bad>=0) throw new Error(`Invalid BOW row at item ${bad+1}.`);
+    const sy=$("sy").value.trim()||"2026-2027";
+    data=data.map(x=>({...x,
+      school_year:sy,
+      tle_component:x.tle_component||"",
+      sector:x.sector||"",
+      week_range:x.week_range||""
+    }));
+    let done=0;
+    const batch=100;
+    for(let i=0;i<data.length;i+=batch){
+      const part=data.slice(i,i+batch);
+      const q=await sb.from("bow_competencies").upsert(part,{
+        onConflict:"school_year,grade_level,learning_area,tle_component,sector,term,week_range,learning_competency",
+        ignoreDuplicates:true
+      });
+      if(q.error) throw q.error;
+      done+=part.length;
+      const pct=Math.round(done/data.length*100);
+      $("progress").value=pct;
+      $("progressText").textContent=`Imported ${done} of ${data.length} rows (${pct}%)`;
+      await new Promise(r=>setTimeout(r,0));
+    }
+    const count=await sb.from("bow_competencies").select("id",{count:"exact",head:true}).eq("school_year",sy);
+    if(count.error) throw count.error;
+    showOk(`BOW import complete. ${data.length} rows processed. Database now contains ${count.count??"verified"} BOW record(s) for ${sy}.`);
+    await load();
+  }catch(err){
+    showError(err?.message||String(err));
+  }finally{
+    btn.disabled=false;
+  }
+});
+
+async function load(){
+  let q=sb.from("bow_competencies").select("*")
+    .eq("school_year",$("sy").value.trim()||"2026-2027")
+    .order("grade_level").order("learning_area").order("term").order("week_range");
+  if($("grade").value)q=q.eq("grade_level",$("grade").value);
+  if($("area").value)q=q.eq("learning_area",$("area").value);
+  if($("term").value)q=q.eq("term",$("term").value);
+  const r=await q.limit(3000);
+  if(r.error){showError(r.error.message);return}
+  $("rows").innerHTML=(r.data||[]).map(x=>`<tr><td>${E(x.grade_level)}</td><td>${E(x.learning_area)}</td><td>${E([x.tle_component,x.sector].filter(Boolean).join(" — "))}</td><td>${E(x.term)}${x.week_range?" / "+E(x.week_range):""}</td><td>${E(x.subdomain||"")}</td><td>${E(x.learning_competency)}</td><td class="small">${E(x.source_file||"")}</td></tr>`).join("")||'<tr><td colspan="7">No BOW records found.</td></tr>';
+}
+$("load").onclick=load;
+guard();
 </script></body></html>
